@@ -1,4 +1,4 @@
-# 建立 Pre-commit Hook
+# 建立 Pre-commit Hook 步驟如下：
 
 ## 1. 建立 pre-commit hook
 
@@ -69,13 +69,13 @@ repos:
       - id: dotnet-analyzers # 使用 .NET 分析器檢查 C# 程式碼品質
 ```
 
-## 4. 安裝 Git hook 到專案 .git/hooks（只需一次）
+## 4. 安裝 Git hook 到專案 .git/hooks
 
 ```bash
 pre-commit install
 ```
 
-## 5. 手動測試所有檔案（第一次使用建議執行）
+## 5. 手動測試所有檔案
 
 ```bash
 pre-commit run --all-files
