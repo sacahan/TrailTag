@@ -86,3 +86,5 @@ pre-commit run --all-files
 ```bash
 pre-commit status
 ```
+
+Let's do it step by step!

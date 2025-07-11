@@ -25,5 +25,5 @@ htmlcov/
 .ipynb_checkpoints/
 .DS_Store
 .idea/
-.vscode/
+# .vscode/
 *.swp

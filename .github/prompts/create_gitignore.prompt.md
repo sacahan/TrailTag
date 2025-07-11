@@ -7,3 +7,5 @@
 參考 [GitHub 的 gitignore 模板](https://github.com/github/gitignore) 來選擇適合的模板。
 
 ## 3. 在專案根目錄新增 `.gitignore` 檔案
+
+Let's do it step by step!

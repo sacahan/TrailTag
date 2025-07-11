@@ -37,3 +37,5 @@ git push -u origin main
 ```
 
 完成以上步驟後，即提示用戶已成功建立一個基本的開發環境，並且已經設定好 Git 儲存庫和 Pre-commit Hook。接下來可以開始進行專案開發工作。
+
+Let's do it step by step!
