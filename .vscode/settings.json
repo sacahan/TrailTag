@@ -112,7 +112,7 @@
 
     // GitHub Copilot Chat - Agent Mode
     "chat.agent.enabled": true,
-    "chat.agent.maxRequests": 100,
+    "chat.agent.maxRequests": 50,
     "github.copilot.chat.agent.runTasks": true,
     "github.copilot.chat.codesearch.enabled": true,
     "github.copilot.chat.newWorkspaceCreation.enabled": true,
