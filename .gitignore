@@ -27,3 +27,9 @@ htmlcov/
 .idea/
 # .vscode/
 *.swp
+outputs/
+*.bak
+*.tmp
+
+# UV
+uv.lock

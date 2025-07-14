@@ -40,7 +40,7 @@ src/trailtag/
 
 ## 代碼規範
 
-- 使用 Python 3.10+ 
+- 使用 Python 3.10+
 - 使用 Black 進行程式碼格式化
 - 使用 Ruff 進行程式碼品質檢查
 - 使用 pre-commit hooks 自動執行以上檢查
