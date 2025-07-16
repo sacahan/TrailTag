@@ -25,7 +25,7 @@ def run():
     trace_context = agentops.start_trace(trace_name="Joke Generator Workflow")
 
     try:
-        inputs = {"topic": "律師"}
+        inputs = {"topic": "酒鬼"}
         Trailtag().crew().kickoff(inputs=inputs)
 
         agentops.end_trace(trace_context=trace_context, end_state="SUCCESS")

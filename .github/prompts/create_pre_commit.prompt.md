@@ -4,13 +4,13 @@
 
 - 安裝 pre-commit 工具（全域或專案內）
 
-```bash
+```zsh
 pip install pre-commit
 ```
 
 - (可選) 安裝到專案 requirements.txt
 
-```bash
+```zsh
 echo "pre-commit" >> requirements.txt
 ```
 
@@ -71,19 +71,19 @@ repos:
 
 ## 4. 安裝 Git hook 到專案 .git/hooks
 
-```bash
+```zsh
 pre-commit install
 ```
 
 ## 5. 手動測試所有檔案
 
-```bash
+```zsh
 pre-commit run --all-files
 ```
 
 ## 6. 檢查目前 hook 狀態
 
-```bash
+```zsh
 pre-commit status
 ```
 
