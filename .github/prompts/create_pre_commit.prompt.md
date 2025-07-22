@@ -58,7 +58,9 @@ repos:
   - repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:
-      - id: black # 格式化 Python 檔案
+        - id: check-docstring-first
+        name: "Check Python docstrings"
+        args: ["--strict"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.5.5
     hooks:
