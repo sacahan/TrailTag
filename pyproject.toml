@@ -7,7 +7,10 @@ requires-python = ">=3.10,<3.14"
 dependencies = [
     "agentops>=0.4.17",
     "crewai[tools]>=0.141.0,<1.0.0",
+    "playwright>=1.53.0",
+    "pre-commit>=4.2.0",
     "pytest>=7.0.0",
+    "pytest-playwright>=0.7.0",
 ]
 
 [project.scripts]

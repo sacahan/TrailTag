@@ -1,3 +1,8 @@
+---
+mode:  agent
+description: 'Initialize a development environment with Git repository, pre-commit hook, .gitignore, and .editorconfig.'
+---
+
 # 開發環境初始化的步驟如下：
 
 ## 1. 初始化 Git 儲存庫
