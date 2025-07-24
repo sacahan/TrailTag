@@ -1,0 +1,19 @@
+youtube_fetch_task:
+    description: |
+        由 YouTube 頻道 ID 或關鍵字 {search_keyword} 搜尋頻道影片，並下載影片 metadata 與媒體檔案。
+
+    expected_output: |
+        結構固定的影片列表清單，可以呈現影片名稱，描述，發布時間，持續時間，關鍵字等資訊。
+
+    agent: youtube_video_agent
+
+video_check_task:
+    description: |
+        比對影片清單中的每支影片，檢查其是否符合旅遊性質。根據影片標題、描述和關鍵字，選出最符合旅遊主題的影片。
+
+    expected_output: |
+        選出一則最適合作為展示旅遊內容的影片，輸出包含影片 ID、標題、描述、關鍵字、發佈時間、持續時間等資訊。
+
+    markdown: True
+
+    agent: travel_video_agent

@@ -22,10 +22,10 @@ def run():
     agentops.init(
         api_key=AGENTOPS_API_KEY, auto_start_session=False
     )  # Initialize AgentOps with the API key
-    trace_context = agentops.start_trace(trace_name="Joke Generator Workflow")
+    trace_context = agentops.start_trace(trace_name="TrailTag Workflow")
 
     try:
-        inputs = {"topic": "酒鬼"}
+        inputs = {"search_keyword": "DoDoMen"}
         Trailtag().crew().kickoff(inputs=inputs)
 
         agentops.end_trace(trace_context=trace_context, end_state="SUCCESS")

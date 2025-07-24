@@ -33,7 +33,7 @@ uv add pre-commit
 uv link pre-commit
 ```
 
-## 2. 在專案根目錄新增 .pre-commit-config.yaml，並增加以下內容：
+## 2. 在 ${workspaceFolderBasename} 根目錄新增 .pre-commit-config.yaml，並增加以下內容：
 
 ```yaml
 # .pre-commit-config.yaml 範例

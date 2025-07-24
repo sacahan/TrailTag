@@ -1,4 +1,5 @@
 ---
+description: 'Python development standards and best practices'
 applyTo: '**/*.py'
 ---
 

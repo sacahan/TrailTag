@@ -11,6 +11,7 @@ mode: 'agent'
 ## 執行命令
 
 ```bash
+cd ${workspaceFolder}
 pre-commit run --all-files
 ```
 
