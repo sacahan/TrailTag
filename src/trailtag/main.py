@@ -27,7 +27,7 @@ def run():
     try:
         inputs = {
             "youtube_video_url": "https://www.youtube.com/watch?v=SlRSbihlytQ",
-            "search_query": "地點與時間軸",
+            "video_subject": "景點與美食",
         }
         Trailtag().crew().kickoff(inputs=inputs)
 

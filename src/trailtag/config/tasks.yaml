@@ -1,4 +1,3 @@
-
 video_metadata_extraction_task:
   description: >
     分析 {youtube_video_url} 的 YouTube 影片，提取影片本身的 metadata 與基本資訊，並結構化輸出。
@@ -18,7 +17,7 @@ video_metadata_extraction_task:
 
 video_topic_summary_task:
   description: >
-    針對 {video_subject} 指定主題，透過分析字幕檔內容彙整出相關摘要，結構化產出主題資訊。
+    針對 {video_subject} 的主題，透過分析字幕檔內容彙整出摘要，結構化產出與主題相關的資訊。
 
   expected_output: >
     Pydantic 模型格式的主題摘要資料，包含：

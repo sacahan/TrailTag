@@ -4,23 +4,37 @@ from typing import Type
 from pydantic import BaseModel, Field
 from ..models import VideoMetadata
 import yt_dlp
+from datetime import datetime
+import requests
+import json
 
 # 設定 logger 以便記錄除錯與警告訊息
 logger = logging.getLogger(__name__)
 
 
 class YoutubeMetadataToolInput(BaseModel):
-    """YoutubeMetadataTool 的輸入資料結構，定義 video_id 欄位。"""
+    """
+    YoutubeMetadataTool 的輸入資料結構。
+
+    Attributes:
+        video_id (str): YouTube 影片的 ID。
+    """
 
     video_id: str = Field(..., description="YouTube 影片的 ID")
 
 
 class YoutubeMetadataTool(BaseTool):
-    # 工具名稱
+    """
+    取得 YouTube 影片 metadata 及字幕的工具。
+
+    Attributes:
+        name (str): 工具名稱。
+        description (str): 工具用途說明。
+        args_schema (Type[BaseModel]): 輸入參數的 schema。
+    """
+
     name: str = "YouTube Metadata Fetcher"
-    # 工具描述，說明用途
     description: str = "根據 video_id 取得 YouTube 影片的 metadata（含字幕資訊），回傳 VideoMetadata Pydantic 物件。"
-    # 指定輸入參數的 schema
     args_schema: Type[BaseModel] = YoutubeMetadataToolInput
 
     def _extract_subtitle_url(
@@ -28,8 +42,19 @@ class YoutubeMetadataTool(BaseTool):
     ) -> tuple[str | None, str | None]:
         """
         根據優先語言，從 info 取得字幕的 URL 與格式。
-        先找手動字幕，若無則找自動字幕。
-        回傳 (subtitle_url, format)，若無字幕則皆為 None。
+
+        搜尋順序：
+        1. 手動字幕 (subtitles)
+        2. 自動字幕 (automatic_captions)
+        3. 依 preferred_langs 順序尋找
+        4. 優先 srt 格式，否則取第一個可用字幕
+
+        Args:
+            info (dict): yt_dlp 擷取的影片資訊。
+            preferred_langs (list[str]): 語言優先順序。
+
+        Returns:
+            tuple[str | None, str | None]: (字幕 URL, 格式)，若無字幕則皆為 None。
         """
         # 依序搜尋 subtitles 與 automatic_captions
         for key in ("subtitles", "automatic_captions"):
@@ -51,50 +76,28 @@ class YoutubeMetadataTool(BaseTool):
     def _run(self, video_id: str) -> VideoMetadata | None:
         """
         取得 YouTube 影片 metadata，並自動擷取字幕（優先 zh-TW, zh-CN, en）。
-        回傳 VideoMetadata，若失敗則回傳 None。
+
+        包含步驟：
+        1. 以 yt_dlp 擷取影片資訊。
+        2. 依語言優先順序取得字幕 URL 並下載字幕內容。
+        3. 處理日期格式與關鍵字欄位。
+        4. 組成 VideoMetadata 物件。
+
+        Args:
+            video_id (str): YouTube 影片的 ID。
+
+        Returns:
+            VideoMetadata | None: 影片 metadata，若失敗則回傳 None。
         """
-        import requests
 
         url = f"https://www.youtube.com/watch?v={video_id}"  # 組合 YouTube 影片網址
-        ydl_opts = {"skip_download": True}  # 設定 yt_dlp 選項，不下載影片僅抓取資訊
+        ydl_opts = {"skip_download": True}
         try:
-            # 使用 yt_dlp 擷取影片資訊
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=False)
 
-            # 將擷取到的資訊填入 VideoMetadata Pydantic 物件
-            metadata = VideoMetadata(
-                video_id=info.get("id"),
-                title=info.get("title"),
-                description=info.get("description"),
-                channel=info.get("channel"),
-                channel_id=info.get("channel_id"),
-                channel_url=info.get("channel_url"),
-                uploader=info.get("uploader"),
-                uploader_id=info.get("uploader_id"),
-                uploader_url=info.get("uploader_url"),
-                duration=info.get("duration"),
-                view_count=info.get("view_count"),
-                like_count=info.get("like_count"),
-                dislike_count=info.get("dislike_count"),
-                average_rating=info.get("average_rating"),
-                age_limit=info.get("age_limit"),
-                webpage_url=info.get("webpage_url"),
-                original_url=info.get("original_url"),
-                upload_date=info.get("upload_date"),
-                release_date=info.get("release_date"),
-                timestamp=info.get("timestamp"),
-                tags=info.get("tags") or [],
-                categories=info.get("categories") or [],
-                automatic_captions=info.get("automatic_captions"),
-                comment_count=info.get("comment_count"),
-                license=info.get("license"),
-                availability=info.get("availability"),
-            )
-
             # 設定字幕語言優先順序
             preferred_langs = ["zh-TW", "zh-CN", "en"]
-            # 取得字幕下載連結與格式
             subtitle_url, subtitle_format = self._extract_subtitle_url(
                 info, preferred_langs
             )
@@ -102,36 +105,59 @@ class YoutubeMetadataTool(BaseTool):
             subtitles_text = None
             if subtitle_url:
                 try:
-                    # 下載字幕內容
+                    # 下載字幕內容，失敗則記錄警告
                     resp = requests.get(subtitle_url, timeout=10)
                     resp.raise_for_status()
                     subtitles_text = resp.text.strip()
                 except Exception as e:
-                    # 若字幕下載或解析失敗，記錄警告
                     logger.warning(f"字幕下載或解析失敗: {e}")
-
-            # 將字幕格式與內容存入 metadata
-            metadata.subtitles_format = subtitle_format
-            metadata.subtitles_text = subtitles_text
-
-            # 若無字幕，記錄警告
-            if not subtitle_url:
+            else:
                 logger.warning(
                     f"No subtitles or automatic captions found for video {video_id}"
                 )
 
+            # 轉換日期格式，yt_dlp 回傳格式為 YYYYMMDD
+            publish_date = None
+            if info.get("upload_date"):
+                try:
+                    publish_date = datetime.strptime(info["upload_date"], "%Y%m%d")
+                except Exception as e:
+                    logger.warning(f"日期格式解析失敗: {e}")
+
+            # 關鍵字欄位，優先 tags，否則 categories
+            keywords = info.get("tags") or info.get("categories") or None
+            if keywords and not isinstance(keywords, list):
+                keywords = [str(keywords)]
+
+            # 填充 VideoMetadata (根據 models.py)
+            metadata = VideoMetadata(
+                url=info.get("webpage_url") or url,
+                video_id=info.get("id"),
+                title=info.get("title"),
+                description=info.get("description"),
+                publish_date=publish_date,
+                duration=info.get("duration"),
+                keywords=keywords,
+                subtitles=subtitles_text,
+            )
             return metadata
 
         except Exception as e:
-            # 若 yt_dlp 擷取失敗，記錄錯誤並回傳 None
             logger.error(f"yt_dlp error for video {video_id}: {str(e)}")
             return None
 
 
 # 使用範例：直接執行此檔案時會執行以下程式
 if __name__ == "__main__":
+    # 工具測試範例，執行後會印出指定影片的 metadata
     tool = YoutubeMetadataTool()
     # video_id = "SlRSbihlytQ"  # 替換為實際的 YouTube 影片 ID
     video_id = "1LPTp7CMQCs"
     metadata = tool._run(video_id)
-    print(metadata)
+    if metadata:
+        # Pydantic v2 不再支援 json() 的 ensure_ascii/indent 參數，需用 json.dumps
+        print(
+            json.dumps(metadata.model_dump(), ensure_ascii=False, indent=2, default=str)
+        )
+    else:
+        print(None)
