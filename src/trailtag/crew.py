@@ -1,5 +1,5 @@
 import logging
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, Process, Task, TaskOutput
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from crewai_tools import (
@@ -10,13 +10,39 @@ from crewai_tools import (
 )
 from .tools.youtube_metadata_tool import YoutubeSubtitleTool
 
-from typing import List
+from typing import List, Tuple, Any
 from .models import (
     VideoMapGenerationOutput,
     MapVisualizationOutput,
 )
 
-logging.basicConfig(level=logging.INFO)
+logging = logging.getLogger(__name__)
+
+
+# --- Guardrail function for video_map_generation_task ---
+def validate_video_map_generation_output(result: TaskOutput) -> Tuple[bool, Any]:
+    """驗證 VideoMapGenerationOutput 是否有值且主要欄位不為空。"""
+    try:
+        # 允許 result.pydantic 或 result.json_dict 取值
+        output = getattr(result, "pydantic", None) or getattr(result, "json_dict", None)
+        if not output:
+            return (False, "無法取得結構化輸出 (pydantic/json_dict) 或輸出為空")
+        # 驗證 subtitles_text 欄位
+        required_fields = ["subtitles_text"]
+        for field in required_fields:
+            value = (
+                getattr(output, field, None)
+                if hasattr(output, field)
+                else output.get(field)
+            )
+            if value is None or (isinstance(value, (str, list, dict)) and not value):
+                logging.warning(f"欄位 '{field}' 缺失或為空")
+                return (False, f"欄位 '{field}' 缺失或為空")
+
+        return (True, output)
+    except Exception as e:
+        logging.error(f"驗證過程發生例外: {str(e)}")
+        return (False, f"驗證過程發生例外: {str(e)}")
 
 
 @CrewBase
@@ -82,6 +108,7 @@ class Trailtag:
             config=self.tasks_config["video_map_generation_task"],
             output_file="outputs/video_map_info.json",
             output_json=VideoMapGenerationOutput,  # 指定 Pydantic 模型
+            guardrail=validate_video_map_generation_output,  # 增加驗證 function
         )
 
     @task
