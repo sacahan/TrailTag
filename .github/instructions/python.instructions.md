@@ -1,6 +1,6 @@
 ---
-description: 'Python development standards and best practices'
-applyTo: '**/*.py'
+description: "Python development standards and best practices"
+applyTo: "**/*.py"
 ---
 
 # Guidelines for Python

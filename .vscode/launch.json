@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "youtube_metadata_tool 偵錯",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.trailtag.tools.youtube_metadata_tool",
+      "console": "integratedTerminal"
+    }
+  ]
+}

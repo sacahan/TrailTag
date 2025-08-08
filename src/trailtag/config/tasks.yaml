@@ -1,19 +1,55 @@
-youtube_fetch_task:
-    description: |
-        由 YouTube 頻道 ID 或關鍵字 {search_keyword} 搜尋頻道影片，並下載影片 metadata 與媒體檔案。
+video_map_generation_task:
+  description: >
+    - 分析 {youtube_video_url} 的 YouTube 影片，提取相關資訊產生結構化資料。
+    - 使用字幕檔查找地點位置資訊
+    - 將提取出包括地點名稱和時間軸等資訊產生結構化資料。
 
-    expected_output: |
-        結構固定的影片列表清單，可以呈現影片名稱，描述，發布時間，持續時間，關鍵字等資訊。
+  expected_output: >
+    Pydantic 模型格式的結構化資料，包含：
+    - url: 影片 URL
+    - video_id: 影片 ID
+    - title: 標題
+    - description: 描述
+    - publish_date: 發佈日期
+    - duration: 持續時間（秒）
+    - keywords: 關鍵字
+    - subtitles: 字幕內容
+    - analysis:
+        - location_name: 片中每個地點的名稱
+        - timestamp: 片中的時間軸（HH:MM:SS）
+        - location_type: 地點類型 (景點/餐廳/住宿等)
+        - confidence_score: 地點識別置信度 (0-1)
+        - context: 影片中提及該地點的上下文內容
+        - related_locations: 相關鄰近地點列表
+        - popularity_score: 地點熱門程度評分
+        - accessibility_info: 無障礙設施資訊
+        - opening_hours: 營業時間資訊
+        - contact_info: 聯絡方式
 
-    agent: youtube_video_agent
+  agent: video_analysis_agent
 
-video_check_task:
-    description: |
-        比對影片清單中的每支影片，檢查其是否符合旅遊性質。根據影片標題、描述和關鍵字，選出最符合旅遊主題的影片。
+map_visualization_task:
+  description: >
+    如果有接收到地點資料則分析內容產生互動式地圖所需欄位。
 
-    expected_output: |
-        選出一則最適合作為展示旅遊內容的影片，輸出包含影片 ID、標題、描述、關鍵字、發佈時間、持續時間等資訊。
+  expected_output: >
+    Pydantic 模型的地圖資料，包含：
+    - routes: 地點列表
+      - location: 地點名稱
+      - coordinates: 地點座標（經度和緯度）
+      - timestamp: 時間軸（HH:MM:SS）
+      - description: 地點描述
+      - thumbnail: 地點縮圖URL
+      - video_timestamp: 影片時間戳記（秒）
+      - tags: 地點標籤
+    - map_settings:
+      - zoom_level: 預設縮放等級
+      - center_coordinates: 地圖中心座標
+      - map_style: 地圖樣式
+      - markers_style: 標記樣式設定
+    - metadata:
+      - video_title: 影片標題
+      - video_url: 影片URL
+      - author: 作者資訊
 
-    markdown: True
-
-    agent: travel_video_agent
+  agent: map_visualization_agent

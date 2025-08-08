@@ -25,7 +25,10 @@ def run():
     trace_context = agentops.start_trace(trace_name="TrailTag Workflow")
 
     try:
-        inputs = {"search_keyword": "DoDoMen"}
+        inputs = {
+            "youtube_video_url": "https://www.youtube.com/watch?v=SlRSbihlytQ",
+            "search_query": "地點與時間軸",
+        }
         Trailtag().crew().kickoff(inputs=inputs)
 
         agentops.end_trace(trace_context=trace_context, end_state="SUCCESS")

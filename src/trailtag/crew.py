@@ -1,8 +1,22 @@
+import logging
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
-from crewai_tools import YoutubeChannelSearchTool, YoutubeVideoSearchTool
+from crewai_tools import (
+    ScrapeWebsiteTool,
+    SerperDevTool,
+    FileReadTool,
+    DirectorySearchTool,
+)
+from .tools.youtube_metadata_tool import YoutubeSubtitleTool
+
 from typing import List
+from .models import (
+    VideoMapGenerationOutput,
+    MapVisualizationOutput,
+)
+
+logging.basicConfig(level=logging.INFO)
 
 
 @CrewBase
@@ -15,66 +29,73 @@ class Trailtag:
     tasks: List[Task]  # 定義 Crew 中的 Task 列表
 
     @agent
-    def youtube_video_agent(self) -> Agent:
-        """定義一個名為 youtube_video_agent 的 Agent，用於擷取影片清單。
+    def video_analysis_agent(self) -> Agent:
+        """定義一個名為 video_analysis_agent 的 Agent，分析影片內容，提取地點資訊和時間軸，並結構化存儲。
 
         Returns:
-            Agent: 配置完成的影片清單擷取 Agent。
+            Agent: 配置完成的影片內容分析 Agent。
         """
         return Agent(
-            llm="gpt-4o-mini",  # 使用 gpt-4o-mini 模型
-            config=self.agents_config[
-                "youtube_video_agent"
-            ],  # 使用配置中的影片清單擷取器設定
+            llm="gpt-4o-mini",
+            config=self.agents_config["video_analysis_agent"],
+            # reasoning=True,  # 設定 Agent 進行推理
+            max_reasoning_attempts=3,  # 設定最大推理嘗試次數
+            max_retry_limit=3,  # 設定最大重試次數
+            verbose=True,
             tools=[
-                YoutubeChannelSearchTool(),
-                YoutubeVideoSearchTool(),
-            ],  # 使用 YouTube 頻道和影片搜尋工具
-            verbose=True,  # 啟用詳細日誌輸出
-            expertise_level="Expert",  # 設定專業等級為專家
+                YoutubeSubtitleTool(),  # 獲取 YouTube 影片字幕
+                SerperDevTool(),  # 獲取地理資訊參考資料
+                FileReadTool(),  # 讀取影片文字稿/字幕檔
+                DirectorySearchTool(),  # 搜尋本地檔案
+                ScrapeWebsiteTool(),  # 獲取地理資訊參考資料
+            ],
         )
 
     @agent
-    def travel_video_agent(self) -> Agent:
-        """定義一個名為 travel_video_agent 的 Agent，用於過濾旅遊影片。
+    def map_visualization_agent(self) -> Agent:
+        """定義一個名為 map_visualization_agent 的 Agent，根據提取的地點與時間軸資訊，生成可視化的地圖路線。
 
         Returns:
-            Agent: 配置完成的旅遊影片過濾 Agent。
+            Agent: 配置完成的地圖路線生成 Agent。
         """
         return Agent(
-            llm="gpt-4o-mini",  # 使用 gpt-4o-mini 模型
-            config=self.agents_config[
-                "travel_video_agent"
-            ],  # 使用配置中的旅遊影片過濾器設定
-            verbose=True,  # 啟用詳細日誌輸出
-            expertise_level="Expert",  # 設定專業等級為專家
+            llm="gpt-4o-mini",
+            config=self.agents_config["map_visualization_agent"],
+            # reasoning=True,  # 設定 Agent 進行推理
+            max_reasoning_attempts=3,  # 設定最大推理嘗試次數
+            max_retry_limit=3,  # 設定最大重試次數
+            verbose=True,
+            tools=[
+                FileReadTool(),  # 讀取結構化地點資料
+                DirectorySearchTool(),  # 搜尋模板或設定檔
+            ],
         )
 
     @task
-    def youtube_fetch_task(self) -> Task:
-        """定義一個名為 youtube_fetch_task 的 Task，用於執行 YouTube 影片擷取任務。
+    def video_map_generation_task(self) -> Task:
+        """定義一個名為 video_map_generation_task 的 Task，用於擷取 YouTube 影片內容並進行基本屬性分析。
 
         Returns:
-            Task: 配置完成的 YouTube 影片擷取任務。
+            Task: 配置完成的影片擷取與分析任務。
         """
         return Task(
-            config=self.tasks_config[
-                "youtube_fetch_task"
-            ],  # 使用配置中的 YouTube 影片擷取任務設定
+            config=self.tasks_config["video_map_generation_task"],
+            output_file="outputs/video_map_info.json",
+            output_json=VideoMapGenerationOutput,  # 指定 Pydantic 模型
         )
 
     @task
-    def video_check_task(self) -> Task:
-        """定義一個名為 video_check_task 的 Task，用於執行影片過濾任務。
+    def map_visualization_task(self) -> Task:
+        """定義一個名為 map_visualization_task 的 Task，用於生成地圖路線。
 
         Returns:
-            Task: 配置完成的影片過濾任務，並將輸出寫入指定檔案。
+            Task: 配置完成的地圖路線生成任務。
         """
         return Task(
-            config=self.tasks_config[
-                "video_check_task"
-            ],  # 使用配置中的影片過濾任務設定
-            output_file="outputs/videos.md",  # 指定輸出檔案路徑
+            config=self.tasks_config["map_visualization_task"],
+            context=[self.video_map_generation_task()],
+            output_file="outputs/map_route.json",
+            output_json=MapVisualizationOutput,  # 指定 Pydantic 模型
         )
 
     @crew
@@ -85,9 +106,11 @@ class Trailtag:
             Crew: 包含所有定義的 Agent 和 Task 的 Crew，並設定執行流程。
         """
         return Crew(
-            agents=self.agents,  # 自動由 @agent 裝飾器創建的 Agent 列表
-            tasks=self.tasks,  # 自動由 @task 裝飾器創建的 Task 列表
-            process=Process.sequential,  # 設定執行流程為順序執行
-            verbose=True,  # 啟用詳細日誌輸出
-            # process=Process.hierarchical, # 如果需要使用分層執行流程，可啟用此設定
+            # agents=self.agents,
+            # tasks=self.tasks,
+            agents=[self.video_analysis_agent()],
+            tasks=[self.video_map_generation_task()],
+            process=Process.sequential,
+            verbose=True,
+            planning=True,
         )

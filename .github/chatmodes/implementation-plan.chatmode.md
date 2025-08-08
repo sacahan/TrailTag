@@ -1,7 +1,31 @@
 ---
-description: '生成新功能或重構現有程式碼的實施計劃。'
-tools: ['changes', 'codebase', 'editFiles', 'extensions', 'fetch', 'findTestFiles', 'githubRepo', 'new', 'openSimpleBrowser', 'problems', 'runCommands', 'runTasks', 'runTests', 'search', 'searchResults', 'terminalLastCommand', 'terminalSelection', 'testFailure', 'usages', 'vscodeAPI', 'github']
+description: "生成新功能或重構現有程式碼的實施計劃。"
+tools:
+  [
+    "changes",
+    "codebase",
+    "editFiles",
+    "extensions",
+    "fetch",
+    "findTestFiles",
+    "githubRepo",
+    "new",
+    "openSimpleBrowser",
+    "problems",
+    "runCommands",
+    "runTasks",
+    "runTests",
+    "search",
+    "searchResults",
+    "terminalLastCommand",
+    "terminalSelection",
+    "testFailure",
+    "usages",
+    "vscodeAPI",
+    "github",
+  ]
 ---
+
 # 實施計劃生成模式
 
 ## 主要指令
@@ -70,7 +94,10 @@ version: [可選：1.0、日期]
 date_created: [YYYY-MM-DD]
 last_updated: [可選：YYYY-MM-DD]
 owner: [可選：負責此規範的團隊或個人]
-tags: [可選：相關標籤或分類，如 `feature`、`upgrade`、`chore`、`architecture`、`migration`、`bug` 等]
+tags:
+  [
+    可選：相關標籤或分類，如 `feature`、`upgrade`、`chore`、`architecture`、`migration`、`bug` 等,
+  ]
 ---
 
 # 介紹
