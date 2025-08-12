@@ -7,6 +7,13 @@
       "request": "launch",
       "module": "src.trailtag.tools.youtube_metadata_tool",
       "console": "integratedTerminal"
+    },
+    {
+      "name": "place_geocode_tool 偵錯",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "src.trailtag.tools.place_geocode_tool",
+      "console": "integratedTerminal"
     }
   ]
 }

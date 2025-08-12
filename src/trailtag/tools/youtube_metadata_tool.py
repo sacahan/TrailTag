@@ -106,23 +106,22 @@ class YoutubeMetadataTool(BaseTool):
             if subtitle_url:
                 try:
                     # 下載字幕內容，失敗則記錄警告
+                    print(f"Downloading subtitles from {subtitle_url}...")
                     resp = requests.get(subtitle_url, timeout=10)
                     resp.raise_for_status()
-                    subtitles_text = resp.text.strip()
+                    subtitles_text = resp.text
                 except Exception as e:
-                    logger.warning(f"字幕下載或解析失敗: {e}")
+                    print(f"字幕下載或解析失敗: {e}")
             else:
-                logger.warning(
-                    f"No subtitles or automatic captions found for video {video_id}"
-                )
+                print(f"No subtitles or automatic captions found for video {video_id}")
 
             # 轉換日期格式，yt_dlp 回傳格式為 YYYYMMDD
             publish_date = None
             if info.get("upload_date"):
                 try:
-                    publish_date = datetime.strptime(info["upload_date"], "%Y%m%d")
+                    publish_date = datetime.strptime(info["upload_date"], "%Y-%m-%d")
                 except Exception as e:
-                    logger.warning(f"日期格式解析失敗: {e}")
+                    print(f"日期格式解析失敗: {e}")
 
             # 關鍵字欄位，優先 tags，否則 categories
             keywords = info.get("tags") or info.get("categories") or None
@@ -140,6 +139,11 @@ class YoutubeMetadataTool(BaseTool):
                 keywords=keywords,
                 subtitles=subtitles_text,
             )
+
+            # 轉為JSON存到 outputs/video_metadata.json
+            # with open("outputs/video_metadata.json", "w", encoding="utf-8") as f:
+            #     json.dump(metadata.model_dump(), f, ensure_ascii=False, indent=2, default=str)
+
             return metadata
 
         except Exception as e:
@@ -151,8 +155,7 @@ class YoutubeMetadataTool(BaseTool):
 if __name__ == "__main__":
     # 工具測試範例，執行後會印出指定影片的 metadata
     tool = YoutubeMetadataTool()
-    # video_id = "SlRSbihlytQ"  # 替換為實際的 YouTube 影片 ID
-    video_id = "1LPTp7CMQCs"
+    video_id = "SlRSbihlytQ"  # 替換為實際的 YouTube 影片 ID
     metadata = tool._run(video_id)
     if metadata:
         # Pydantic v2 不再支援 json() 的 ensure_ascii/indent 參數，需用 json.dumps

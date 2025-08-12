@@ -13,28 +13,34 @@ video_metadata_extraction_task:
     - keywords: 關鍵字
     - subtitles: 字幕內容
 
-  agent: video_analysis_agent
+  agent: video_fetch_agent
 
 video_topic_summary_task:
   description: >
-    針對 {video_subject} 的主題，透過分析字幕檔內容彙整出摘要，結構化產出與主題相關的資訊。
+    透過分析影片 metadata 以及字幕檔中的內容，分析 '{search_subject}' 資訊，產出結構化的輸出。
+    只能針對既有內容進行分析，不可自行產生不存在的內容，不多不少。
+    如果有多筆內容輸出時使用影片出現的時間軸 (timecode) 進行排序。
 
   expected_output: >
     Pydantic 模型格式的主題摘要資料，包含：
     - topic: 主題名稱（如地點/人物/事件/主題）
     - summary_items:
         - name: 項目名稱（如地點名稱、人物名稱等）
-        - video_timestamp: 字幕中提及該項目的時間軸（秒）
+        - country: 所屬國家
+        - city: 所屬城市
+        - timecode: 字幕中提及該項目的時間軸（hh:mm:ss,mmm）
         - context: 字幕中提及該項目的上下文內容
         - related_items: 相關項目列表
         - confidence_score: 項目識別置信度 (0-1)
         - extra_info: 其他補充資訊（如地點類型、熱門程度、無障礙設施、營業時間、聯絡方式等，依主題彈性擴充）
 
-  agent: summary_extraction_agent
+  agent: content_extraction_agent
 
 map_visualization_task:
   description: >
-    如果有接收到地點資料則分析內容產生互動式地圖所需欄位。
+    如果有接收到地點資料則分析內容產生互動式地圖所需欄位，例如地點所在的經緯度。
+    只能針對既有內容進行分析，不可自行產生不存在的內容，不多不少。
+    如果有多筆內容輸出時使用影片出現的時間軸 (timecode) 進行排序。
 
   expected_output: >
     Pydantic 模型的地圖資料，包含：
@@ -42,12 +48,8 @@ map_visualization_task:
       - location: 地點名稱
       - coordinates: 地點座標（經度和緯度）
       - description: 地點描述
-      - video_timestamp: 字幕中提及該項目的時間軸（秒）
+      - timecode: 字幕中提及該項目的時間軸（hh:mm:ss,mmm）
       - tags: 地點標籤
-      - map_settings:
-        - zoom_level: 預設縮放等級
-        - center_coordinates: 地圖中心座標
-        - map_style: 地圖樣式
-        - markers_style: 標記樣式設定 (依特性給予不同標記，如餐廳、景點、商場等)
+      - markers: Material Icon Font Marker (依特性給予不同標記，如餐廳、景點、商場等)
 
   agent: map_visualization_agent

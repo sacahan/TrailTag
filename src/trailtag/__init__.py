@@ -2,11 +2,8 @@
 __all__ = [
     "Trailtag",
     "VideoMetadata",
-    "LocationInfo",
-    "TimelineEntry",
-    "VideoFetchAndAnalysisOutput",
-    "VideoMapGenerationOutput",
-    "MapVisualizationOutput",
-    "RouteInfo",
-    "MapVisualizationData",
+    "SummaryItem",
+    "VideoTopicSummary",
+    "RouteItem",
+    "MapVisualization",
 ]

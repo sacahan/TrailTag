@@ -31,7 +31,9 @@ class SummaryItem(BaseModel):
     """
 
     name: str  # 主題名稱
-    video_timestamp: Optional[int]  # 對應影片時間戳（秒）
+    country: Optional[str]  # 所屬國家
+    city: Optional[str]  # 所屬城市
+    timecode: Optional[str]  # 對應影片時間戳（hh:mm:ss,mmm）
     context: Optional[str]  # 主題相關內容
     related_items: Optional[List[str]]  # 相關主題名稱列表
     confidence_score: Optional[float] = Field(None, ge=0, le=1)  # 信心分數，介於 0~1
@@ -52,17 +54,6 @@ class VideoTopicSummary(BaseModel):
 # region: 地圖視覺化結構
 
 
-class MapSettings(BaseModel):
-    """
-    地圖設定，描述地圖視覺化相關參數。
-    """
-
-    zoom_level: Optional[int]  # 地圖縮放層級
-    center_coordinates: Optional[List[float]]  # 地圖中心座標 [經度, 緯度]
-    map_style: Optional[str]  # 地圖樣式
-    markers_style: Optional[Dict[str, Any]]  # 標記樣式設定
-
-
 class RouteItem(BaseModel):
     """
     路線項目，描述地圖上一個地點與相關資訊。
@@ -71,9 +62,9 @@ class RouteItem(BaseModel):
     location: str  # 地點名稱
     coordinates: Optional[List[float]]  # 地點座標 [經度, 緯度]
     description: Optional[str]  # 地點描述
-    video_timestamp: Optional[int]  # 對應影片時間戳（秒）
+    timecode: Optional[str]  # 對應影片時間戳（hh:mm:ss,mmm）
     tags: Optional[List[str]]  # 標籤列表
-    map_settings: Optional[MapSettings]  # 個別地點的地圖設定
+    marker: Optional[str]  # 標記樣式設定
 
 
 class MapVisualization(BaseModel):

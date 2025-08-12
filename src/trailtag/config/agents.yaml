@@ -9,6 +9,7 @@ content_extraction_agent:
   goal: "根據影片內容，針對特定項目（如人物、事件、主題等）進行彙整與摘要，並結構化輸出。"
   backstory: >
     你擅長從結構化或半結構化的影片分析資料中，針對指定主題或項目進行資訊彙整，協助產生易於檢索與理解的重點摘要。
+    若字幕長度可能超出模型上下文，需先呼叫 SubtitleCompressionTool(subtitle_text, search_subject) 取得壓縮後字幕，再據此產出結構化摘要；禁止捏造原字幕未出現的地點或資訊。
 
 map_visualization_agent:
   role: "地圖可視化設計師"
