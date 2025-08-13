@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrailTag</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>TrailTag</h1>
+      <div class="status-badge" id="status-badge">閒置</div>
+    </header>
+
+    <main>
+      <!-- 初始狀態 -->
+      <div class="view" id="idle-view">
+        <p class="description">將 YouTube 旅遊影片中的地點轉換為互動地圖。</p>
+        <button id="analyze-btn" class="primary-btn">分析此影片</button>
+      </div>
+
+      <!-- 檢查快取狀態 -->
+      <div class="view hidden" id="checking-view">
+        <div class="spinner"></div>
+        <p>正在檢查是否已分析過此影片...</p>
+      </div>
+
+      <!-- 分析中狀態 -->
+      <div class="view hidden" id="analyzing-view">
+        <div class="progress-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p id="phase-text">正在抓取影片資料...</p>
+        <p id="progress-text">0%</p>
+        <button id="cancel-btn" class="secondary-btn">取消</button>
+      </div>
+
+      <!-- 地圖視圖 -->
+      <div class="view hidden" id="map-view">
+        <div id="map"></div>
+        <div class="map-controls">
+          <span id="locations-count">0 個地點</span>
+          <button id="export-btn" class="secondary-btn">匯出 GeoJSON</button>
+        </div>
+      </div>
+
+      <!-- 錯誤視圖 -->
+      <div class="view hidden" id="error-view">
+        <div class="error-icon">❌</div>
+        <p id="error-message">發生錯誤</p>
+        <button id="retry-btn" class="primary-btn">重試</button>
+      </div>
+    </main>
+
+    <footer>
+      <a href="https://github.com/sacahan/TrailTag" target="_blank">關於 TrailTag</a>
+    </footer>
+  </div>
+
+  <!-- 先載入 Leaflet.js -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+
+  <!-- 然後載入我們的腳本 -->
+  <script src="utils.js"></script>
+  <script src="api.js"></script>
+  <script src="map.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

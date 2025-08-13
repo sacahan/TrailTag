@@ -1,75 +1,214 @@
----
-post_title: "TrailTag 後端 API 與任務處理計劃"
-author1: "TEAM"
-post_slug: "backend-plan"
-microsoft_alias: "na"
-featured_image: ""
-categories: [architecture]
-tags: [backend, fastapi, crewai, redis, celery, architecture]
-ai_note: "此文件由 AI 協助生成，已由人員審閱。"
-summary: "將既有 CrewAI 同步流程重構為可快取、可觀測、非同步的 API 服務，涵蓋 FastAPI、任務排程、快取、觀測性與階段 Roadmap。"
-post_date: 2025-08-12
----
 
-TrailTag 後端 API 與任務處理計劃
-=============================
+# TrailTag 後端 API 精簡計劃
 
-概述
-----
+## 目標
 
-本文件聚焦 TrailTag 後端重構：把目前單一 `main.py` 串行執行的影片→字幕→壓縮→主題/地點→地理編碼流程 API 化，支援非同步、快取、進度推送與觀測性（不再提供 artifacts 下載端點，對外只暴露地點視覺化資料）。
+- 提供 REST API 與 SSE 進度查詢，支援非同步任務、快取、可觀測性，並易於維護擴展。
 
-目標與成功指標
----------------
+## 架構分層
 
-- 提供標準化 REST 端點：提交分析、查詢進度、取得地點視覺化資料。
-- 單一影片重複請求 <100ms 回應（快取命中）。
-- 90% 影片分析全流程在 60 秒內完成（示範資料集）。
-- Geocode 成功率 ≥ 85%，失敗地點可重試。
-- 具備結構化日誌與基本指標匯出。
+```mermaid
+graph TD
+  A[API] --> B[Orchestrator]
+  B --> C[JobDispatcher]
+  B --> D[CrewAdapter]
+  B --> E[CacheProvider]
+  B --> F[Metrics]
+```
 
-範疇 (In Scope)
----------------
+## 運作流程
 
-- FastAPI 應用骨架
-- 任務隊列與執行（初期 ThreadPool → 後續 Celery+Redis）
-- Redis 快取與任務狀態儲存
-- SSE 進度回報（phase_update / completed / error / heartbeat）。不再推送 partial locations 或 artifacts。
-- 基本重試與錯誤分類
-- 指標 / 日誌 / 簡易健康檢查
+1. Client 請求 analyze，API 先查快取，命中直接回傳。
+2. 未命中則建立 job，交由 Dispatcher 非同步執行。
+3. CrewAdapter 執行各階段，進度/錯誤即時回報。
+4. 結果寫入快取，SSE/輪詢查詢進度。
 
-非範疇 (Out of Scope)
----------------------
+## 最小功能清單
 
-- 多租戶 / SaaS 帳務
-- OAuth / 使用者管理
-- Whisper ASR (Roadmap P2)
-- GeoJSON 路線優化 (Roadmap P4)
+- FastAPI + /health
+- 分層協調（Orchestrator, Dispatcher, Adapter, Cache）
+- Redis 快取與狀態
+- 非同步任務排程
+- SSE 進度推播
+- 基本錯誤分類與重試
 
-架構概要
---------
+## Backlog（精簡版）
 
-- FastAPI (REST + /health + /metrics)
-- 任務執行層：`AnalysisOrchestrator` 封裝現有工具
-- 任務排程：`JobDispatcher` (抽象) → `InMemoryDispatcher` → `CeleryDispatcher`
-- Redis：
-  - Key: `analysis:{video_id}:{strategy_version}` (結果)
-  - Key: `job:{job_id}` (狀態 JSON)
-  - TTL: 7d (可調)
-- Artifacts：內部仍生成（供除錯與後續功能），不提供公開端點；對外僅提供聚合後的 `MapVisualization`（來源於 `models.py`）。
+1. FastAPI skeleton + /health
+2. Orchestrator + 快取檢查
+3. CrewAdapter 包裝 crew.py
+4. Redis CacheProvider
+5. 非同步 Dispatcher (InMemory) + 狀態查詢
+6. SSE 進度推播
+7. Geocode 失敗重試
 
-端點設計
---------
+## 狀態定義
 
-| Method | Path | 說明 | 回傳 (核心欄位) |
-| ------ | ---- | ---- | --------------- |
-| POST | /api/videos/analyze | 提交新分析或命中快取 | job_id, status, cached |
-| GET | /api/jobs/{job_id} | 查詢進度 | job_id, status, phase, progress, stats |
-| GET | /api/jobs/{job_id}/stream | SSE 事件 | event: phase_update/completed/error/heartbeat |
-| GET | /api/videos/{video_id}/locations | 取得地點視覺化資料 (一次性) | MapVisualization (video_id, routes[]) |
-| POST | /api/videos/{video_id}/geocode/retry | 局部地點重試 (P1.5) | retried_count |
+- Job 狀態：queued / running / partial / failed / done
+- Phase：metadata / compression / summary / geocode
 
-`MapVisualization` 回傳示例：
+## 架構概要
+
+- FastAPI (REST + /health + /metrics)。
+- 協調層：`AnalysisOrchestrator`。
+- 排程層：`JobDispatcher`（InMemory ThreadPool）。
+- Redis：`analysis:*`, `job:*`, `geocode_fail:*`。
+- CrewAI：沿用 `crew.py` 中 `Trailtag` Agents + Tasks。
+- SSE：由狀態輪詢/事件推播。
+
+## 介接設計 (CrewAI ↔ Orchestrator/API)
+
+### 分層
+
+```text
+[API Routers]
+  └─ AnalysisController
+       └─ AnalysisOrchestrator
+            ├─ JobDispatcher (InMemory)
+            ├─ TrailtagCrewAdapter (wrap crew.py)
+            ├─ CacheProvider (Redis/Memory fallback)
+            └─ Metrics & Logging Hooks
+```
+
+### 職責摘要
+
+- AnalysisOrchestrator：策略 hash、快取短路、建/更 job、進度/錯誤分類。
+- TrailtagCrewAdapter：呼叫 `Trailtag().crew().kickoff()`；映射 Task→Phase；人工補 compression 階段事件。
+- JobDispatcher：非同步 submit / (未來 cancel)。
+- CacheProvider：get/set/exists + TTL + degraded fallback。
+
+### Phase 對應
+
+| Phase | Crew Task / 行為 | 備註 |
+| ----- | ---------------- | ---- |
+| metadata | `video_metadata_extraction_task` | 抓 metadata + 字幕 (guardrail) |
+| compression | SubtitleCompressionTool | Adapter 人工標記進度 |
+| summary | `video_topic_summary_task` | 主題/地點抽取 |
+| geocode | `map_visualization_task` | PlaceGeocodeTool + callback |
+
+### 流程（Cache Miss）
+
+1. 組策略輸入 → `strategy_hash`。
+2. 查 `analysis:{video_id}:{hash}` 命中 → 返回 done+cached。
+3. 未命中 → 建立 `job:{job_id}` (queued)。
+4. Dispatcher.submit 背景執行 Adapter。
+5. Adapter 逐 Phase 更新：phase、intra 進度、累計 progress。
+6. 錯誤分類（transient 重試 / deterministic 直接 fail / partial geocode）。
+7. 成功：寫入結果快取 + status=done。
+
+### 進度計算（詳細）
+
+```text
+total_progress = Σ finished_phase_weight + current_phase_weight * intra_phase_ratio
+```
+
+來源：
+
+- metadata：下載/解析步驟完成比例。
+- compression：已壓縮段數 / 總段數。
+- summary：已摘要 chunk / 總 chunk。
+- geocode：成功 geocode 地點 / 總地點。
+
+### SSE 事件
+
+| event | payload 主要欄位 |
+| ----- | --------------- |
+| phase_update | job_id, phase, progress, ts |
+| heartbeat | job_id, status, ts |
+| completed | job_id, status=done, progress=100 |
+| error | job_id, status=failed, error {type,message} |
+| partial_locations (可選) | job_id, locations[], progress |
+
+### 錯誤分類
+
+| 類別 | 來源 | 策略 |
+| ---- | ---- | ---- |
+| transient | LLM Timeout / 429 | 指數退避 ≤3 → fail(transient) |
+| deterministic | 無效 video id | 立即 fail(deterministic) |
+| partial | 部分 geocode 失敗 | status=partial + 記錄失敗列表 |
+
+### 失敗地點記錄 (Redis)
+
+Key: `geocode_fail:{video_id}:{strategy_hash}`
+
+```json
+{
+  "failed": [{"raw": "Shilin Night", "reason": "not_found"}],
+  "retryable": true,
+  "last_updated": 1734031000
+}
+```
+
+### 快取 Keys
+
+| 用途 | Key | TTL | 備註 |
+| ---- | --- | --- | ---- |
+| 結果 | analysis:{video}:{hash} | 7d | MapVisualization |
+| Job 狀態 | job:{job_id} | 24h | SSE / 查詢 |
+| 失敗地點 | geocode_fail:{video}:{hash} | 7d | retry |
+
+### Strategy Hash
+
+```python
+strategy_input = {
+  "model": llm.model_name,
+  "model_temp": 0.7,
+  "compression_ratio": 0.4,
+  "extraction_prompt_v": 2,
+  "geocode_mode": "std"
+}
+strategy_hash = sha1(json.dumps(strategy_input, sort_keys=True)).hexdigest()[:8]
+```
+
+### 介面草稿
+
+```python
+class JobDispatcher(Protocol):
+    def submit(self, job_id: str, fn: Callable[[], None]) -> None: ...
+
+class AnalysisOrchestrator:
+    def analyze(self, video_url: str, params: dict) -> JobStatus: ...
+    def get_status(self, job_id: str) -> JobStatus: ...
+    def get_result(self, video_id: str, strategy_hash: str) -> MapVisualization | None: ...
+```
+
+### 同步 vs 非同步
+
+| 面向 | M2 同步 | M3+ 非同步 |
+| ---- | ------- | ---------- |
+| analyze 回應 | 完成後返回 | 立即 job_id |
+| 進度顯示 | 無或最終 100% | SSE / polling |
+| Dispatcher | 無 | InMemory |
+| 重試 | 直接內部 | 背景策略化 |
+
+### 可觀測性 Hook
+
+| 類型 | Hook | 指標 |
+| ---- | ---- | ---- |
+| Phase timing | phase start/end | phase_duration_seconds |
+| Token usage | LLM 回應後 | tokens_in / tokens_out |
+| Geocode 成功率 | 每地點完成 | geocode_success_ratio |
+
+### 安全 / 限速順序
+
+1. CORS 白名單 (M2)
+2. IP Rate Limit (M3)
+3. API Key header (P1.5)
+
+### Degraded 策略
+
+Redis 失效 → fallback memory (LRU) + 對 /health 與 metrics 增加 degraded 標記。
+
+## 端點設計
+
+| Method | Path | 說明 | 回傳 |
+| ------ | ---- | ---- | ---- |
+| POST | /api/videos/analyze | 提交或命中快取 | job_id, status, cached |
+| GET | /api/jobs/{job_id} | 查進度 | job_id, status, phase, progress, stats |
+| GET | /api/jobs/{job_id}/stream | SSE 事件 | phase_update/completed/error/heartbeat |
+| GET | /api/videos/{video_id}/locations | 取得視覺化 | MapVisualization |
+
+`MapVisualization` 範例：
 
 ```json
 {
@@ -87,8 +226,7 @@ TrailTag 後端 API 與任務處理計劃
 }
 ```
 
-狀態與階段定義
---------------
+## 狀態與階段定義
 
 | Phase | 權重 | 描述 |
 | ----- | ---- | ---- |
@@ -97,15 +235,13 @@ TrailTag 後端 API 與任務處理計劃
 | summary | 35 | 主題/地點抽取 |
 | geocode | 30 | 地點地理編碼與組合 |
 
-Progress = Σ 已完成階段權重 + 當前階段內細分進度。
+Progress = Σ 完成階段權重 + 當前階段權重 * intra_phase_ratio。
 
-Job 狀態列舉
------------
+## Job 狀態列舉
 
 queued / running / partial / failed / done / canceled
 
-資料結構 (概念 JSON)
--------------------
+## 資料結構 (概念 JSON)
 
 ```text
 Job {
@@ -126,110 +262,160 @@ Job {
 }
 ```
 
-快取與冪等策略
---------------
+## 快取與冪等策略
 
-- 先檢查 `analysis:{video_id}:{strategy_version}` 是否存在 → 直接返回 done 與可用 MapVisualization。
-- strategy_version = 壓縮參數 / 模型版本 / 抽取規則 hash。
-- 當策略版本升級：不重用舊 key，透過新 hash 強制重跑。
+- 先查 `analysis:{video_id}:{strategy_version}`；命中→done+cached。
+- `strategy_version` = 模型 / 壓縮 / 抽取規則 hash。
+- 策略升級 → 新 hash；不覆蓋舊結果。
 
-失敗分類與重試
---------------
+## 失敗分類與重試
 
 | 類型 | 範例 | 處理 |
 | ---- | ---- | ---- |
 | transient | 429, timeout | 指數退避 3 次 → fail |
 | deterministic | invalid video id | 直接 fail |
-| partial | subset geocode fail | 記錄缺失 + status=done + retriable flag |
+| partial | subset geocode fail | status=partial + retriable flag |
 
-可觀測性
---------
+## 可觀測性
 
-- 日誌：JSON 行 (job_id, phase, elapsed_ms, event_type)
-- 指標（/metrics Prometheus）：jobs_total、jobs_running、phase_duration_seconds_bucket、geocode_success_ratio
-- Tracing（P2 之後）：OpenTelemetry exporter (可選)
+- JSON 行日誌：job_id, phase, elapsed_ms, event_type。
+- 指標：jobs_total、jobs_running、phase_duration_seconds_bucket、geocode_success_ratio。
+- Tracing：OpenTelemetry (P2+)。
 
-安全與限速
---------
+## 安全與限速
 
-- Rate limit：IP + 路徑 token bucket (fastapi-limiter / 自製 Redis script)
-- API Key header（P1.5 覆蓋）
-- CORS：白名單 extension origin + localhost
+- IP Rate Limit (token bucket)。
+- API Key header（P1.5）。
+- CORS：白名單 extension origin + localhost。
 
-交付分階段 (Milestones)
------------------------
+## 交付分階段 (Milestones)
 
 | Milestone | 內容 | 完成判準 |
 | --------- | ---- | -------- |
-| M1 Skeleton | FastAPI 啟動 + /health | 200 OK |
-| M2 Analyze Sync | POST /analyze 同步執行（阻塞） | 回傳 job_id, status=done |
-| M3 Async Queue | 引入 dispatcher + 狀態查詢 | 任務可排隊並查進度 |
-| M4 SSE | /jobs/{id}/stream 推送 | 前端可即時顯示階段 |
-| M5 Cache | Redis 命中 <100ms | 重複請求顯示 cached=true |
-| M6 Partial Push | geocode 時 partial_locations | 地圖能增量更新 |
-| M7 Metrics | /metrics + 主要指標 | Prometheus 可抓取 |
-| M8 Retry Geocode | 局部重試端點 | 失敗地點可補全 |
+| M1 Skeleton | FastAPI + /health | 200 OK |
+| M2 Analyze Sync | 同步 analyze | status=done 回傳 |
+| M3 Async Queue | Dispatcher + 狀態查詢 | 進度可查 |
+| M4 SSE | /jobs/{id}/stream | 即時推進度 |
+| M5 Cache | Redis 快取 | 命中 <100ms |
+| M6 Partial Push | (可選) geocode partial | 增量更新 |
+| M7 Metrics | /metrics 指標 | Prometheus 抓取 |
+| M8 Retry Geocode | retry 端點 | 失敗補全 |
 
-詳細任務分解 (Backlog 切片)
----------------------------
+## 詳細任務分解 (Backlog)
 
-M1~M2:
+### M1~M2
 
-- 建立 FastAPI 專案結構 (`src/api/`)
-- 匯入現有工具模組抽象成 service 層
-- 同步版 POST /api/videos/analyze
+- Skeleton (`src/api/`)。
+- TrailtagCrewAdapter 初版。
+- AnalysisOrchestrator 同步 + 快取檢查 + strategy hash。
+- 同步 POST /api/videos/analyze。
 
-M3:
+### M3
 
-- 建 Dispatcher 介面 + InMemory 實作 (queue, worker thread)
-- Job 狀態存 Redis Hash
-- GET /api/jobs/{id}
+- Dispatcher 抽象 + InMemory(ThreadPool)。
+- Redis Job 狀態 Hash。
+- GET /api/jobs/{id}。
+- 非同步 analyze 回傳 job_id。
+- Phase/Progress 更新事件。
 
-M4:
+### M4
 
-- SSE router (yield event-stream)
-- 事件模型 + heartbeat
+- SSE router + heartbeat (5s)。
+- Token 使用統計。
+- 錯誤分類器。
 
-M5:
+### M5
 
-- Hash 策略實作
-- cache 命中短路返回
+- 策略 Hash 函式標準化 + metrics.strategy_hash。
+- Degraded 模式 (Redis fallback)。
 
-M6:
+### M6
 
-- （若未來需要增量呈現）可再引入 partial locations；目前維持一次性輸出 MapVisualization，減少前端狀態複雜度。
+- (可選) geocode partial 推送與合併策略。
 
-M7:
+### M7
 
-- 指標中介層 + phase 計時 decorator
-- /metrics endpoint
+- Metrics decorator + /metrics。
+- Phase 計時與 geocode 成功率。
 
-M8:
+### M8
 
-- 失敗地點紀錄 + retry 邏輯
-- POST /api/videos/{id}/geocode/retry
+- retry 地點端點與邏輯。
+- 失敗地點統計重試後淨減少。
 
-風險與緩解
---------
+## 新增細化工作 (Integration)
+
+| ID | 任務 | 說明 | 里程碑 |
+| -- | ---- | ---- | ------ |
+| INT-01 | Strategy Hash 工具 | 策略 dict → hash | M2 |
+| INT-02 | CacheProvider | Redis get/set/exists | M2 |
+| INT-03 | TrailtagCrewAdapter | kickoff + phase hooks | M2 |
+| INT-04 | Phase 事件機制 | Adapter 觸發 update_job | M3 |
+| INT-05 | JobDispatcher | InMemory ThreadPool | M3 |
+| INT-06 | Orchestrator 非同步化 | analyze 回傳 job_id | M3 |
+| INT-07 | SSE 實作 | 事件/heartbeat | M4 |
+| INT-08 | Token 統計 | 攔截 LLM 回應 | M4 |
+| INT-09 | 錯誤分類器 | 異常正規化 | M4 |
+| INT-10 | Metrics 佈建 | /metrics + 指標 | M7 |
+| INT-11 | Geocode retry | retry 端點 | M8 |
+| INT-12 | Degraded 模式 | Redis fallback | M5 |
+| INT-13 | Partial geocode | 增量推送 (可選) | M6 |
+
+## 測試策略
+
+| 類型 | 重點 | 範例 |
+| ---- | ---- | ---- |
+| Unit | Hash / Adapter / Dispatcher | 固定輸入 → 同 hash |
+| Integration | cache miss/hit | 第二次 analyze cached=true |
+| Integration | 進度計算 | 模擬 5 地點 geocode 逐步更新 |
+| Contract | API schema | analyze 回傳欄位完整 |
+| Load | 佇列堆疊 | 10 並發 < X 秒完成 |
+| Retry | transient 錯誤 | 模擬 429 → 成功重試 |
+
+## 開發順序（每日）
+
+Day1: Skeleton + Strategy Hash + CacheProvider
+Day2: 同步 Orchestrator + Adapter + 快取
+Day3: Dispatcher + 非同步 analyze + 狀態
+Day4: SSE + Phase 事件 + heartbeat
+Day5: Metrics decorator + /metrics + token usage
+Day6: Error 分類 + retry 策略 + degraded 測試
+Day7: Geocode 失敗紀錄 + retry 端點
+Day8: 文件 / 清理 / 補測試
+
+## 風險與緩解
 
 | 風險 | 描述 | 緩解 |
 | ---- | ---- | ---- |
-| 長任務阻塞 | 初期未佇列化 | 優先完成 M3 非同步化 |
-| Redis 不可用 | 快取/狀態失效 | fallback memory + 降級警示 |
-| LLM 成本上升 | 重複分析 | 積極快取 + version 控制 |
-| Geocode 失敗率高 | 模糊地名 | 加語境 + 多輪重試 + retry 端點 |
+| 長任務阻塞 | 初期同步 | 優先完成 M3 佇列化 |
+| Redis 不可用 | 狀態/快取缺失 | memory fallback + 告警 |
+| 模型成本升高 | 重複分析 | 積極結果快取 + 策略版本 |
+| Geocode 失敗率高 | 模糊地名 | 語境補強 + 重試 + retry 端點 |
 
-後續延伸 (Beyond P1.5)
-----------------------
+## 後續延伸 (Beyond P1.5)
 
-- WebSocket 雙向互動 (取消任務 / 動態調整策略)
-- 任務優先級排程
-- 多影片批次分析 API
-- OpenTelemetry Tracing
+- WebSocket 雙向控制（取消任務 / 動態策略）。
+- 多影片批次分析。
+- OpenTelemetry Tracing。
 
-實作備註
---------
+## 實作備註
 
-- 先不引入大型 ORM；直接讀寫 JSON + 輕量索引。
-- 避免阻塞 I/O：yt_dlp、LLM 呼叫包裝在 thread / async executor。
-- 嚴格區分工具層（純函式）與 orchestrator（狀態）。
+- 無 ORM，直接 JSON + 輕量索引。
+- I/O 與 LLM 呼叫包裝 executor 避免阻塞事件迴圈。
+- 工具層純邏輯，協調層負責狀態與串接。
+- 版本化策略參數，避免快取污染。
+| INT-10 | Metrics 佈建 | /metrics + 指標 | M7 |
+| INT-11 | Geocode retry | retry 端點 | M8 |
+| INT-12 | Degraded 模式 | Redis fallback | M5 |
+| INT-13 | Partial geocode (可選) | 增量推送合併 | M6 |
+
+## 測試策略補充
+
+| 測試類型 | 重點 | 範例 |
+| -------- | ---- | ---- |
+| Unit | Hash / Adapter / Dispatcher | 固定輸入 → 同 hash |
+| Integration | cache miss/hit | 連續 analyze 第二次 cached=true |
+| Integration | Phase 進度 | 模擬 5 地點 geocode 漸進 |
+| Contract (API) | JSON schema | analyze 回傳欄位完整 |
+| Load | 佇列堆疊 | 10 並發 analyze < X 秒全部完成 |
+| Retry | transient 錯誤 | 模擬 429 → 重試成功 |

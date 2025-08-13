@@ -1,10 +1,9 @@
 video_metadata_extraction_task:
   description: >
-    分析 {youtube_video_url} 的 YouTube 影片，提取影片本身的 metadata 與基本資訊，並結構化輸出。
+    分析 {video_id} 代表的 YouTube 影片，提取影片本身的 metadata 與基本資訊，並結構化輸出。
 
   expected_output: >
     Pydantic 模型格式的結構化資料，包含：
-    - url: 影片 URL
     - video_id: 影片 ID
     - title: 標題
     - description: 描述

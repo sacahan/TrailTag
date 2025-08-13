@@ -56,20 +56,25 @@ class YoutubeMetadataTool(BaseTool):
         Returns:
             tuple[str | None, str | None]: (字幕 URL, 格式)，若無字幕則皆為 None。
         """
-        # 依序搜尋 subtitles 與 automatic_captions
-        for key in ("subtitles", "automatic_captions"):
-            subs = info.get(key) or {}
-            # 依照優先語言順序尋找可用字幕
-            for lang in preferred_langs:
-                if lang in subs and subs[lang]:
-                    lang_subs = subs[lang]
-                    # 優先選擇 srt 格式
-                    for s in lang_subs:
-                        if s.get("ext") == "srt":
-                            return s.get("url"), "srt"
-                    # 若無 srt，取第一個可用字幕
-                    if lang_subs:
-                        return lang_subs[0].get("url"), lang_subs[0].get("ext")
+
+        # 先查找 subtitles 若不存在則使用 automatic_captions
+        subs = info.get("subtitles") or info.get("automatic_captions") or None
+        # 依照優先語言順序尋找可用字幕
+        for lang in preferred_langs:
+            if lang in subs and subs[lang]:
+                lang_subs = subs[lang]
+                # 優先選擇 srt 格式
+                for s in lang_subs:
+                    if s.get("ext") == "srt":
+                        return s.get("url"), lang
+
+        # 若無偏好srt，取第一個可用字幕
+        if subs:
+            lang, subtitles = next(iter(subs.items()))
+            for s in subtitles:
+                if s.get("ext") == "srt":
+                    return s.get("url"), lang
+
         # 若無任何可用字幕，回傳 None
         return None, None
 
@@ -97,8 +102,8 @@ class YoutubeMetadataTool(BaseTool):
                 info = ydl.extract_info(url, download=False)
 
             # 設定字幕語言優先順序
-            preferred_langs = ["zh-TW", "zh-CN", "en"]
-            subtitle_url, subtitle_format = self._extract_subtitle_url(
+            preferred_langs = ["zh-TW", "zh-Hant", "zh-CN", "zh-Hans", "en"]
+            subtitle_url, subtitle_lang = self._extract_subtitle_url(
                 info, preferred_langs
             )
 
@@ -119,7 +124,7 @@ class YoutubeMetadataTool(BaseTool):
             publish_date = None
             if info.get("upload_date"):
                 try:
-                    publish_date = datetime.strptime(info["upload_date"], "%Y-%m-%d")
+                    publish_date = datetime.strptime(info["upload_date"], "%Y%m%d")
                 except Exception as e:
                     print(f"日期格式解析失敗: {e}")
 
@@ -137,6 +142,7 @@ class YoutubeMetadataTool(BaseTool):
                 publish_date=publish_date,
                 duration=info.get("duration"),
                 keywords=keywords,
+                subtitle_lang=subtitle_lang,
                 subtitles=subtitles_text,
             )
 
@@ -155,7 +161,7 @@ class YoutubeMetadataTool(BaseTool):
 if __name__ == "__main__":
     # 工具測試範例，執行後會印出指定影片的 metadata
     tool = YoutubeMetadataTool()
-    video_id = "SlRSbihlytQ"  # 替換為實際的 YouTube 影片 ID
+    video_id = "xV-oTx8RHZw"  # 替換為實際的 YouTube 影片 ID
     metadata = tool._run(video_id)
     if metadata:
         # Pydantic v2 不再支援 json() 的 ensure_ascii/indent 參數，需用 json.dumps

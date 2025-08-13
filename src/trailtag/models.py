@@ -10,13 +10,13 @@ class VideoMetadata(BaseModel):
     影片 metadata 結構，描述單一影片的基本資訊。
     """
 
-    url: str  # 影片網址
     video_id: str  # 影片唯一識別碼
     title: str  # 影片標題
     description: Optional[str]  # 影片描述
     publish_date: Optional[datetime]  # 發佈日期
     duration: Optional[int]  # 影片長度（秒）
     keywords: Optional[List[str]]  # 關鍵字列表
+    subtitle_lang: Optional[str]  # 字幕語言
     subtitles: Optional[str]  # 字幕內容（如有）
 
 
@@ -45,6 +45,7 @@ class VideoTopicSummary(BaseModel):
     影片主題摘要，包含主題名稱與對應的摘要項目。
     """
 
+    video_id: str  # 影片唯一識別碼
     topic: str  # 主題名稱
     summary_items: List[SummaryItem]  # 該主題下的摘要項目列表
 
@@ -72,6 +73,7 @@ class MapVisualization(BaseModel):
     地圖視覺化資料，包含多個路線項目。
     """
 
+    video_id: str  # 影片唯一識別碼
     routes: List[RouteItem]  # 路線項目列表
 
 
