@@ -1,8 +1,8 @@
 import os
-import logging
+from src.api.logger_config import get_logger
 import datetime
 from typing import List, Tuple, Any
-from crewai import LLM, Agent, Crew, Process, Task, TaskOutput
+from crewai import Agent, Crew, Process, Task, TaskOutput
 from crewai.project import CrewBase, before_kickoff, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from src.trailtag.tools.youtube_metadata_tool import YoutubeMetadataTool
@@ -12,8 +12,7 @@ from src.api.cache_manager import CacheManager
 from src.trailtag.models import VideoMetadata, VideoTopicSummary, MapVisualization
 
 # 建立 logger 物件，供全域記錄除錯與執行狀態
-logging.basicConfig(level=logging.INFO)  # 設定為 INFO 級別
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 # 設定專案根目錄，便於後續路徑組合
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -57,7 +56,8 @@ class Trailtag:
     agents: List[BaseAgent] = []
     tasks: List[Task] = []
     # 指定 LLM 模型，可切換本地或雲端模型
-    llm = LLM(model="openai/gpt-4o-mini", max_tokens=12000, timeout=300)
+    # llm = LLM(model="openai/gpt-4o-mini", max_tokens=12000, timeout=300)
+    llm = "gpt-4o-mini"
     # 啟動時的輸入參數
     kickoff_inputs: dict = {}
     # 輸出資料目錄

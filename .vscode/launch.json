@@ -2,6 +2,21 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Backend 偵錯",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "src.api.main:app",
+        "--reload",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8010",
+      ],
+      "jinja": true
+    },
+    {
       "name": "youtube_metadata_tool 偵錯",
       "type": "debugpy",
       "request": "launch",

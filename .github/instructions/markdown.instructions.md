@@ -3,7 +3,9 @@ description: "Documentation and content creation standards"
 applyTo: "**/*.md"
 ---
 
-# CODING_PRACTICES For Markdown Files
+# CODING PRACTICES For Markdown Files
+
+- You must thoroughly read and understand the document content before proceeding with writing every time.
 
 ## Markdown Content Rules
 

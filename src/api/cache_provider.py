@@ -1,11 +1,13 @@
 import json
 import hashlib
-import logging
 import os
-from typing import Dict, Any, Optional, Union
-import redis
 import time
 import datetime
+from typing import Dict, Any, Optional, Union
+import redis
+from src.api.logger_config import get_logger
+
+logger = get_logger(__name__)
 
 
 def json_default(obj):
@@ -17,14 +19,22 @@ def json_default(obj):
 
 # 記憶體快取（斷線/測試用）
 class MemoryCacheProvider:
+    """
+    提供本地記憶體快取功能，適用於測試或 Redis 斷線時。
+    支援快取存取、過期檢查、刪除與清空。
+    """
+
     def __init__(self, expiry_seconds=3600):
+        # 初始化快取儲存結構與過期秒數
         self._store = {}
         self.expiry_seconds = expiry_seconds
 
     def _now(self):
+        # 取得目前時間（秒）
         return int(time.time())
 
     def get(self, key):
+        # 取得快取內容，若已過期則自動移除
         v = self._store.get(key)
         if not v:
             return None
@@ -35,9 +45,11 @@ class MemoryCacheProvider:
         return value
 
     def set(self, key, value):
+        # 設定快取內容，並記錄存入時間
         self._store[key] = (value, self._now())
 
     def exists(self, key):
+        # 檢查快取是否存在且未過期
         v = self._store.get(key)
         if not v:
             return False
@@ -48,16 +60,19 @@ class MemoryCacheProvider:
         return True
 
     def delete(self, key):
+        # 刪除指定快取
         if key in self._store:
             del self._store[key]
 
     def clear(self):
+        # 清空所有快取
         self._store.clear()
 
 
 class RedisCacheProvider:
     """
-    Redis 快取工具，用於儲存和檢索 CrewAI 輸出結果
+    Redis 快取工具，支援 get/set/exists/delete/clear_all，並自動序列化 JSON。
+    用於儲存和檢索分析結果、狀態等。
     """
 
     def __init__(
@@ -70,16 +85,10 @@ class RedisCacheProvider:
         prefix: str = "trailtag:",
     ):
         """
-        初始化 Redis 快取工具
-        Args:
-            host: Redis 伺服器主機
-            port: Redis 埠號
-            db: Redis 資料庫編號
-            password: Redis 密碼
-            expiry_days: 快取過期天數
-            prefix: 快取鍵前綴
+        初始化 RedisCacheProvider，設定連線參數、快取前綴與過期時間。
+        連線失敗時 logger 會記錄警告。
         """
-        self.logger = logging.getLogger(__name__)
+        self.logger = logger
         self.expiry_days = (
             expiry_days
             if expiry_days is not None
@@ -95,34 +104,28 @@ class RedisCacheProvider:
             password if password is not None else os.getenv("REDIS_PASSWORD", None)
         )
 
-        print(
-            f"Redis 連線參數: host={self.host}, port={self.port}, db={self.db}, password={'***' if self.password else None}, expiry_days={self.expiry_days}"
-        )
-
-        # 連接 Redis
         self.redis = None
-        if redis:
-            try:
-                self.redis = redis.Redis(
-                    host=self.host,
-                    port=self.port,
-                    db=self.db,
-                    password=self.password,
-                    decode_responses=True,
-                )
-                self.redis.ping()
-                print("已成功連接到 Redis 伺服器")
-            except Exception as e:
-                print(f"Redis 連接失敗: {str(e)}")
-                self.redis = None
-        else:
-            print("未安裝 redis 套件，RedisCacheProvider 無法使用")
+        try:
+            # 建立 Redis 連線
+            self.redis = redis.Redis(
+                host=self.host,
+                port=self.port,
+                db=self.db,
+                password=self.password,
+                decode_responses=True,
+            )
+            self.redis.ping()
+            self.logger.debug("*** Redis Connected ***")
+        except Exception as e:
+            self.logger.warning(f"Redis 連接失敗: {str(e)}")
+            self.redis = None
 
     def _generate_key(
         self, query: Union[str, Dict], params: Optional[Dict] = None
     ) -> str:
         """
-        根據查詢和參數生成唯一快取鍵值
+        根據 query 與 params 產生唯一快取鍵值，並加上前綴。
+        以 MD5 雜湊確保鍵值唯一且不易重複。
         """
         if isinstance(query, dict):
             query_str = json.dumps(query, sort_keys=True)
@@ -137,7 +140,9 @@ class RedisCacheProvider:
         self, query: Union[str, Dict], params: Optional[Dict] = None
     ) -> Optional[Any]:
         """
-        從快取中檢索數據
+        取得指定 query 與 params 的快取內容。
+        若 Redis 未連接或快取不存在則回傳 None。
+        內容自動反序列化為 Python 物件。
         """
         if not self.redis:
             self.logger.warning("Redis 未連接，無法獲取快取")
@@ -156,17 +161,17 @@ class RedisCacheProvider:
         self, query: Union[str, Dict], result: Any, params: Optional[Dict] = None
     ) -> bool:
         """
-        向快取中存入數據
+        設定快取內容，將 result 以 JSON 序列化後存入 Redis。
+        若 Redis 未連接則回傳 False。
         """
         if not self.redis:
             self.logger.warning("Redis 未連接，無法設置快取")
             return False
         try:
             key = self._generate_key(query, params)
-            # 使用全域 json_default 處理 datetime 物件
             result_json = json.dumps(result, ensure_ascii=False, default=json_default)
             self.redis.setex(key, self.expiry_seconds, result_json)
-            self.logger.info(f"已成功設置快取，鍵值: {key}")
+            self.logger.debug(f"已成功設置快取，鍵值: {key}")
             return True
         except Exception as e:
             self.logger.error(f"Redis 設置快取失敗: {str(e)}")
@@ -174,7 +179,8 @@ class RedisCacheProvider:
 
     def exists(self, query: Union[str, Dict], params: Optional[Dict] = None) -> bool:
         """
-        檢查快取鍵是否存在
+        檢查指定 query 與 params 的快取是否存在。
+        若 Redis 未連接則回傳 False。
         """
         if not self.redis:
             return False
@@ -187,7 +193,8 @@ class RedisCacheProvider:
 
     def delete(self, query: Union[str, Dict], params: Optional[Dict] = None) -> bool:
         """
-        刪除快取鍵
+        刪除指定 query 與 params 的快取。
+        若 Redis 未連接則回傳 False。
         """
         if not self.redis:
             return False
@@ -200,7 +207,10 @@ class RedisCacheProvider:
 
     def clear_all(self, pattern: str = None) -> int:
         """
-        清除所有或符合模式的快取
+        清除所有符合 pattern 的快取鍵。
+        預設清除所有 trailtag 前綴的快取。
+        回傳刪除鍵數量。
+        若 Redis 未連接則回傳 0。
         """
         if not self.redis:
             return 0

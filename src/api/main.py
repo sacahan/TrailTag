@@ -5,10 +5,15 @@ TrailTag API 主應用模組
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Dict, Any
-import logging
+from src.api.logger_config import get_logger
+from .routes import router as videos_router
+from .sse import router as sse_router
+from .cache_manager import CacheManager
 import time
 import sys
 import os
+
+logger = get_logger(__name__)
 
 # 禁用 OpenTelemetry SDK
 os.environ["OTEL_SDK_DISABLED"] = "true"
@@ -17,23 +22,8 @@ os.environ["CREWAI_DISABLE_TELEMETRY"] = "true"
 # 確保模組可以被找到
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# 從專案內部模組引入
-
-from .routes import router as videos_router
-from .sse import router as sse_router
-from .cache_manager import CacheProvider
-
-
-# 設定 logger
-logging.basicConfig(
-    level=logging.INFO,
-    format='{"timestamp": "%(asctime)s", "level": "%(levelname)s", "message": %(message)s}',
-    datefmt="%Y-%m-%dT%H:%M:%S%z",
-)
-logger = logging.getLogger("trailtag-api")
-
 # 全域快取狀態
-cache = CacheProvider()
+cache = CacheManager()
 
 # 創建 FastAPI 應用
 app = FastAPI(
@@ -55,15 +45,21 @@ app.add_middleware(
 app.include_router(videos_router)
 app.include_router(sse_router)
 
+
 # 基本健康檢查
-
-
 @app.get("/health")
 async def health_check() -> Dict[str, Any]:
     """基本健康檢查端點"""
     return {
         "status": "ok",
-        "timestamp": time.time(),
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
         "version": app.version,
         "degraded": cache.is_degraded(),
     }
+
+
+# 啟動 FastAPI 伺服器時，印出 OpenAPI docs 與 JSON spec 的 URL
+port = int(os.getenv("API_PORT", 8010))
+host = os.getenv("API_HOST", "0.0.0.0")
+print(f"\n[OpenAPI] Swagger UI: http://{host}:{port}/docs")
+print(f"[OpenAPI] JSON Spec: http://{host}:{port}/openapi.json\n")

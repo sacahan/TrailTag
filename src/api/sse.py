@@ -12,20 +12,21 @@ from sse_starlette.sse import EventSourceResponse
 
 # 非同步與系統工具
 import asyncio
-import logging
+from src.api.logger_config import get_logger
+
 import time
 import json
 from enum import Enum
 
 # 快取存取（查詢 job 狀態）
-from .cache_manager import CacheProvider
+from .cache_manager import CacheManager
 
 # 任務狀態列舉
 from src.api.models import JobStatus
 
 
 # 設定 logger
-logger = logging.getLogger("trailtag-api")
+logger = get_logger(__name__)
 # 註冊 API 路由前綴
 router = APIRouter(prefix="/api")
 
@@ -55,7 +56,7 @@ async def event_generator(job_id: str):
     5. 若查無任務則立即推送 error 並結束。
     6. 例外狀況會推送 error 事件。
     """
-    cache = CacheProvider()  # 每次請求獨立快取實例
+    cache = CacheManager()  # 每次請求獨立快取實例
     last_phase = None  # 記錄上次推送的階段
     last_progress = None  # 記錄上次推送的進度
     try:

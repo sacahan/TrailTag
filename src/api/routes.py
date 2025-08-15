@@ -5,12 +5,11 @@
 """
 
 from fastapi import APIRouter, HTTPException, Path, BackgroundTasks
-import logging
+from fastapi.openapi.utils import get_openapi
+from src.api.logger_config import get_logger
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 import re
-
-
 from src.api.models import (
     AnalyzeRequest,
     JobResponse,
@@ -20,11 +19,27 @@ from src.api.models import (
 )
 
 from .cache_manager import CacheManager
-
 from trailtag.crew import Trailtag
 
-logger = logging.getLogger("trailtag-api")
+
+logger = get_logger(__name__)
 router = APIRouter(prefix="/api")
+
+
+def custom_openapi():
+    if router.openapi_schema:
+        return router.openapi_schema
+    openapi_schema = get_openapi(
+        title="TrailTag API",
+        version="1.0.0",
+        description="TrailTag 後端 API，提供 YouTube 影片分析、任務進度查詢與地點視覺化資料。支援快取、非同步任務、SSE 進度推播。",
+        routes=router.routes,
+    )
+    router.openapi_schema = openapi_schema
+    return router.openapi_schema
+
+
+router.openapi = custom_openapi
 
 
 # 快取提供者（Redis/Memory fallback），統一管理 job 狀態與分析結果
@@ -61,7 +76,7 @@ def run_trailtag_job(job_id, video_id):
             """
             寫入/更新 job 狀態到快取，供進度查詢與 SSE 推播。
             """
-            now = datetime.now(datetime.timezone.utc)
+            now = datetime.now(timezone.utc)
             job = cache.get(f"job:{job_id}") or {}
             job.update(
                 {
@@ -95,10 +110,11 @@ def run_trailtag_job(job_id, video_id):
             # 進度: geocode 完成
             update_job("geocode", 100, status=JobStatus.DONE)
             # 結果寫入 analysis 快取，供地圖查詢
-            cache.set(
-                f"analysis:{video_id}",
-                output.model_dump() if hasattr(output, "model_dump") else output,
-            )
+            if hasattr(output, ""):
+                cache.set(
+                    f"analysis:{video_id}",
+                    output.model_dump() if hasattr(output, "model_dump") else output,
+                )
         except Exception as e:
             # crewai 執行失敗，記錄錯誤並更新 job 狀態
             logger.error({"event": "job_failed", "job_id": job_id, "error": str(e)})
@@ -113,7 +129,12 @@ def run_trailtag_job(job_id, video_id):
         logger.error({"event": "job_fatal", "job_id": job_id, "error": str(e)})
 
 
-@router.post("/videos/analyze", response_model=JobResponse)
+@router.post(
+    "/videos/analyze",
+    response_model=JobResponse,
+    summary="提交影片分析任務",
+    description="提交新的 YouTube 影片分析請求，支援快取查詢與非同步任務分派。回傳 job_id 供進度查詢。",
+)
 async def analyze_video(
     request: AnalyzeRequest, background_tasks: BackgroundTasks
 ) -> JobResponse:
@@ -135,7 +156,7 @@ async def analyze_video(
     if cached_result:
         logger.info({"event": "cache_hit", "video_id": video_id})
         job_id = str(uuid.uuid4())
-        now = datetime.now(datetime.timezone.utc)
+        now = datetime.now(timezone.utc)
         job = {
             "job_id": job_id,
             "video_id": video_id,
@@ -151,7 +172,7 @@ async def analyze_video(
 
     # 創建新任務
     job_id = str(uuid.uuid4())
-    now = datetime.now(datetime.timezone.utc)
+    now = datetime.now(timezone.utc)
     job = {
         "job_id": job_id,
         "video_id": video_id,
@@ -171,7 +192,12 @@ async def analyze_video(
 
 
 # 查詢任務狀態 API
-@router.get("/jobs/{job_id}", response_model=JobResponse)
+@router.get(
+    "/jobs/{job_id}",
+    response_model=JobResponse,
+    summary="查詢任務狀態",
+    description="根據 job_id 查詢分析任務的進度、階段與錯誤資訊。",
+)
 async def get_job_status(job_id: str = Path(..., description="任務 ID")) -> JobResponse:
     """
     根據 job_id 查詢任務狀態，回傳進度、階段、錯誤等資訊。
@@ -185,7 +211,12 @@ async def get_job_status(job_id: str = Path(..., description="任務 ID")) -> Jo
 
 
 # 查詢影片地點視覺化資料 API
-@router.get("/videos/{video_id}/locations", response_model=MapVisualization)
+@router.get(
+    "/videos/{video_id}/locations",
+    response_model=MapVisualization,
+    summary="查詢影片地點視覺化資料",
+    description="根據 YouTube video_id 查詢分析後的地點視覺化資料（地圖路線等）。",
+)
 async def get_video_locations(
     video_id: str = Path(..., description="YouTube 影片 ID"),
 ) -> MapVisualization:

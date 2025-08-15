@@ -23,13 +23,13 @@ from __future__ import annotations
 
 import re
 import hashlib
-import logging
+from src.api.logger_config import get_logger
 from typing import List, Dict, Optional, Type
 from pydantic import BaseModel, Field
 from crewai.tools import BaseTool
 from crewai import LLM
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 # -------------------- 參數可調 --------------------
 MAX_FINAL_TOKENS = 9000  # 低於此估計 token 直接返回原字幕

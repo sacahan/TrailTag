@@ -1,4 +1,4 @@
-import logging
+from src.api.logger_config import get_logger
 from crewai.tools import BaseTool
 from typing import Type
 from pydantic import BaseModel, Field
@@ -9,7 +9,7 @@ import requests
 import json
 
 # 設定 logger 以便記錄除錯與警告訊息
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class YoutubeMetadataToolInput(BaseModel):
@@ -56,24 +56,26 @@ class YoutubeMetadataTool(BaseTool):
         Returns:
             tuple[str | None, str | None]: (字幕 URL, 格式)，若無字幕則皆為 None。
         """
+        try:
+            # 先查找 subtitles 若不存在則使用 automatic_captions
+            subs = info.get("subtitles") or info.get("automatic_captions") or {}
+            # 依照優先語言順序尋找可用字幕
+            for lang in preferred_langs:
+                if lang in subs and subs[lang]:
+                    lang_subs = subs[lang]
+                    # 優先選擇 srt 格式
+                    for s in lang_subs:
+                        if s.get("ext") == "srt":
+                            return s.get("url"), lang
 
-        # 先查找 subtitles 若不存在則使用 automatic_captions
-        subs = info.get("subtitles") or info.get("automatic_captions") or None
-        # 依照優先語言順序尋找可用字幕
-        for lang in preferred_langs:
-            if lang in subs and subs[lang]:
-                lang_subs = subs[lang]
-                # 優先選擇 srt 格式
-                for s in lang_subs:
+            # 若無偏好srt，取第一個可用字幕
+            if subs:
+                lang, subtitles = next(iter(subs.items()))
+                for s in subtitles:
                     if s.get("ext") == "srt":
                         return s.get("url"), lang
-
-        # 若無偏好srt，取第一個可用字幕
-        if subs:
-            lang, subtitles = next(iter(subs.items()))
-            for s in subtitles:
-                if s.get("ext") == "srt":
-                    return s.get("url"), lang
+        except Exception as e:
+            logger.warning(f"字幕 URL 提取失敗: {e}")
 
         # 若無任何可用字幕，回傳 None
         return None, None
@@ -161,7 +163,7 @@ class YoutubeMetadataTool(BaseTool):
 if __name__ == "__main__":
     # 工具測試範例，執行後會印出指定影片的 metadata
     tool = YoutubeMetadataTool()
-    video_id = "xV-oTx8RHZw"  # 替換為實際的 YouTube 影片 ID
+    video_id = "VF1HMYD95aw"  # 替換為實際的 YouTube 影片 ID
     metadata = tool._run(video_id)
     if metadata:
         # Pydantic v2 不再支援 json() 的 ensure_ascii/indent 參數，需用 json.dumps

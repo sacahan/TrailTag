@@ -2,13 +2,14 @@
 import sys
 import os
 import uuid
-import agentops
 import warnings
 from dotenv import load_dotenv
-import logging
+from src.api.logger_config import get_logger
 from trailtag.crew import Trailtag
 from src.api.cache_provider import RedisCacheProvider
 import json
+
+logger = get_logger(__name__)
 
 # 禁用 OpenTelemetry SDK
 os.environ["OTEL_SDK_DISABLED"] = "true"
@@ -25,10 +26,6 @@ load_dotenv(override=True)
 
 # 取得 AgentOps API 金鑰，供後續追蹤與監控使用
 AGENTOPS_API_KEY = os.getenv("AGENTOPS_API_KEY")
-
-# 初始化 logger 物件，方便後續記錄執行資訊與錯誤
-logging.basicConfig(level=logging.INFO)  # 設定為 INFO 級別
-logger = logging.getLogger(__name__)
 
 # 初始化快取提供者，用於儲存分析結果與狀態
 redisCache = RedisCacheProvider()
@@ -61,8 +58,8 @@ def run(video_id: str = None):
             return
 
         # 初始化 AgentOps 追蹤功能，便於後續監控與除錯
-        agentops.init(api_key=AGENTOPS_API_KEY, auto_start_session=False)
-        trace_context = agentops.start_trace(trace_name="TrailTag Workflow")
+        # agentops.init(api_key=AGENTOPS_API_KEY, auto_start_session=False)
+        # trace_context = agentops.start_trace(trace_name="TrailTag Workflow")
 
         # 準備輸入參數，包含影片網址、搜尋主題與快取設定
         inputs = {
@@ -76,10 +73,10 @@ def run(video_id: str = None):
         print(json.dumps(output.json_dict, indent=2, ensure_ascii=False))
 
         # 任務成功結束，結束追蹤
-        agentops.end_trace(trace_context=trace_context, end_state="SUCCESS")
+        # agentops.end_trace(trace_context=trace_context, end_state="SUCCESS")
     except Exception as e:
         # 若發生例外，記錄失敗狀態並拋出詳細錯誤
-        agentops.end_trace(trace_context=trace_context, end_state="FAILED")
+        # agentops.end_trace(trace_context=trace_context, end_state="FAILED")
         raise Exception(f"An error occurred while running the crew: {e}")
 
 

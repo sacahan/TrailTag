@@ -1,6 +1,6 @@
 import threading
 import time
-import logging
+from src.api.logger_config import get_logger
 import os
 from crewai.tools import BaseTool
 from typing import Type
@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 import requests
 
 # 設定 logger 以便記錄錯誤與警告訊息
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class TokenBucket:
