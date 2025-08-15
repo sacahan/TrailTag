@@ -4,6 +4,10 @@
 
 These are VS Code coding guidelines. Please also review our [Source Code Organisation](https://github.com/microsoft/vscode/wiki/Source-Code-Organization) page.
 
+## Task List
+
+List the available executable tasks or options using 1, 2, 3, ... for easy user selection.
+
 ## Indentation
 
 Use spaces, not tabs.
@@ -63,6 +67,7 @@ Use zsh syntax for shell commands.
 - Perform end-to-end tests to ensure the system works as expected.
 - Aim for high test coverage and use tools to measure it.
 - Use testing frameworks like `pytest` or `Jest`.
+- Each test case should add comments explaining its purpose and any complex logic.
 
 ## Version Control
 

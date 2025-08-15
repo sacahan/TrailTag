@@ -1,0 +1,17 @@
+{
+  "name": "trailtag-extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Test scaffold for TrailTag Chrome Extension (Jest)",
+  "scripts": {
+    "test": "jest --runInBand",
+    "clean": "rm -rf ../../dist/extension ../../dist/extension.zip && mkdir -p ../../dist",
+    "build": "npm run clean && mkdir -p ../../dist/extension && rsync -a --exclude 'node_modules' --exclude '__tests__' --exclude '*.test.js' --exclude 'jest.config.cjs' ./ ../../dist/extension/",
+    "zip": "npm run build && (cd ../../dist && zip -r extension.zip extension) && echo 'Created ../../dist/extension.zip'",
+    "package": "npm run zip"
+  },
+  "devDependencies": {
+    "jest": "^29.6.1",
+    "jest-environment-jsdom": "^29.2.1"
+  }
+}

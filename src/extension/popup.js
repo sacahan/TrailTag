@@ -24,6 +24,10 @@ let state = {
   lastUpdated: Date.now()
 };
 
+// Note: For tests, a registration hook is available at window.__registerPopupTestingHelpers
+// popup.js will call this at initialization to provide test-only helpers. Production code
+// does not attach internal state or functions to global window by default.
+
 // DOM 元素參考
 const elements = {
   views: {
@@ -252,6 +256,50 @@ function stopEventListener() {
       type: 'stopListeningEvents',
       jobId: state.jobId
     });
+    // 停止任何可能的輪詢備援
+    stopPolling();
+    state.jobId = null;
+  }
+}
+
+// Polling fallback
+let pollingIntervalId = null;
+const POLLING_INTERVAL_MS = (typeof TRAILTAG_CONFIG !== 'undefined' && TRAILTAG_CONFIG.POLLING_INTERVAL_MS) ? TRAILTAG_CONFIG.POLLING_INTERVAL_MS : 2500; // 2.5s
+
+async function pollJobStatus(jobId) {
+  try {
+    const status = await getJobStatus(jobId);
+
+    if (!status) return;
+
+    if (status.progress != null) {
+      changeState(AppState.ANALYZING, { progress: status.progress, phase: status.phase || state.phase });
+    }
+
+    if (status.status === 'completed' || status.status === 'done') {
+      // 任務完成
+      stopPolling();
+      handleJobCompleted();
+    } else if (status.status === 'failed' || status.status === 'error') {
+      stopPolling();
+      changeState(AppState.ERROR, { error: status.message || 'Job failed' });
+    }
+  } catch (error) {
+    console.error('Polling job status error:', error);
+  }
+}
+
+function startPolling(jobId) {
+  stopPolling();
+  pollingIntervalId = setInterval(() => pollJobStatus(jobId), POLLING_INTERVAL_MS);
+  console.log('Started polling for job:', jobId);
+}
+
+function stopPolling() {
+  if (pollingIntervalId) {
+    clearInterval(pollingIntervalId);
+    pollingIntervalId = null;
+    console.log('Stopped polling');
   }
 }
 
@@ -356,6 +404,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         changeState(AppState.ERROR, { error: message.data.message || '未知錯誤' });
       }
       break;
+    case 'sse_fallback':
+      // Service worker 通知 SSE 已失敗，啟動輪詢作為備援
+      if (state.currentState === AppState.ANALYZING && state.jobId === message.jobId) {
+        console.warn('SSE fallback received, starting polling for job:', message.jobId);
+        // prefer test-overridable window.startPolling when available
+        if (typeof window !== 'undefined' && typeof window.startPolling === 'function') {
+          window.startPolling(message.jobId);
+        } else {
+          startPolling(message.jobId);
+        }
+      }
+      break;
   }
 
   sendResponse({ received: true });
@@ -381,8 +441,33 @@ document.addEventListener('DOMContentLoaded', () => {
   // 初始化
   initializeApp();
 
-  // 每 30 秒保活 service worker
+  // 每 N 秒保活 service worker (可由 config 覆寫)
   setInterval(() => {
     chrome.runtime.sendMessage({ type: 'keepAlive' });
-  }, 30000);
+  }, (typeof TRAILTAG_CONFIG !== 'undefined' && TRAILTAG_CONFIG.KEEPALIVE_MS) ? TRAILTAG_CONFIG.KEEPALIVE_MS : 30000);
 });
+
+// If test harness is present, register small helpers without polluting production globals
+try {
+  if (typeof window !== 'undefined' && typeof window.__registerPopupTestingHelpers === 'function') {
+    window.__registerPopupTestingHelpers({
+      setState: (patch) => Object.assign(state, patch),
+      getState: () => state,
+      startPolling,
+      stopPolling
+    });
+    // also expose some functions on window for easier spying in tests
+    try {
+      window.startPolling = startPolling;
+      window.stopPolling = stopPolling;
+      window.startAnalysis = startAnalysis;
+      window.stopEventListener = stopEventListener;
+      window.changeState = changeState;
+      window.exportGeoJSON = exportGeoJSON;
+    } catch (e) {
+      // ignore
+    }
+  }
+} catch (e) {
+  // noop
+}

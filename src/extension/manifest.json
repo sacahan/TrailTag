@@ -4,16 +4,16 @@
   "version": "0.1.0",
   "description": "將 YouTube 旅遊影片轉換為互動地圖路線，探索影片中提到的地點。",
   "icons": {
-    "16": "assets/icon16.png",
-    "48": "assets/icon48.png",
-    "128": "assets/icon128.png"
+    "16": "assets/icon_16x16.png",
+    "48": "assets/icon_48x48.png",
+    "128": "assets/icon_128x128.png"
   },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "assets/icon16.png",
-      "48": "assets/icon48.png",
-      "128": "assets/icon128.png"
+      "16": "assets/icon_16x16.png",
+      "48": "assets/icon_48x48.png",
+      "128": "assets/icon_128x128.png"
     },
     "default_title": "TrailTag 地圖"
   },

@@ -82,6 +82,13 @@ function formatTimecode(timecode) {
     }
   }
 
+  // mm:ss 情況 — 把分鐘轉為整數以去除前導零
+  if (parts.length === 2) {
+    const minutes = parseInt(parts[0]);
+    const seconds = parseInt(parts[1]);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }
+
   return timecode;
 }
 
