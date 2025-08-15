@@ -172,6 +172,7 @@ function changeState(newState, data = {}) {
  * 啟動分析流程
  */
 async function startAnalysis() {
+  debugger;
   try {
     const videoId = await getCurrentVideoId();
 

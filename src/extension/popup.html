@@ -5,15 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TrailTag</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""/>
+  <link rel="stylesheet" href="vendor/leaflet.css">
 </head>
 <body>
   <div class="container">
     <header>
       <h1>TrailTag</h1>
-      <div class="status-badge" id="status-badge">閒置</div>
+      <div class="status-badge" id="status-badge">閒置1</div>
     </header>
 
     <main>
@@ -61,10 +59,8 @@
     </footer>
   </div>
 
-  <!-- 先載入 Leaflet.js -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-          crossorigin=""></script>
+  <!-- 使用本地 vendor/leaflet.js（避免 CSP 阻擋外部腳本） -->
+  <script src="vendor/leaflet.js"></script>
 
   <!-- 然後載入我們的腳本 via module bootstrap (resolves config then injects legacy scripts) -->
   <script type="module" src="popup.bootstrap.mjs"></script>
