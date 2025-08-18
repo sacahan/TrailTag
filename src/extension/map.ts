@@ -119,11 +119,11 @@ export function addMarkersFromMapVisualization(mapVisualization: any, videoId: s
           if (Utils && typeof Utils.createTimecodeUrl === 'function') timecodeUrl = Utils.createTimecodeUrl(vid, route.timecode);
         }
         const formattedTime = (Utils && typeof Utils.formatTimecode === 'function') ? Utils.formatTimecode(route.timecode) : route.timecode;
-        popupContent += `<a href="#" data-timecode-url="${timecodeUrl}" class="timecode-link popup-link">觀看片段 ${formattedTime}</a>`;
+        popupContent += `<a href="${timecodeUrl}" data-timecode-url="${timecodeUrl}" class="timecode-link popup-link">觀看片段 ${formattedTime}</a>`;
       }
 
       // 在地圖開啟連結（會由 popupopen handler 處理以支援 chrome.tabs），放在後面以顯示於右側
-      popupContent += `<a href="#" target="_blank" data-google-url="${googleMapsUrl}" class="open-map-link popup-link">在地圖開啟</a>`;
+      popupContent += `<a href="${googleMapsUrl}" target="_blank" data-google-url="${googleMapsUrl}" class="open-map-link popup-link">在地圖開啟</a>`;
 
       popupContent += '</div></div>';
 
@@ -148,10 +148,34 @@ export function addMarkersFromMapVisualization(mapVisualization: any, videoId: s
               ev.preventDefault();
               const url = el.getAttribute(dataAttr);
               if (!url || url === '#') return;
-              if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query && chrome.tabs.update) {
-                chrome.tabs.query({ active: true, currentWindow: true }, function(tabs: any) {
-                  try { if (tabs && tabs[0] && tabs[0].id) chrome.tabs.update(tabs[0].id, { url: url }); else window.open(url, '_blank'); } catch (err) { window.open(url, '_blank'); }
-                });
+              if (typeof chrome !== 'undefined' && chrome.tabs) {
+                try {
+                  // For timecode links prefer updating the current active tab so the user stays in the video context.
+                  // For other links (e.g. google maps) prefer creating a new tab.
+                  const prefersUpdate = dataAttr === 'data-timecode-url' || (el.classList && el.classList.contains('timecode-link'));
+                  if (prefersUpdate && chrome.tabs.query && chrome.tabs.update) {
+                    // Try to update the current active tab first, fallback to creating a new tab or window.open
+                    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs: any) {
+                      try {
+                        if (tabs && tabs[0] && tabs[0].id) {
+                          chrome.tabs.update(tabs[0].id, { url: url });
+                        } else if (typeof chrome.tabs.create === 'function') {
+                          chrome.tabs.create({ url: url });
+                        } else {
+                          window.open(url, '_blank');
+                        }
+                      } catch (err) { window.open(url, '_blank'); }
+                    });
+                  } else if (typeof chrome.tabs.create === 'function') {
+                    // Default behaviour for non-timecode links: open a new tab
+                    chrome.tabs.create({ url: url });
+                  } else if (chrome.tabs.query && chrome.tabs.update) {
+                    // Fallback: update current tab if create is not available
+                    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs: any) {
+                      try { if (tabs && tabs[0] && tabs[0].id) chrome.tabs.update(tabs[0].id, { url: url }); else window.open(url, '_blank'); } catch (err) { window.open(url, '_blank'); }
+                    });
+                  } else { window.open(url, '_blank'); }
+                } catch (err) { window.open(url, '_blank'); }
               } else { window.open(url, '_blank'); }
             } catch (err) { console.error('Link click handler error', err); }
           });

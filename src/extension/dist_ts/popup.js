@@ -624,10 +624,78 @@ export function registerApp() {
     }
     // 初始化應用狀態與 UI
     initializeApp();
-    // 定期發送 keepAlive 訊息給 background/service worker，避免 service worker 休眠
-    setInterval(() => {
-        chrome.runtime.sendMessage({ type: 'keepAlive' });
-    }, (typeof TRAILTAG_CONFIG !== 'undefined' && TRAILTAG_CONFIG.KEEPALIVE_MS) ? TRAILTAG_CONFIG.KEEPALIVE_MS : 30000);
+    // 定期發送 keepAlive 訊息給 background/service worker，避免 service worker 休眠。
+    // 使用 runtime.postMessage via chrome.runtime.sendMessage 的簡單 ping。
+    const keepAliveMs = (typeof TRAILTAG_CONFIG !== 'undefined' && TRAILTAG_CONFIG.KEEPALIVE_MS) ? TRAILTAG_CONFIG.KEEPALIVE_MS : 30000;
+    const keepAliveInterval = setInterval(() => {
+        try {
+            chrome.runtime.sendMessage({ type: 'keepAlive' });
+        }
+        catch (e) { /* ignore */ }
+    }, keepAliveMs);
+    // 當 popup 被關閉或切換（visibilitychange / beforeunload）時，確保當前 state 被儲存到 storage
+    // 以便重新打開 popup 時能夠恢復到分析中的狀態。
+    const saveNow = () => {
+        try {
+            saveState(state);
+        }
+        catch (e) { /* ignore */ }
+    };
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            saveNow();
+        }
+    });
+    // storage onChanged handler: 當 background 或 service worker 更新 persisted state 時，
+    // popup 可即時反映並嘗試 re-attach
+    const storageChangeHandler = (changes, areaName) => {
+        if (areaName !== 'local')
+            return;
+        if (!changes || !changes.trailtag_state_v1)
+            return;
+        const newVal = changes.trailtag_state_v1.newValue;
+        if (!newVal)
+            return;
+        // 只對目前 videoId 的變更做反應
+        if (newVal.videoId && newVal.videoId === state.videoId) {
+            try {
+                // 當 background 有 jobId 時更新 local state
+                if (newVal.jobId) {
+                    state = { ...state, jobId: newVal.jobId, currentState: newVal.currentState || state.currentState, progress: newVal.progress || state.progress, phase: newVal.phase || state.phase };
+                    try {
+                        saveState(state);
+                    }
+                    catch (e) { }
+                    updateUI();
+                    // 確保 background 正在監聽事件
+                    try {
+                        chrome.runtime.sendMessage({ type: 'startListeningEvents', jobId: newVal.jobId, videoId: newVal.videoId }, () => { });
+                    }
+                    catch (e) { }
+                }
+            }
+            catch (e) { /* ignore */ }
+        }
+    };
+    try {
+        if (chrome && chrome.storage && chrome.storage.onChanged && typeof chrome.storage.onChanged.addListener === 'function') {
+            chrome.storage.onChanged.addListener(storageChangeHandler);
+        }
+    }
+    catch (e) { /* ignore */ }
+    window.addEventListener('beforeunload', () => {
+        saveNow();
+        try {
+            clearInterval(keepAliveInterval);
+        }
+        catch (e) { }
+        try {
+            if (chrome && chrome.storage && chrome.storage.onChanged && typeof chrome.storage.onChanged.removeListener === 'function') {
+                chrome.storage.onChanged.removeListener(storageChangeHandler);
+            }
+        }
+        catch (e) { /* ignore */ }
+    });
     // 註冊測試輔助函式於 window，方便測試與除錯
     try {
         if (typeof window !== 'undefined' && typeof window.__registerPopupTestingHelpers === 'function') {

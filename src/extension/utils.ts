@@ -164,11 +164,11 @@ export function createTimecodeUrl(videoId: string | null, timecode: string): str
   if (!videoId || !timecode) return '';
   const parts = timecode.split(':');
   let seconds = 0;
-  if (parts.length === 3) {
+  if (parts.length === 4) {
     seconds = parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
-  } else if (parts.length === 2) {
+  } else if (parts.length === 3) {
     seconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-  } else if (parts.length === 1) {
+  } else if (parts.length === 2) {
     seconds = parseInt(parts[0]);
   }
   return 'https://www.youtube.com/watch?v=' + videoId + '&t=' + seconds + 's';

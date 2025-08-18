@@ -179,8 +179,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         try {
             chrome.storage.local.get(['trailtag_state_v1'], (res) => {
                 const val = res && res.trailtag_state_v1 ? res.trailtag_state_v1 : null;
-                if (val && val.videoId === videoId && val.currentState === 'analyzing' && val.jobId) {
-                    sendResponse({ jobId: val.jobId, currentState: val.currentState });
+                // If there's a stored entry for this video and it has a jobId, return it.
+                // Be permissive about currentState: the popup may have saved a slightly
+                // different state or background persisted it earlier. Returning the jobId
+                // allows the popup to re-attach and recover UI state.
+                if (val && val.videoId === videoId && val.jobId) {
+                    sendResponse({ jobId: val.jobId, currentState: val.currentState || 'analyzing' });
                 }
                 else {
                     sendResponse({ jobId: null });
