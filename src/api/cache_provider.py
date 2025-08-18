@@ -25,7 +25,8 @@ class MemoryCacheProvider:
     """
 
     def __init__(self, expiry_seconds=3600):
-        # 初始化快取儲存結構與過期秒數
+        # 初始化快取儲存結構與預設過期秒數
+        # _store maps key -> (value, ts, ttl_seconds_or_None)
         self._store = {}
         self.expiry_seconds = expiry_seconds
 
@@ -38,23 +39,26 @@ class MemoryCacheProvider:
         v = self._store.get(key)
         if not v:
             return None
-        value, ts = v
-        if self._now() - ts > self.expiry_seconds:
+        value, ts, ttl = v
+        ttl = ttl if ttl is not None else self.expiry_seconds
+        if self._now() - ts > ttl:
             del self._store[key]
             return None
         return value
 
-    def set(self, key, value):
-        # 設定快取內容，並記錄存入時間
-        self._store[key] = (value, self._now())
+    def set(self, key, value, ttl: int = None):
+        # 設定快取內容，並記錄存入時間與可選的 TTL（秒）
+        # 若 ttl 為 None，會使用預設 self.expiry_seconds
+        self._store[key] = (value, self._now(), ttl)
 
     def exists(self, key):
         # 檢查快取是否存在且未過期
         v = self._store.get(key)
         if not v:
             return False
-        value, ts = v
-        if self._now() - ts > self.expiry_seconds:
+        value, ts, ttl = v
+        ttl = ttl if ttl is not None else self.expiry_seconds
+        if self._now() - ts > ttl:
             del self._store[key]
             return False
         return True
@@ -158,7 +162,11 @@ class RedisCacheProvider:
             return None
 
     def set(
-        self, query: Union[str, Dict], result: Any, params: Optional[Dict] = None
+        self,
+        query: Union[str, Dict],
+        result: Any,
+        params: Optional[Dict] = None,
+        ttl: Optional[int] = None,
     ) -> bool:
         """
         設定快取內容，將 result 以 JSON 序列化後存入 Redis。
@@ -170,7 +178,8 @@ class RedisCacheProvider:
         try:
             key = self._generate_key(query, params)
             result_json = json.dumps(result, ensure_ascii=False, default=json_default)
-            self.redis.setex(key, self.expiry_seconds, result_json)
+            expire = ttl if ttl is not None else self.expiry_seconds
+            self.redis.setex(key, expire, result_json)
             self.logger.debug(f"已成功設置快取，鍵值: {key}")
             return True
         except Exception as e:

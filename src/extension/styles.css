@@ -152,6 +152,15 @@ footer a:hover {
   animation: spin 1s linear infinite;
 }
 
+.loading-text {
+  font-weight: 600;
+  color: #2b2b2b;
+}
+.loading-subtext {
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -181,4 +190,26 @@ footer a:hover {
 .description {
   color: #5f6368;
   margin-bottom: 16px;
+}
+
+/* Popup link buttons for map markers */
+.popup-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.popup-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #1a73e8;
+  background: rgba(26,115,232,0.06);
+  border: 1px solid rgba(26,115,232,0.12);
+}
+.popup-link:hover {
+  background: rgba(26,115,232,0.12);
 }

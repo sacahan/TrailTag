@@ -35,7 +35,11 @@ app = FastAPI(
 # 設定 CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["chrome-extension://*", "http://localhost:*"],
+    # 明確列出開發時常用的本機來源
+    allow_origins=["*"],
+    # 允許 chrome-extension://<extension-id> 的 origin（例如 chrome-extension://apkdjmojbemmceiaalnlfocjlkcbphnn）
+    # 使用正規表達式以覆蓋各種 extension id。若需限制單一 id，可改為完整字串清單。
+    allow_origin_regex=r"^chrome-extension://[a-p0-9]+$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

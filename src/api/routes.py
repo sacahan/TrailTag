@@ -72,9 +72,12 @@ def run_trailtag_job(job_id, video_id):
     """
     try:
 
-        def update_job(phase, progress, status=JobStatus.RUNNING, extra=None):
+        def update_job(
+            phase, progress, status=JobStatus.RUNNING, extra=None, ttl: int = None
+        ):
             """
             寫入/更新 job 狀態到快取，供進度查詢與 SSE 推播。
+            支援可選的 ttl（秒）參數以便設定短暫生命週期的完成狀態。
             """
             now = datetime.now(timezone.utc)
             job = cache.get(f"job:{job_id}") or {}
@@ -92,7 +95,8 @@ def run_trailtag_job(job_id, video_id):
             )
             if extra:
                 job.update(extra)
-            cache.set(f"job:{job_id}", job)
+            # 若提供 ttl，則將其傳遞給 cache.set（支援短生命週期的完成狀態）
+            cache.set(f"job:{job_id}", job, ttl=ttl)
 
         # 1. metadata 階段（可擴充更多細緻進度）
         update_job("metadata", 0.0)
@@ -101,14 +105,15 @@ def run_trailtag_job(job_id, video_id):
             inputs = {
                 "job_id": job_id,
                 "video_id": video_id,
-                "search_subject": "找出景點與美食的地理位置",
+                "search_subject": "找出景點、餐廳、交通方式與住宿的地理位置",
             }
             # 進度: metadata
             update_job("metadata", 5)
             # 執行 crewai 主流程（同步呼叫，實際可依需求細分進度）
             output = Trailtag().crew().kickoff(inputs=inputs)
-            # 進度: geocode 完成
-            update_job("geocode", 100, status=JobStatus.DONE)
+            # 進度: geocode 完成 — 將完成的 job TTL 設為 60 秒
+            update_job("geocode", 100, status=JobStatus.DONE, ttl=60)
+
             # 結果寫入 analysis 快取，供地圖查詢
             if hasattr(output, ""):
                 cache.set(
@@ -167,7 +172,7 @@ async def analyze_video(
             "created_at": now,
             "updated_at": now,
         }
-        cache.set(f"job:{job_id}", job)
+        cache.set(f"job:{job_id}", job, ttl=60)
         return JobResponse(**job)
 
     # 創建新任務

@@ -8,20 +8,19 @@
     當作起始配置。
 */
 const DEFAULTS = {
-  // API 基礎 URL（開發預設指向本地服務）
-  API_BASE_URL: 'https://tailtag.brianhan.cc',
-  // fetch 重試次數
-  FETCH_RETRIES: 2,
-  // fetch 起始回退時間（毫秒），實作可基於此做指數回退
-  FETCH_BACKOFF_MS: 500,
-  // service worker 使用的最大重連次數（SSE 等機制）
-  MAX_RECONNECT: 1,
-  // popup 端輪詢間隔（毫秒）
-  POLLING_INTERVAL_MS: 2500,
-  // keepalive 的時間窗（毫秒）
-  KEEPALIVE_MS: 30000
+    // API 基礎 URL（開發預設指向本地服務）
+    API_BASE_URL: 'https://tailtag.brianhan.cc',
+    // fetch 重試次數
+    FETCH_RETRIES: 2,
+    // fetch 起始回退時間（毫秒），實作可基於此做指數回退
+    FETCH_BACKOFF_MS: 500,
+    // service worker 使用的最大重連次數（SSE 等機制）
+    MAX_RECONNECT: 1,
+    // popup 端輪詢間隔（毫秒）
+    POLLING_INTERVAL_MS: 2500,
+    // keepalive 的時間窗（毫秒）
+    KEEPALIVE_MS: 30000
 };
-
 /**
  * 解析最終配置
  *
@@ -32,8 +31,7 @@ const DEFAULTS = {
  * @returns {Object} 合併後的新設定物件
  */
 export function resolveConfig(overrides = {}) {
-  return Object.assign({}, DEFAULTS, overrides);
+    return Object.assign({}, DEFAULTS, overrides);
 }
-
 // 預設匯出 DEFAULTS，方便不需覆寫時直接引用
 export default DEFAULTS;

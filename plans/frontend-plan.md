@@ -199,6 +199,70 @@ Transition:
 | Map | Leaflet 容器 | map_ready 顯示 |
 | Footer | 動作按鈕 | retry / export / open in new tab |
 
+## 畫面狀態與對應功能（實作範圍與優先）
+
+下列為 extension popup 在各種狀態下的畫面顯示、主要功能、資料契約與對應要實作的位置。依你的指示，我將優先實作下列項目：
+
+- 必須實作：1) 狀態持久化（save/load state）、3) popup ↔ background 重新 attach 機制、4) 錯誤分類與回報按鈕。
+- 可以實作但不在 UI 提供按鈕：2) 權限/配額處理（不顯示「授權並重試」或「手動上傳」按鈕）。
+- 不實作（本次迭代略過）：5) Partial incremental UI、6) Accessibility 深度優化、7) 進階 UX 改善。
+
+每個狀態說明：
+
+- Idle（未分析 / 初始）
+  - 顯示：`idle-view`，標題、簡短說明、主要按鈕「分析此影片」。
+  - 主要動作：使用者點擊 `analyze-btn` → 呼 `startAnalysis()` → 切換到 `checking_cache` 或 `analyzing`。
+  - 資料契約：無輸入；按下後呼 `POST /api/videos/analyze { url }`，得到 `{ job_id, cached? }`。
+  - 要修改的檔案：`src/extension/popup.html`（view）、`src/extension/popup.ts`（行為）。
+
+- Checking_cache（檢查快取）
+  - 顯示：`checking-view`，spinner 與說明文字。
+  - 主要動作：呼 `GET /api/videos/{id}/locations`；若命中直接切 MAP_READY，否則觸發分析流程。
+  - 要修改的檔案：`src/extension/popup.ts`、`src/extension/api.ts`（已存在）。
+
+- Analyzing（分析中 / 進度）
+  - 顯示：`analyzing-view`，進度條（`progress-bar`）、階段文字（`phase-text`）、取消按鈕。
+  - 主要動作：建立 SSE（由 service worker 建立並轉發），或在 SSE 失敗後以 polling 更新；可取消（停止 event listener 並回到 IDLE）。
+  - 資料契約：phase_update events { progress, phase, optional partial payload }；completed / error events。
+  - 要修改的檔案（必做）：`src/extension/popup.ts`（在 initialize 階段加入 restore/attach 邏輯）、`src/extension/service_worker.ts`（background attach 已具部分實作，可強化回應 attach 要求）。
+
+- Map_ready（已完成）
+  - 顯示：`map-view`，Leaflet 地圖、地點數、匯出按鈕。
+  - 主要動作：顯示 markers、提供 `exportGeoJSON()` 下載功能。
+  - 要修改的檔案：`src/extension/popup.ts`（map 初始化）與 `src/extension/api.ts` / `src/extension/utils.ts`（GeoJSON 生成與下載已實作）。
+
+- Error（錯誤）
+  - 顯示：`error-view`，錯誤友善訊息、主要按鈕「重試」、以及「回報錯誤」按鈕（本次將加上）。
+  - 主要動作：錯誤會包含可分類資訊（HTTP code / message / debugId），UI 顯示分類後的建議文案；按「回報錯誤」會將錯誤摘要與 debugId 準備好以便用戶複製或觸發 mailto/issue（不自動上傳任何敏感資訊）。
+  - 要修改的檔案（必做）：`src/extension/popup.html`（在 error view 加回報按鈕）、`src/extension/popup.ts`（錯誤顯示與回報邏輯）、`src/extension/api.ts`（在出錯時包含 code/debugId）。
+
+- Empty / Not supported（無可分析內容）
+  - 顯示：目前會回到 IDLE 或顯示 ERROR（「請在 YouTube 影片頁使用」）；計畫中可新增 `empty-view` 以說明原因，但本次不為必做。若要處理 CSP 或 iframe 問題，會在 error 分類中標示為 "unsupported"。
+  - 決策：此狀態不新增手動上傳按鈕（依指示不在 UI 顯示）。
+
+- Auth / Rate-limit（權限或配額）
+  - 顯示：分類後的錯誤提示（如 401/403/429），說明性文案與下一步建議（例如稍後再試或聯絡維運）。
+  - 決策：會在錯誤分類時顯示建議，但不提供「授權並重試」或「手動上傳」按鈕（按你要求）。
+
+- Cancelled / Paused（已取消/暫停）
+  - 顯示：取消後 UI 會回到 IDLE（目前設計），若需專屬 cancelled view 可於後續加入；本次維持現狀（回 IDLE）。
+
+檔案變更總覽（本次迭代）
+
+- 必做（會在此迭代修改）
+  1. `src/extension/utils.ts` — 實作 `saveState()` / `loadState()` 使用 `chrome.storage.local`（含 TTL / 最低欄位：videoId, jobId, timestamp, progress）。
+  2. `src/extension/popup.ts` — 在 `initializeApp()` 加入從 storage restore 的流程；若發現尚未完成的 jobId，發訊息給 background 請求 attach 或呼 `startEventListener(jobId)`；在 `registerApp()` 確保重新 attach 與 polling 控制。
+  3. `src/extension/popup.html` — 在 `error-view` 加上「回報錯誤」按鈕（並在 `popup.ts` 中實作回報 handler），不新增授權/上傳按鈕。
+  4. `src/extension/api.ts` / `src/extension/service_worker.ts` — 在 error/fail/path 中包含可辨識的 code 或 debugId，並在 service worker 對 attach 請求做更明確的回應（若 background 端已有 job，回傳 jobId）。
+
+驗收準則（短期）
+
+- 開啟 popup 且有未完成 job 時，popup 能自動恢復 "分析中" 的 UI 並繼續接收進度（SSE 或 polling）。
+- 於分析中關閉再開啟 popup，不會造成多重 listener；state 能被正確還原或 background attach。
+- 發生錯誤時，Error view 顯示分類後的友善文案並提供「回報錯誤」的動作；API 回傳包含 code/debugId 以便回報。
+
+如要我開始實作上述變更，回覆「請實作」，我會依序在 repo 上做小幅 patch（先完成 save/load state 與 popup restore），每個步驟完成後執行快速檢查並回報結果。
+
 ## 進度條策略
 
 - 後端提供 progress（0~100）→ 直接映射。
@@ -294,3 +358,31 @@ E6:
 - ESLint + Prettier（若引入 build pipeline）
 - 每個模組最小單元測試（可用 Vitest 若改為模組化建置）
 - 手動測試腳本：列舉主要錯誤情境（無網路 / SSE 中斷 / 404）
+
+## 最近變更（2025-08-16）
+
+### 概要
+
+- 在 `src/extension/popup.js` 的 `initializeApp()` 新增：當 popup 開啟且目前狀態不是 `ANALYZING` 時，自動向後端呼叫 `getVideoLocations(videoId)` 以嘗試取得後端已存在的地點資料，若有資料則直接切換到 `MAP_READY` 並顯示地圖。
+
+- 新增兩個 Jest 測試（`src/extension/__tests__/popup.test.js`）來模擬 `getVideoLocations()` 的回傳行為：
+
+  - 測試在非 `ANALYZING` 狀態時，`initializeApp()` 會呼叫 `getVideoLocations()` 並在取得資料時切換到 `MAP_READY`。
+
+  - 測試在已為 `ANALYZING` 狀態時，`initializeApp()` 不會呼叫 `getVideoLocations()`（guard 生效，避免中斷進行中的 job）。
+
+### 目的與風險
+
+- 目的：確保使用者每次打開 popup 時能取得後端快取結果，立即顯示地圖（改善使用者體驗），同時避免在正在分析中的情況下干擾現行任務。
+
+- 風險：增加一次額外的後端請求；設計為保守行為（僅在非 ANALYZING 時發送），並在請求失敗時只記錄 warning，不會中斷初始化流程。
+
+### 驗證
+
+- 已在 `src/extension` 執行 Jest 測試（本地測試環境）：4 個測試檔、18 個測試皆通過。
+
+### 後續建議
+
+- 顯示「資料來源：快取」與最後更新時間，讓使用者知道顯示的是後端快取結果。
+
+- 若要更節省頻寬，可改為條件請求（ETag / If-Modified-Since）或短期失效的快取策略。

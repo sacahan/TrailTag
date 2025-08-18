@@ -33,7 +33,7 @@ class CacheManager:
         """
         return self.backend.get(key, params)
 
-    def set(self, key, value, params=None):
+    def set(self, key, value, params=None, ttl: int = None):
         """
         設定快取內容。
         :param key: 快取鍵值
@@ -41,7 +41,12 @@ class CacheManager:
         :param params: 進階查詢參數（可選）
         :return: 是否成功
         """
-        return self.backend.set(key, value, params)
+        # Forward optional ttl to backend if supported
+        try:
+            return self.backend.set(key, value, params, ttl=ttl)
+        except TypeError:
+            # backend may not accept ttl param (backwards compatibility)
+            return self.backend.set(key, value, params)
 
     def exists(self, key, params=None):
         """

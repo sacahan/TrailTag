@@ -1,42 +1,40 @@
 import defaults from './config.mjs';
 
+/*
+ * popup.bootstrap.mjs
+ *
+ * Purpose: bootstrap popup environment using bundled defaults. chrome.storage is
+ * intentionally not used so popup always relies on the packaged configuration
+ * and the backend for fresh data.
+ */
+
 // bootstrap module for popup: resolve config and load legacy scripts in order
 (async function bootstrap() {
+  // always use packaged defaults; do not read from chrome.storage
   const resolved = Object.assign({}, defaults);
 
-  try {
-    // try to read from chrome.storage.local
-    const storage = await new Promise((resolve) => {
-      try {
-        chrome.storage.local.get(['trailtag_config', 'api_base_url'], (res) => resolve(res || {}));
-      } catch (e) {
-        resolve({});
-      }
-    });
-
-    if (storage) {
-      if (storage.trailtag_config && typeof storage.trailtag_config === 'object') {
-        Object.assign(resolved, storage.trailtag_config);
-      }
-      if (storage.api_base_url) resolved.API_BASE_URL = storage.api_base_url;
-    }
-  } catch (e) {
-    // ignore
-  }
-
-  // expose global snapshot for legacy scripts & tests
+  // expose config globally
   window.TRAILTAG_CONFIG = resolved;
 
-  // dynamically inject legacy non-module scripts in order
-  const scripts = ['utils.js','api.js','map.js','popup.js'];
+  // dynamic import old modules in order and attach to window.TrailTag
+  const scripts = [
+    { file: 'utils.js', ns: 'Utils' },
+    { file: 'api.js', ns: 'API' },
+    { file: 'map.js', ns: 'Map' },
+    { file: 'popup.js', ns: 'Popup' }
+  ];
+
+  window.TrailTag = window.TrailTag || {};
+
   for (const s of scripts) {
-    await new Promise((resolve, reject) => {
-      const el = document.createElement('script');
-      el.src = s;
-      el.onload = () => resolve();
-      el.onerror = (err) => reject(err);
-      document.body.appendChild(el);
-    });
+    try {
+      const mod = await import(`./${s.file}`);
+      window.TrailTag[s.ns] = mod;
+    } catch (err) {
+      console.error('Failed to import module', s.file, err);
+      throw err;
+    }
   }
 
 })();
+  // 將解析後的設定放到全域，可被舊式腳本或測試讀取（命名為 TRAILTAG_CONFIG）

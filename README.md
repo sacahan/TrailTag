@@ -53,17 +53,6 @@ npm run package
 
 - `API_PORT`, `API_HOST` — 應用列印或部署用途。
 
-```bash
-cd src/extension
-npm install
-npm test
-npm run package
-```
-
-## 環境變數（常用）
-
-- `API_PORT`, `API_HOST` — 應用列印或部署用途。
-
 - `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD`, `REDIS_EXPIRY_DAYS` — Redis 連線與過期設定。
 
 - `AGENTOPS_API_KEY` —（可選）AgentOps 追蹤 API 金鑰。
@@ -76,7 +65,7 @@ npm run package
 
 ## 日誌與偵錯
 
-- 後端使用 `src/api/logger_config.py` 管理日誌，若已安裝 `colorlog`，會顯示彩色日誌。
+- 後端使用 `src/api/logger_config.py` 管理日誌，若安裝 `colorlog`，會顯示彩色日誌。
 
 ## 貢獻與授權
 
