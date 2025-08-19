@@ -552,6 +552,7 @@ export async function initializeApp() {
                         state = { ...state, jobId: latestStatus.job_id, currentState: AppState.ERROR, progress: latestStatus.progress != null ? latestStatus.progress : state.progress, phase: latestStatus.phase || state.phase, error: latestStatus.message || 'Job failed' };
                         saveState(state);
                         updateUI();
+                        stopPolling();
                         return;
                     }
                     else {
@@ -573,6 +574,7 @@ export async function initializeApp() {
                         if (chrome && chrome.storage && chrome.storage.local && typeof chrome.storage.local.remove === 'function') {
                             chrome.storage.local.remove(['trailtag_state_v1'], () => { });
                         }
+                        stopPolling();
                     }
                     catch (e) { /* ignore */ }
                 }
@@ -584,6 +586,7 @@ export async function initializeApp() {
                     if (chrome && chrome.storage && chrome.storage.local && typeof chrome.storage.local.remove === 'function') {
                         chrome.storage.local.remove(['trailtag_state_v1'], () => { });
                     }
+                    stopPolling();
                 }
                 catch (e) { /* ignore */ }
             }
@@ -594,6 +597,7 @@ export async function initializeApp() {
     }
     // 4) 若無可恢復的任務或同步失敗，進入閒置狀態
     changeState(AppState.IDLE, { videoId: currentVideoId });
+    stopPolling();
 }
 // popup 不再監聽 background/service worker 的 runtime messages；
 // popup 改以直接向後端輪詢 (polling) 取得 job 狀態。
