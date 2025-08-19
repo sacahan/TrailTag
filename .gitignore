@@ -56,3 +56,6 @@ coverage/
 .env.production.local
 .eslintcache
 *.tsbuildinfo
+
+#docker
+docker-compose.yml

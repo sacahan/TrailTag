@@ -17,9 +17,12 @@ const DEFAULTS = {
   // service worker 使用的最大重連次數（SSE 等機制）
   MAX_RECONNECT: 1,
   // popup 端輪詢間隔（毫秒）
-  POLLING_INTERVAL_MS: 2500,
+  POLLING_INTERVAL_MS: 5000,
   // keepalive 的時間窗（毫秒）
   KEEPALIVE_MS: 30000
+  ,
+  // persisted state TTL（毫秒）：預設 30 分鐘，可由 globalThis.TRAILTAG_CONFIG 或 chrome.storage 中的 trailtag_config 覆寫
+  STATE_TTL_MS: 30 * 60 * 1000
 };
 
 /**

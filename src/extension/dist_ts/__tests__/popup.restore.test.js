@@ -45,25 +45,25 @@ describe('popup initializeApp restore/attach', () => {
             }
         });
     }
-    test('attaches to background job when no saved state but background knows job', async () => {
+    test('no saved state and no cached locations -> enters idle', async () => {
         // prepare mocks on window before importing popup
         global.window = global.window || {};
         global.window.getCurrentVideoId = async () => 'video-1';
         global.window.loadState = async () => null;
         // ensure saveState stub exists to avoid saveState undefined in popup.changeState
         global.window.saveState = async () => { return; };
-        const sendMessage = makeMockChrome({ jobId: 'job-from-bg' });
+        // mock API to return no cached locations
+        global.window.TrailTag = { API: { getVideoLocations: async () => null } };
         createDomMocks();
         const popup = await import('../popup');
         const { initializeApp, state: popupState, AppState, queryElements } = popup;
         if (typeof queryElements === 'function')
             queryElements();
         await initializeApp();
-        // popup should be in analyzing state and should have requested background to start listening
-        expect(popupState.currentState).toBe(AppState.ANALYZING);
-        expect(sendMessage).toHaveBeenCalledWith(expect.objectContaining({ type: 'startListeningEvents', jobId: expect.anything() }), expect.any(Function));
+        // popup should enter idle state when no saved state and no cached locations
+        expect(popupState.currentState).toBe(AppState.IDLE);
     });
-    test('restores from saved state and asks background to start listening', async () => {
+    test('restores from saved state and starts polling', async () => {
         // reset for fresh module import
         Object.defineProperty(document, 'readyState', { value: 'loading', configurable: true });
         jest.resetModules();
@@ -72,15 +72,15 @@ describe('popup initializeApp restore/attach', () => {
         // Return a plain string for currentState to avoid needing AppState before import
         global.window.loadState = async () => ({ videoId: 'video-2', jobId: 'saved-job', currentState: 'analyzing', progress: 42, phase: 'geocode' });
         global.window.saveState = async () => { return; };
-        const sendMessage = makeMockChrome(null);
+        // no need to mock chrome messaging; popup should call startPolling
         const popup = await import('../popup');
-        const { initializeApp, state: popupState, queryElements } = popup;
+        const { initializeApp, queryElements } = popup;
         if (typeof queryElements === 'function')
             queryElements();
         await initializeApp();
-        // popup should be in analyzing state and should have requested background to start listening
-        expect(popupState.currentState).toBe('analyzing');
-        expect(popupState.progress).toBe(42);
-        expect(sendMessage).toHaveBeenCalledWith(expect.objectContaining({ type: 'startListeningEvents', jobId: expect.anything() }), expect.any(Function));
+        // popup should be in analyzing state and should have started polling (jobId set)
+        expect(popup.state.currentState).toBe('analyzing');
+        expect(popup.state.progress).toBe(42);
+        expect(popup.state.jobId).toBe('saved-job');
     });
 });

@@ -59,6 +59,13 @@ async def event_generator(job_id: str):
     cache = CacheManager()  # 每次請求獨立快取實例
     last_phase = None  # 記錄上次推送的階段
     last_progress = None  # 記錄上次推送的進度
+    # 心跳間隔（秒），可由環境變數覆寫以配合 proxy/ingress 的 idle timeout
+    try:
+        HEARTBEAT_SEC = int(
+            __import__("os").environ.get("TRAILTAG_SSE_HEARTBEAT_SEC", "1")
+        )
+    except Exception:
+        HEARTBEAT_SEC = 1
     try:
         while True:
             job = cache.get(f"job:{job_id}")
@@ -99,15 +106,22 @@ async def event_generator(job_id: str):
                     "id": job_id,
                 }
                 break
-            # 定期推送心跳事件，避免前端斷線
+            # 定期推送心跳事件，避免前端或 proxy 認定為 idle 而斷線
             yield {
                 "event": EventType.HEARTBEAT,
                 "data": json.dumps({"timestamp": time.time(), "status": status}),
                 "id": job_id,
             }
-            await asyncio.sleep(2)
+            # 使用較短的心跳間隔（可由環境變數調整）
+            await asyncio.sleep(HEARTBEAT_SEC)
     except Exception as e:
         # 例外狀況推送 error 事件
+        # 偵測 client 端取消（例如瀏覽器關閉或 ingress 關閉連線）時，部分實作會以 CancelledError/GeneratorExit 抛出
+        if isinstance(e, (asyncio.CancelledError, GeneratorExit)):
+            logger.info(
+                {"event": "sse_client_disconnected", "job_id": job_id, "error": str(e)}
+            )
+            return
         logger.error({"event": "sse_error", "job_id": job_id, "error": str(e)})
         yield {
             "event": EventType.ERROR,

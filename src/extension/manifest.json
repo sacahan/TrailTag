@@ -24,10 +24,7 @@
   "host_permissions": [
     "https://www.youtube.com/*"
   ],
-  "background": {
-    "service_worker": "service_worker.js",
-    "type": "module"
-  },
+
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   }

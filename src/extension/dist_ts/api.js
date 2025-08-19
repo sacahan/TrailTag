@@ -127,6 +127,27 @@ export async function getJobStatus(jobId) {
     }
 }
 /**
+ * 以 videoId 查詢對應的 job 簡要狀態（如果沒有對應 job，API 會回傳 404）
+ *
+ * 輸入：videoId
+ * 回傳：若存在則回傳 JSON（含 job_id / status / phase / progress / stats / error），若不存在回傳 null
+ */
+export async function getJobByVideo(videoId) {
+    try {
+        const response = await fetchWithRetry(`${API_BASE_URL}/api/videos/${videoId}/job`, { method: 'GET' }, 2, 500);
+        if (response.status === 404)
+            return null;
+        if (!response.ok)
+            throw new Error(`API error: ${response.status} ${response.statusText}`);
+        return await response.json();
+    }
+    catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Get job by video error:', error);
+        throw error;
+    }
+}
+/**
  * 取得影片的地點標註列表（如果不存在回傳 null）
  *
  * 輸入：videoId

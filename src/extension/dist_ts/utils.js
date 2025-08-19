@@ -139,15 +139,15 @@ export function formatTimecode(timecode) {
 export function createTimecodeUrl(videoId, timecode) {
     if (!videoId || !timecode)
         return '';
-    const parts = timecode.split(':');
+    const parts = timecode.split(',')[0].split(':');
     let seconds = 0;
-    if (parts.length === 4) {
+    if (parts.length === 3) {
         seconds = parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseInt(parts[2]);
     }
-    else if (parts.length === 3) {
+    else if (parts.length === 2) {
         seconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
     }
-    else if (parts.length === 2) {
+    else if (parts.length === 1) {
         seconds = parseInt(parts[0]);
     }
     return 'https://www.youtube.com/watch?v=' + videoId + '&t=' + seconds + 's';
@@ -178,21 +178,12 @@ export function saveState(state) {
                     chrome.storage.local.set({ trailtag_state_v1: payload }, () => resolve());
                 }
                 catch (e) {
-                    // fallback to localStorage
-                    try {
-                        localStorage.setItem('trailtag_state_v1', JSON.stringify(payload));
-                    }
-                    catch { }
-                    ;
+                    // ignore failures when chrome.storage is not usable
                     resolve();
                 }
             });
         }
-        // fallback to localStorage
-        try {
-            localStorage.setItem('trailtag_state_v1', JSON.stringify(payload));
-        }
-        catch (e) { }
+        // if chrome.storage.local is not available, noop (no persistent fallback)
     }
     catch (e) { }
     return Promise.resolve();
@@ -209,7 +200,7 @@ export function loadState() {
                         const val = res && res.trailtag_state_v1 ? res.trailtag_state_v1 : null;
                         if (!val)
                             return resolve(null);
-                        const ttl = (typeof TRAILTAG_CONFIG !== 'undefined' && TRAILTAG_CONFIG.STATE_TTL_MS) ? TRAILTAG_CONFIG.STATE_TTL_MS : 24 * 60 * 60 * 1000;
+                        const ttl = (typeof TRAILTAG_CONFIG !== 'undefined' && TRAILTAG_CONFIG.STATE_TTL_MS != null) ? TRAILTAG_CONFIG.STATE_TTL_MS : 30 * 60 * 1000;
                         if (val.timestamp && Date.now() - val.timestamp > ttl)
                             return resolve(null);
                         return resolve(val);
@@ -217,24 +208,13 @@ export function loadState() {
                     return;
                 }
                 catch (e) {
-                    // fall through to localStorage
+                    // if chrome.storage get throws, treat as unavailable
                 }
             }
         }
         catch (e) { }
-        try {
-            const raw = localStorage.getItem('trailtag_state_v1');
-            if (!raw)
-                return resolve(null);
-            const val = JSON.parse(raw);
-            const ttl = (typeof TRAILTAG_CONFIG !== 'undefined' && TRAILTAG_CONFIG.STATE_TTL_MS) ? TRAILTAG_CONFIG.STATE_TTL_MS : 24 * 60 * 60 * 1000;
-            if (val.timestamp && Date.now() - val.timestamp > ttl)
-                return resolve(null);
-            return resolve(val);
-        }
-        catch (e) {
-            return resolve(null);
-        }
+        // chrome.storage.local not available or failed => no persisted state
+        return resolve(null);
     });
 }
 // attach to global for legacy usage

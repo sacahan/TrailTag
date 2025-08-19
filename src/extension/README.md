@@ -1,20 +1,3 @@
----
-post_title: "TrailTag Browser Extension (src/extension)"
-author1: "sacahan"
-post_slug: "trailtag-extension"
-microsoft_alias: "sacahan"
-featured_image: "assets/icon_128x128.png"
-categories:
-   - Extensions
-tags:
-   - chrome-extension
-   - typescript
-   - build
-ai_note: "Updated with AI assistance"
-summary: "說明如何開發、測試與打包 TrailTag Chrome extension，包含範例指令與注意事項。"
-post_date: "2025-08-16"
----
-
 # TrailTag Browser Extension (src/extension)
 
 ## 簡介
@@ -26,7 +9,6 @@ post_date: "2025-08-16"
 - `popup.html` / `popup.js`：擴充功能彈出視窗介面與行為。
 - `map.js`：處理地圖相關的邏輯（整合地圖庫並顯示路線與標記）。
 - `api.js`：與後端 API 的互動函式封裝，例如提交分析請求、查詢 job 與取得 locations。
-- `service_worker.js`：背景執行邏輯。
 - `styles.css`：樣式表。
 - `assets/`：圖示與資源。
 - `__tests__/`：Jest 測試檔案與測試工具。
@@ -76,6 +58,8 @@ post_date: "2025-08-16"
 - 使用 manifest v3，請確認 Chrome 瀏覽器版本支援。
 - 若要在不同作業系統上保持相容，建議改用 Node.js 腳本或安裝跨平台套件來處理複製與壓縮流程。
 - 上傳至 Chrome Web Store 或以開發者模式載入時，請使用 `dist/extension` 或 `dist/extension.zip`。
+
+Note: The project was refactored to move event handling into the popup (polling) and the service worker was removed; any references to `service_worker.js` have been deprecated.
 
 ## 授權
 

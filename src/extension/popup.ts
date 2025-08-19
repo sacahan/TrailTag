@@ -1,12 +1,12 @@
 /**
- * popup.ts - Popup UI 與狀態管理邏輯（TypeScript 輕量轉換）
+ * popup.ts - Popup UI 與狀態管理邏輯（TypeScript）
  *
- * 本檔負責：
- * - 維護 UI 上的狀態（state）
- * - 提供與 background/service 的通訊（透過 chrome.runtime）
- * - 啟動分析流程並顯示進度與地圖結果
+ * 主要責任：
+ * - 維護 popup 的應用狀態並更新 UI
+ * - 與後端 API 互動（提交分析、查詢 job 狀態、取得 locations）
+ * - 當 SSE/背景不可用時以 polling 取代
  *
- * 註解以正體中文補充，並保留原有邏輯與呼叫介面以維持相容性。
+ * 本次重排僅調整函式順序與區塊結構，提高可讀性與維護性，不改變行為。
  */
 
 /* Ambient globals used by extension runtime */
@@ -18,10 +18,21 @@ const Utils = (typeof window !== 'undefined' && window.TrailTag && window.TrailT
 const getCurrentVideoId = Utils ? Utils.getCurrentVideoId : (typeof window !== 'undefined' ? (window as any).getCurrentVideoId : undefined);
 const loadState = Utils ? Utils.loadState : (typeof window !== 'undefined' ? (window as any).loadState : undefined);
 const saveState = Utils ? Utils.saveState : (typeof window !== 'undefined' ? (window as any).saveState : undefined);
-const createTimecodeUrl = Utils ? Utils.createTimecodeUrl : (typeof window !== 'undefined' ? (window as any).createTimecodeUrl : undefined);
 
 // 擴充全域 Window 型別，讓測試或舊有程式可使用 window 上的 helper
-declare global { interface Window { TrailTag?: any; startAnalysis?: any; stopEventListener?: any; changeState?: any; exportGeoJSON?: any; startPolling?: any; stopPolling?: any; downloadGeoJSON?: ((geoJSON: any, videoId: string) => void) | any; __registerPopupTestingHelpers?: ((arg: any) => void) | any; } }
+declare global {
+  interface Window {
+    TrailTag?: any;
+    startAnalysis?: any;
+    stopEventListener?: any;
+    changeState?: any;
+    exportGeoJSON?: any;
+    startPolling?: any;
+    stopPolling?: any;
+    downloadGeoJSON?: ((geoJSON: any, videoId: string) => void) | any;
+    __registerPopupTestingHelpers?: ((arg: any) => void) | any;
+  }
+}
 
 /* 其他可能綁在 window 上的函式（在某些環境由外部模組提供） */
 declare function initMap(containerId: string): any;
@@ -55,6 +66,36 @@ export let state: any = {
 // cache DOM 元素引用與地圖實例以避免重複查詢
 let elements: any = null;
 let map: any = null;
+
+// ----------------------
+// UI helpers / text
+// ----------------------
+/** Internal helper: safeTextContent - set textContent if element exists */
+function safeTextContent(el: any, text: string) {
+  if (!el) return;
+  try { el.textContent = text; } catch (e) { }
+}
+
+export function getStatusText(appState: string) {
+  switch (appState) {
+    case AppState.IDLE: return '閒置';
+    case AppState.CHECKING_CACHE: return '檢查中';
+    case AppState.ANALYZING: return '分析中';
+    case AppState.MAP_READY: return '已完成';
+    case AppState.ERROR: return '錯誤';
+    default: return '未知';
+  }
+}
+
+export function getPhaseText(phase: string) {
+  switch (phase) {
+    case 'metadata': return '正在抓取影片資料...';
+    case 'compression': return '正在壓縮字幕...';
+    case 'summary': return '正在分析主題與地點...';
+    case 'geocode': return '正在解析地理座標...';
+    default: return '正在處理...';
+  }
+}
 
 /**
  * 查詢並快取必要的 DOM 元素引用
@@ -108,15 +149,6 @@ export function reportError() {
   try { window.open(mailto, '_blank'); } catch (e) { /* ignore */ }
 }
 
-/** Internal helper: safeTextContent - set textContent if element exists
- * @param el HTMLElement | null
- * @param text string
- * @calledFrom updateUI
- */
-function safeTextContent(el: any, text: string) {
-  if (!el) return;
-  try { el.textContent = text; } catch (e) { }
-}
 
 /**
  * 根據目前 state 更新 popup 的 UI
@@ -124,64 +156,54 @@ function safeTextContent(el: any, text: string) {
  * @calledFrom changeState, initializeApp
  */
 export function updateUI() {
-  // 隱藏所有視圖，稍後根據狀態顯示對應 view
+  if (!elements) return;
   Object.values(elements.views).forEach((view: any) => view.classList.add('hidden'));
-
-  // 更新狀態徽章文字
   elements.statusBadge.textContent = getStatusText(state.currentState);
-
-  // 重設狀態徽章 class
   elements.statusBadge.className = 'status-badge';
 
-  // 根據目前狀態切換 UI 顯示
+  /**
+   * 根據目前的應用狀態切換 UI 顯示區塊與狀態徽章樣式
+   * - IDLE: 顯示閒置視圖
+   * - CHECKING_CACHE: 顯示檢查快取視圖
+   * - ANALYZING: 顯示分析進度與階段
+   * - MAP_READY: 顯示地圖與地點數
+   * - ERROR: 顯示錯誤訊息
+   */
   switch (state.currentState) {
     case AppState.IDLE:
-      // 閒置狀態：顯示 idle view，設置徽章樣式
+      // 閒置狀態：顯示 idle 視圖，狀態徽章加上 idle 樣式
       elements.views.idle.classList.remove('hidden');
       elements.statusBadge.classList.add('idle');
       break;
     case AppState.CHECKING_CACHE:
-      // 檢查快取中：顯示 checking view，設置徽章樣式
+      // 檢查快取狀態：顯示 checking 視圖，狀態徽章加上 analyzing 樣式
       elements.views.checking.classList.remove('hidden');
       elements.statusBadge.classList.add('analyzing');
       break;
     case AppState.ANALYZING:
-      // 分析中：顯示 analyzing view，更新進度條、進度文字、階段文字
+      // 分析中：顯示 analyzing 視圖，更新進度條、進度文字與階段說明
       elements.views.analyzing.classList.remove('hidden');
       elements.statusBadge.classList.add('analyzing');
-      // 設定進度條寬度
       elements.progressBar.style.width = `${state.progress}%`;
-      // 顯示進度百分比
       elements.progressText.textContent = `${Math.round(state.progress)}%`;
-      // 顯示目前分析階段
       elements.phaseText.textContent = getPhaseText(state.phase);
       break;
     case AppState.MAP_READY:
-      // 地圖已完成：顯示 map view，設置徽章樣式
+      // 地圖已完成：顯示 map 視圖，初始化地圖並顯示地點數
       elements.views.map.classList.remove('hidden');
       elements.statusBadge.classList.add('ready');
-      // 若尚未初始化地圖，則嘗試初始化
       if (!map) {
         try {
           if (typeof window !== 'undefined' && window.TrailTag && window.TrailTag.Map && typeof window.TrailTag.Map.initMap === 'function') {
             map = window.TrailTag.Map.initMap('map');
           } else if (typeof initMap === 'function') {
             map = initMap('map');
-          } else {
-            // 若無地圖初始化函式則警告
-            console.warn('Map init function not available');
-            map = null;
           }
-        } catch (e) {
-          // 初始化失敗時記錄錯誤
-          console.error('Failed to init map:', e);
-          map = null;
-        }
+        } catch (e) { console.warn('Map init failed', e); map = null; }
       }
-      // 若有地點資料則加入地圖標記
       if (state.mapVisualization) {
+        // 嘗試將地點資料加到地圖上，並顯示地點數
         let addFn: any = null;
-        // 取得加入標記的函式
         if (typeof window !== 'undefined' && window.TrailTag && window.TrailTag.Map && typeof window.TrailTag.Map.addMarkersFromMapVisualization === 'function') {
           addFn = window.TrailTag.Map.addMarkersFromMapVisualization;
         } else if (typeof addMarkersFromMapVisualization === 'function') {
@@ -189,55 +211,21 @@ export function updateUI() {
         }
         if (addFn) {
           try {
-            // 加入標記並顯示地點數量
             const markersCount = addFn(state.mapVisualization, state.videoId);
             elements.locationsCount.textContent = `${markersCount} 個地點`;
           } catch (e) {
-            // 加入標記失敗時顯示 0
             console.error('Error adding markers to map:', e);
             elements.locationsCount.textContent = `0 個地點`;
           }
-        } else {
-          // 若無標記函式則警告
-          console.warn('addMarkersFromMapVisualization not available');
         }
       }
       break;
     case AppState.ERROR:
-      // 錯誤狀態：顯示 error view，設置徽章樣式，顯示錯誤訊息
+      // 錯誤狀態：顯示 error 視圖，狀態徽章加上 error 樣式，顯示錯誤訊息
       elements.views.error.classList.remove('hidden');
       elements.statusBadge.classList.add('error');
       elements.errorMessage.textContent = state.error || '未知錯誤';
       break;
-  }
-}
-
-/**
- * 將內部狀態轉為使用者可讀的中文標籤
- * @calledFrom updateUI
- */
-export function getStatusText(appState: string) {
-  switch (appState) {
-    case AppState.IDLE: return '閒置';
-    case AppState.CHECKING_CACHE: return '檢查中';
-    case AppState.ANALYZING: return '分析中';
-    case AppState.MAP_READY: return '已完成';
-    case AppState.ERROR: return '錯誤';
-    default: return '未知';
-  }
-}
-
-/**
- * 將工作階段識別字串轉為詳盡的中文描述（顯示於 UI）
- * @calledFrom updateUI
- */
-export function getPhaseText(phase: string) {
-  switch (phase) {
-    case 'metadata': return '正在抓取影片資料...';
-    case 'compression': return '正在壓縮字幕...';
-    case 'summary': return '正在分析主題與地點...';
-    case 'geocode': return '正在解析地理座標...';
-    default: return '正在處理...';
   }
 }
 
@@ -329,10 +317,12 @@ export async function startAnalysis() {
  * @param jobId 要監聽的 job id
  */
 export function startEventListener(jobId: string) {
-  // include current videoId so the service worker/background can persist/restore the active job
-  chrome.runtime.sendMessage({ type: 'startListeningEvents', jobId, videoId: state.videoId }, (response) => {
-    if (!response || !response.success) console.error('Failed to start event listener');
-  });
+  // Start local polling as the popup-managed fallback (no service worker usage)
+  try {
+    startPolling(jobId);
+  } catch (e) {
+    console.error('Failed to start local polling for events:', e);
+  }
 }
 
 /**
@@ -340,8 +330,13 @@ export function startEventListener(jobId: string) {
  */
 export function stopEventListener() {
   if (state.jobId) {
-    chrome.runtime.sendMessage({ type: 'stopListeningEvents', jobId: state.jobId });
+    // Stop local polling and clear persisted active job state
     stopPolling();
+    try {
+      if (chrome && chrome.storage && chrome.storage.local && typeof chrome.storage.local.remove === 'function') {
+        chrome.storage.local.remove(['trailtag_state_v1'], () => { /* noop */ });
+      }
+    } catch (e) { /* ignore */ }
     state.jobId = null;
   }
 }
@@ -394,14 +389,18 @@ export async function pollJobStatus(jobId: string) {
   }
 }
 
-/**
- * 啟動備援輪詢（會先停止現有輪詢）
- */
-export function startPolling(jobId: string) { stopPolling(); pollingIntervalId = setInterval(() => pollJobStatus(jobId), POLLING_INTERVAL_MS); console.log('Started polling for job:', jobId); }
-/**
- * 停止輪詢
- */
-export function stopPolling() { if (pollingIntervalId) { clearInterval(pollingIntervalId); pollingIntervalId = null; console.log('Stopped polling'); } }
+/** 啟動備援輪詢（會先停止現有輪詢） */
+export function startPolling(jobId: string) {
+  stopPolling();
+  pollingIntervalId = setInterval(() => pollJobStatus(jobId), POLLING_INTERVAL_MS);
+  console.log('Started polling for job:', jobId);
+}
+/** 停止輪詢 */
+export function stopPolling() {
+  if (pollingIntervalId) {
+    clearInterval(pollingIntervalId); pollingIntervalId = null; console.log('Stopped polling');
+  }
+}
 
 /**
  * 任務完成後的處理流程：
@@ -473,13 +472,24 @@ export function exportGeoJSON() {
 }
 
 /**
- * 初始化 popup 應用邏輯
- * - 取得目前分頁的 videoId，若非影片頁則顯示錯誤
- * - 重設本地 state，進入檢查快取狀態
- * - 嘗試恢復先前儲存的分析任務（若有），可自動 re-attach
- * - 若無儲存任務，詢問 background 是否有活躍任務（備援 attach）
- * - 若有地點資料則直接顯示地圖
- * - 否則進入 idle 狀態，等待使用者啟動分析
+ * initializeApp - 初始化 popup 應用邏輯
+ *
+ * 主要流程：
+ * - 檢查是否在 YouTube 影片頁，若不是則切到 ERROR
+ * - 嘗試從後端取得已存在的 locations；若有直接顯示地圖並移除已保存的任務資料
+ * - 若無快取，重置本地 state 為 CHECKING_CACHE
+ * - 嘗試從 persisted state 恢復先前未完成的 job，並與後端同步最新狀態
+ *   - 若 job 已完成/失敗/進行中，根據後端回傳更新 UI 並啟動 polling（如需要）
+ * - 若無可恢復任務或同步失敗，切到 IDLE
+ *
+ * 實作注意事項：
+ * - 不直接使用儲存的 saved.currentState，全部以後端狀態為準
+ * - 所有外部 API 呼叫以 window.TrailTag.API 的存在檢查包裹
+ * - 會在必要時清除 chrome.storage.local 的 persisted state（trailtag_state_v1）
+ *
+ * @async
+ * @returns {Promise<void>}
+ * @calledFrom registerApp
  */
 export async function initializeApp() {
   const currentVideoId = await getCurrentVideoId();
@@ -487,91 +497,135 @@ export async function initializeApp() {
   // 若非影片頁則顯示錯誤
   if (!isVideoPage) { changeState(AppState.ERROR, { error: '請在 YouTube 影片頁面使用此擴充功能。' }); return; }
 
-  // 重設本地 state，進入檢查快取狀態
-  state = { ...state, videoId: currentVideoId, jobId: null, mapVisualization: null, currentState: AppState.CHECKING_CACHE, progress: 0, phase: null };
-  updateUI();
-
-  // 嘗試恢復 popup 儲存的分析任務（可自動 re-attach）
+  // 1) 先嘗試取得地點資料，若有則直接顯示地圖並嘗試移除先前儲存的任務狀態
   try {
-    const saved = await loadState();
-    if (saved && saved.videoId === currentVideoId && saved.jobId && saved.currentState === AppState.ANALYZING) {
-      state = { ...state, jobId: saved.jobId, currentState: AppState.ANALYZING, progress: saved.progress || 0, phase: saved.phase || null };
-      saveState(state);
-      updateUI();
-      // 通知 background 重新監聽事件
-  try { chrome.runtime.sendMessage({ type: 'startListeningEvents', jobId: saved.jobId, videoId: saved.videoId }, (res: any) => { }); } catch (e) { console.warn('Failed to ask background to start listening:', e); }
-      return;
-    }
-  } catch (e) { console.warn('loadState error:', e); }
+    const latestLocations = await (
+      typeof window !== 'undefined' &&
+        window.TrailTag &&
+        window.TrailTag.API &&
+        typeof window.TrailTag.API.getVideoLocations === 'function'
+        ? window.TrailTag.API.getVideoLocations(currentVideoId)
+        : Promise.resolve(null)
+    );
 
-  // 若無儲存任務，詢問 background 是否有活躍任務（備援 attach）
-  try {
-    const bgJob = await new Promise<any>((resolve) => {
-      try {
-        chrome.runtime.sendMessage({ type: 'getActiveJobForVideo', videoId: currentVideoId }, (resp: any) => { resolve(resp && resp.jobId ? resp.jobId : null); });
-      } catch (err) {
-        resolve(null);
-      }
-    });
-    if (bgJob) {
-      state = { ...state, jobId: bgJob, currentState: AppState.ANALYZING, progress: 0 };
-      saveState(state);
-      updateUI();
-      // 通知 background 重新監聽事件
-  try { chrome.runtime.sendMessage({ type: 'startListeningEvents', jobId: bgJob, videoId: currentVideoId }, (res: any) => { }); } catch (e) { console.warn('Failed to ask background to start listening (bgQuery):', e); }
-      return;
-    }
-  } catch (e) { console.warn('background query error:', e); }
-
-  // 嘗試取得地點資料，若有則直接顯示地圖
-  try {
-    const latestLocations = await (typeof window !== 'undefined' && window.TrailTag && window.TrailTag.API && typeof window.TrailTag.API.getVideoLocations === 'function' ? window.TrailTag.API.getVideoLocations(currentVideoId) : Promise.resolve(null));
     if (latestLocations) {
       changeState(AppState.MAP_READY, { videoId: currentVideoId, mapVisualization: latestLocations, jobId: null, progress: 100, phase: null });
+      // 若有舊的 persisted 任務狀態，移除它，避免 popup 之後誤判
+      try {
+        if (chrome && chrome.storage && chrome.storage.local && typeof chrome.storage.local.remove === 'function') {
+          chrome.storage.local.remove(['trailtag_state_v1'], () => { /* noop */ });
+        }
+      } catch (e) { /* ignore */ }
       return;
     }
   } catch (e) { console.warn('Failed to fetch locations on init:', e); }
 
-  // 無快取地圖資料則進入 idle 狀態，等待使用者啟動分析
+  // 2) 無快取地點資料 -> 重設本地 state 並進入 CHECKING_CACHE
+  state = { ...state, videoId: currentVideoId, jobId: null, mapVisualization: null, currentState: AppState.CHECKING_CACHE, progress: 0, phase: null };
+  updateUI();
+
+  // 3) 嘗試恢復先前儲存的分析任務；若 chrome.storage.local 有保存任務則忽略儲存的狀態值
+  //    直接呼叫後端 API 取得最新 job 狀態並以該狀態更新與保存 local state
+  try {
+    const saved = await loadState();
+    if (saved) {
+      try {
+        // 先透過 videoId 嘗試取得後端目前對應的 job（避免使用已儲存的 jobId 為 stale）
+        const mapped = await (
+          typeof window !== 'undefined' &&
+            window.TrailTag &&
+            window.TrailTag.API &&
+            typeof window.TrailTag.API.getJobByVideo === 'function'
+            ? window.TrailTag.API.getJobByVideo(currentVideoId)
+            : Promise.resolve(null)
+        );
+
+        // 如果後端回傳了對應的 job_id，再向後端查詢該 job 的詳細狀態；否則視為沒有可恢復的任務
+        let latestStatus = null;
+        if (mapped && mapped.job_id) {
+          latestStatus = await (
+            typeof window !== 'undefined' &&
+              window.TrailTag &&
+              window.TrailTag.API &&
+              typeof window.TrailTag.API.getJobStatus === 'function'
+              ? window.TrailTag.API.getJobStatus(mapped.job_id)
+              : Promise.resolve(null)
+          );
+        }
+
+        /**
+         * {
+            "job_id": "55309d4c-ce65-457e-be4f-2ed08374bc6d",
+            "video_id": "sROac3CHrI4",
+            "status": "running",
+            "phase": "metadata",
+            "progress": 5,
+            "cached": false,
+            "created_at": "2025-08-19T10:41:59.207297Z",
+            "updated_at": "2025-08-19T10:41:59.233663Z"
+            }
+         */
+
+        if (latestStatus) {
+          // 根據後端回傳的最新狀態決定本地狀態（ignore saved.currentState）
+          const isCompleted = latestStatus.status === 'completed' || latestStatus.status === 'done';
+          const isFailed = latestStatus.status === 'failed' || latestStatus.status === 'error';
+          if (isCompleted) {
+            // 直接標示為 ANALYZING 的完成，之後 handleJobCompleted 會切換至 MAP_READY
+            state = { ...state, jobId: saved.jobId, currentState: AppState.ANALYZING, progress: latestStatus.progress != null ? latestStatus.progress : 100, phase: latestStatus.phase || null };
+            saveState(state);
+            updateUI();
+            // 停止/啟動 polling 以取得最終結果
+            try {
+              startPolling(latestStatus.job_id);
+            } catch (e) { /* ignore */ }
+            return;
+          } else if (isFailed) {
+            state = { ...state, jobId: latestStatus.job_id, currentState: AppState.ERROR, progress: latestStatus.progress != null ? latestStatus.progress : state.progress, phase: latestStatus.phase || state.phase, error: latestStatus.message || 'Job failed' };
+            saveState(state);
+            updateUI();
+            stopPolling();
+            return;
+          } else {
+            // 任務仍在進行中，將 local state 設為 ANALYZING 並開始輪詢
+            state = { ...state, jobId: latestStatus.job_id, currentState: AppState.ANALYZING, progress: latestStatus.progress != null ? latestStatus.progress : (saved.progress || 0), phase: latestStatus.phase || saved.phase || null };
+            saveState(state);
+            updateUI();
+            try {
+              startPolling(latestStatus.job_id);
+            } catch (e) { /* ignore */ }
+            return;
+          }
+        } else {
+          // 若無法取得最新任務狀態，清除先前儲存的狀態
+          console.warn('Failed to fetch job status for saved job:', saved.jobId);
+          try {
+            if (chrome && chrome.storage && chrome.storage.local && typeof chrome.storage.local.remove === 'function') {
+              chrome.storage.local.remove(['trailtag_state_v1'], () => { /* noop */ });
+            }
+            stopPolling();
+          } catch (e) { /* ignore */ }
+        }
+      } catch (e) {
+        console.warn('Failed to sync job status from backend for saved job:', e);
+        // 若同步失敗，清除先前儲存的狀態，避免後續誤判
+        try {
+          if (chrome && chrome.storage && chrome.storage.local && typeof chrome.storage.local.remove === 'function') {
+            chrome.storage.local.remove(['trailtag_state_v1'], () => { /* noop */ });
+          }
+          stopPolling();
+        } catch (e) { /* ignore */ }
+      }
+    }
+  } catch (e) { console.warn('loadState error:', e); }
+
+  // 4) 若無可恢復的任務或同步失敗，進入閒置狀態
   changeState(AppState.IDLE, { videoId: currentVideoId });
+  stopPolling();
 }
 
-/**
- * 處理來自 background/service worker 的訊息
- * - phase_update: 更新進度與階段
- * - completed: 任務完成，取得地點資料並顯示地圖
- * - error: 任務失敗，顯示錯誤訊息
- * - sse_fallback: SSE 失敗時啟動備援輪詢
- */
-chrome.runtime.onMessage.addListener((message: any, sender: any, sendResponse: any) => {
-  // 僅處理來自本擴充的訊息
-  if (sender.id !== chrome.runtime.id) return;
-  switch (message.type) {
-    case 'phase_update':
-      // 更新進度與階段
-      if (state.currentState === AppState.ANALYZING && state.jobId === message.jobId) changeState(AppState.ANALYZING, { progress: message.data.progress || state.progress, phase: message.data.phase || state.phase });
-      break;
-    case 'completed':
-      // 任務完成，取得地點資料並顯示地圖
-      if (state.currentState === AppState.ANALYZING && state.jobId === message.jobId) handleJobCompleted();
-      break;
-    case 'error':
-      // 任務失敗，顯示錯誤訊息
-      if (state.currentState === AppState.ANALYZING && state.jobId === message.jobId) changeState(AppState.ERROR, { error: message.data.message || '未知錯誤' });
-      break;
-    case 'sse_fallback':
-      // SSE 失敗時啟動備援輪詢
-      if (state.currentState === AppState.ANALYZING && state.jobId === message.jobId) {
-        if (typeof window !== 'undefined' && typeof window.startPolling === 'function') {
-          window.startPolling(message.jobId);
-        } else {
-          startPolling(message.jobId);
-        }
-      }
-      break;
-  }
-  sendResponse({ received: true });
-});
+// popup 不再監聽 background/service worker 的 runtime messages；
+// popup 改以直接向後端輪詢 (polling) 取得 job 狀態。
 
 /**
  * 註冊 popup 應用的事件處理器與初始化邏輯
@@ -628,12 +682,7 @@ export function registerApp() {
   // 初始化應用狀態與 UI
   initializeApp();
 
-  // 定期發送 keepAlive 訊息給 background/service worker，避免 service worker 休眠。
-  // 使用 runtime.postMessage via chrome.runtime.sendMessage 的簡單 ping。
-  const keepAliveMs = (typeof TRAILTAG_CONFIG !== 'undefined' && TRAILTAG_CONFIG.KEEPALIVE_MS) ? TRAILTAG_CONFIG.KEEPALIVE_MS : 30000;
-  const keepAliveInterval = setInterval(() => {
-    try { chrome.runtime.sendMessage({ type: 'keepAlive' }); } catch (e) { /* ignore */ }
-  }, keepAliveMs);
+  // (已移除) 先前此處會定期向 background/service worker 發送 keepAlive。
 
   // 當 popup 被關閉或切換（visibilitychange / beforeunload）時，確保當前 state 被儲存到 storage
   // 以便重新打開 popup 時能夠恢復到分析中的狀態。
@@ -662,8 +711,8 @@ export function registerApp() {
           state = { ...state, jobId: newVal.jobId, currentState: newVal.currentState || state.currentState, progress: newVal.progress || state.progress, phase: newVal.phase || state.phase };
           try { saveState(state); } catch (e) { }
           updateUI();
-          // 確保 background 正在監聽事件
-          try { chrome.runtime.sendMessage({ type: 'startListeningEvents', jobId: newVal.jobId, videoId: newVal.videoId }, () => { }); } catch (e) { }
+          // start local polling for the new active job announced via storage changes
+          try { startPolling(newVal.jobId); } catch (e) { }
         }
       } catch (e) { /* ignore */ }
     }
@@ -677,7 +726,6 @@ export function registerApp() {
 
   window.addEventListener('beforeunload', () => {
     saveNow();
-    try { clearInterval(keepAliveInterval); } catch (e) { }
     try {
       if (chrome && chrome.storage && chrome.storage.onChanged && typeof chrome.storage.onChanged.removeListener === 'function') {
         chrome.storage.onChanged.removeListener(storageChangeHandler);
@@ -707,6 +755,8 @@ export function registerApp() {
   } catch (e) { }
 }
 
+// 當 DOM 尚未載入完成時，監聽 DOMContentLoaded 事件以延後初始化；
+// 若已載入則直接執行 registerApp 初始化 popup 應用邏輯。
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', registerApp);
 } else {

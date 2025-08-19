@@ -8,7 +8,7 @@ token_count_tool.py
 import tiktoken
 
 
-def count_tokens(text: str, model: str = "gpt-4o-mini") -> int:
+def count_tokens(text: str, model: str = "gpt-3.5-turbo") -> int:
     """
     計算輸入字串經指定 LLM 模型 tokenizer 處理後的 token 數量。
     :param text: 輸入字串
@@ -17,8 +17,7 @@ def count_tokens(text: str, model: str = "gpt-4o-mini") -> int:
     """
     encoding = tiktoken.encoding_for_model(model)
     tokens = encoding.encode(text)
-    # 增加 k 為單位
-    return f"{len(tokens)} ({len(tokens) // 1000} K)"
+    return len(tokens)
 
 
 if __name__ == "__main__":

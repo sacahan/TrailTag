@@ -1,0 +1,34 @@
+services:
+  redis:
+    container_name: trailtag-redis
+    image: redis:7-alpine
+    command: ["sh", "-c", "redis-server --requirepass \"\""]
+    restart: always
+    networks:
+      - trailtag-network
+
+  backend:
+    container_name: trailtag-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["sh", "-c", "uvicorn src.api.main:app --host 0.0.0.0 --port 8010"]
+    ports:
+      - "8010:8010"
+    environment:
+      OPENAI_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_DB: "1"
+      REDIS_EXPIRY_DAYS: "7"
+      REDIS_PASSWORD: ""
+    depends_on:
+      - redis
+    restart: always
+    networks:
+      - trailtag-network
+
+networks:
+  trailtag-network:
+    driver: bridge

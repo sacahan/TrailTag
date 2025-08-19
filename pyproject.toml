@@ -21,6 +21,7 @@ dependencies = [
     "aioredis>=2.0.1",
     "loguru>=0.7.2",
     "colorlog>=6.9.0",
+    "openai>=1.95.1",
 ]
 
 [project.scripts]

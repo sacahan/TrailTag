@@ -13,6 +13,7 @@ import re
 from src.api.models import (
     AnalyzeRequest,
     JobResponse,
+    JobStatusResponse,
     JobStatus,
     Phase,
     MapVisualization,
@@ -120,6 +121,11 @@ def run_trailtag_job(job_id, video_id):
                     f"analysis:{video_id}",
                     output.model_dump() if hasattr(output, "model_dump") else output,
                 )
+            # 任務完成，移除 video->job 映射以避免 stale state
+            try:
+                cache.delete(f"video_job:{video_id}")
+            except Exception:
+                logger.debug({"event": "video_job_delete_failed", "video_id": video_id})
         except Exception as e:
             # crewai 執行失敗，記錄錯誤並更新 job 狀態
             logger.error({"event": "job_failed", "job_id": job_id, "error": str(e)})
@@ -129,9 +135,18 @@ def run_trailtag_job(job_id, video_id):
                 status=JobStatus.FAILED,
                 extra={"error": {"type": "exception", "message": str(e)}},
             )
+            # 任務失敗時也清除 video->job 映射
+            try:
+                cache.delete(f"video_job:{video_id}")
+            except Exception:
+                logger.debug({"event": "video_job_delete_failed", "video_id": video_id})
     except Exception as e:
         # 背景任務本身致命錯誤
         logger.error({"event": "job_fatal", "job_id": job_id, "error": str(e)})
+        try:
+            cache.delete(f"video_job:{video_id}")
+        except Exception:
+            logger.debug({"event": "video_job_delete_failed", "video_id": video_id})
 
 
 @router.post(
@@ -173,6 +188,18 @@ async def analyze_video(
             "updated_at": now,
         }
         cache.set(f"job:{job_id}", job, ttl=60)
+        # 建立 video_id -> job_id 映射，方便以 video_id 查詢目前對應的 job
+        try:
+            cache.set(f"video_job:{video_id}", job_id, ttl=60)
+        except Exception:
+            # 不應該阻斷主流程，僅記錄即可
+            logger.debug(
+                {
+                    "event": "video_job_map_failed",
+                    "video_id": video_id,
+                    "job_id": job_id,
+                }
+            )
         return JobResponse(**job)
 
     # 創建新任務
@@ -189,6 +216,13 @@ async def analyze_video(
         "updated_at": now,
     }
     cache.set(f"job:{job_id}", job)
+    # 設定 video_id -> job_id 映射，方便以 video_id 查詢目前對應的 job
+    try:
+        cache.set(f"video_job:{video_id}", job_id)
+    except Exception:
+        logger.debug(
+            {"event": "video_job_map_failed", "video_id": video_id, "job_id": job_id}
+        )
     logger.info({"event": "job_created", "job_id": job_id, "video_id": video_id})
 
     # 分派 crewai 任務到背景，執行分析與進度更新
@@ -235,3 +269,50 @@ async def get_video_locations(
         logger.warning({"event": "locations_not_found", "video_id": video_id})
         raise HTTPException(status_code=404, detail=f"找不到影片地點資料: {video_id}")
     return MapVisualization(**result)
+
+
+@router.get(
+    "/videos/{video_id}/job",
+    response_model=JobStatusResponse,
+    summary="以 video_id 查詢對應的 job 狀態",
+    description="根據 YouTube video_id 查詢目前對應的 job（若有）。若未找到則回傳 404。",
+)
+async def get_job_by_video(
+    video_id: str = Path(..., description="YouTube 影片 ID"),
+) -> JobStatusResponse:
+    """
+    先嘗試使用 video_job:{video_id} 映射取得對應 job_id，若未命中則回傳 404。
+    若命中則回傳該 job 的簡要狀態（job_id, status, phase, progress, stats, error）。
+    """
+    # 嘗試直接查找映射
+    try:
+        mapped = cache.get(f"video_job:{video_id}")
+    except Exception:
+        mapped = None
+
+    if not mapped:
+        # 若映射不存在，嘗試回傳 404（避免遍歷全部快取）
+        logger.info({"event": "video_job_not_found", "video_id": video_id})
+        raise HTTPException(
+            status_code=404, detail=f"找不到針對影片的進行中任務: {video_id}"
+        )
+
+    job = cache.get(f"job:{mapped}")
+    if not job:
+        logger.info(
+            {"event": "job_not_found_for_video", "video_id": video_id, "job_id": mapped}
+        )
+        raise HTTPException(status_code=404, detail=f"找不到 job: {mapped}")
+
+    # 構建回傳格式
+    resp = {
+        "job_id": job.get("job_id"),
+        "status": job.get("status"),
+        "phase": job.get("phase"),
+        "progress": job.get("progress", 0),
+        "stats": {},
+        "error": job.get("error")
+        if job.get("status") in [JobStatus.FAILED, JobStatus.CANCELED]
+        else None,
+    }
+    return JobStatusResponse(**resp)

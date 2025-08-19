@@ -36,3 +36,25 @@ htmlcov/
 
 # 其他
 .DS_Store
+
+# Project-specific
+outputs/
+outputs/**
+
+# Exclude extension frontend sources (not needed in Docker image)
+src/extension/
+extension/
+
+# Tests directory
+tests/
+tests/**
+
+# Logs, databases, keys
+*.log
+*.sqlite3
+*.db
+*.pem
+*.key
+
+# Lock files
+*.lock
