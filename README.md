@@ -229,12 +229,3 @@ Run tests
 
 - See the `LICENSE` file at the repository root for the project license.
 
----
-
-If you want, I can:
-
-1. Translate this file into the repository's `README.md` (replace existing), or
-2. Add an example GeoJSON file at `outputs/example.geojson` and a simple unit test that loads it, or
-3. Add CI badges and a short one-line project description to `README.en.md` or `README.md`.
-
-Tell me which next step you prefer and I'll implement it.
