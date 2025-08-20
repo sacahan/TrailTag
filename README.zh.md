@@ -178,13 +178,13 @@ npm run package
 - `src/extension/` — 前端 extension 源碼與測試
 - `tests/` — 單元測試
 
-## 合約與邊界情況（工程注意）
+## 邊界注意
 
 - 輸入不包含有效字幕或語言辨識失敗時，系統會嘗試用 video description 或章節備援；若都失敗，會回傳部分結果或標記為 "needs_human_review"。
 - 大型影片（長時間）：處理可被切片並平行化；快取能減少重複負載。
 - 地理編碼無法解析的地名會標記為未解析並回傳原始字串供人工處理。
 
-## 小型合約（Inputs/Outputs）
+## Inputs/Outputs
 
 - Inputs: { video_id: string } 或已解析 subtitle/timestamps JSON
 - Outputs: { task_id, status } + 最終 results: GeoJSON
@@ -203,6 +203,3 @@ npm run package
 
 - 授權請參考專案根目錄 `LICENSE`。
 
----
-
-若你想要我把 README 精簡為英文版本、或新增範例 GeoJSON 檔案與自動化測試範例（我可以直接新增到 repo），請告訴我下一個優先項目。
