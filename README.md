@@ -1,148 +1,171 @@
-
 # TrailTag
 
-TrailTag 將 YouTube 旅遊 Vlog 轉換成可互動的地圖與路線資料，讓使用者能在地圖上重現創作者的旅程、檢視重要地點與主題摘要。這份 README 會說明主要功能、輸入/輸出合約、API 與 CLI 使用範例、資料格式、部署與開發注意事項。
+Convert YouTube travel vlogs into interactive map data and route visualizations.
 
-## 目標讀者
+TrailTag extracts meaningful places, timestamps, and routes from travel videos so viewers and developers can replay journeys on a map, inspect points-of-interest (POIs), and consume concise topic summaries.
 
-- 想把旅遊影片自動化轉成地理資訊（開發者／資料工程師）
-- 想把影片路線可視化（產品或前端工程師）
-- 想在 GitHub 上評估或貢獻此專案的人
+## Who this is for
 
-## 一句話功能總覽
+- Developers and data engineers who want to automatically convert travel videos into geospatial data
+- Frontend or product engineers who need map-ready GeoJSON for visualization
+- Contributors evaluating the project on GitHub
 
-- 從 YouTube 影片或影片 ID 擷取 metadata、字幕與時間軸
-- 自動辨識影片中提到的地點（POI）與時間戳（timestamp）
-- 進行地理編碼（geocoding）取得座標，重構路線（LineString）與 POI（Point）
-- 建立可直接丟到地圖上的 GeoJSON（含屬性：時間、標題、信心度等）
-- 提供後端 API、CLI 與瀏覽器擴充套件（extension）整合前端地圖顯示
-- 支援快取（記憶體或 Redis）與任務狀態查詢（task/status streaming）
+## Quick summary of capabilities
 
-## 合約（簡短）
+- Ingest a YouTube video (ID or URL) or supplied subtitles/metadata
+- Extract timestamps, named places and POIs mentioned in subtitles/descriptions
+- Geocode place names to coordinates (configurable provider) and assemble routes (LineString)
+- Output GeoJSON for routes and points with useful properties (time, label, confidence)
+- Provide a FastAPI backend, CLI crew for offline processing, and a browser extension to trigger analyses from the YouTube UI
+- Support caching (in-memory or Redis) and asynchronous task status reporting
 
-- 輸入：YouTube video ID 或影片 URL（亦可接收已下載的字幕/metadata）
-- 輸出：
-  - 任務識別：task_id（非同步處理）
-  - 地圖資料：GeoJSON（route: LineString、points: FeatureCollection of Points）
-  - 任務狀態：pending / running / done / failed
+## Contract (brief)
 
-## 主要功能（詳細）
+- Input: a YouTube video ID / URL, or pre-parsed subtitles + timestamps JSON
+- Output: asynchronous task_id; final result available as JSON/GeoJSON
+  - route: LineString
+  - points: FeatureCollection of Point features
+  - status: pending | running | done | failed
 
-### 1. 影片擷取與預處理
+## Detailed features
 
-- 下載或解析 YouTube metadata（title、description、upload date）
-- 取得字幕（自動生成的字幕或上傳字幕），並解析時間戳與章節（chapters）
+1. Video fetching and pre-processing
+   - Download or parse YouTube metadata (title, description, upload date)
+   - Retrieve subtitles (auto-generated or uploaded) and normalize timestamped text and chapters
 
-### 2. 主題抽取與摘要
+2. Topic extraction and time-aligned summaries
+   - Lightweight NLP to extract main topics, key sentences and keywords
+   - Produce short, time-aligned summaries useful for map popups
 
-- 透過 NLP（lightweight agent）抽出影片的主題、重點句與關鍵詞
-- 產生時間戳對應的短摘要，便於在地圖 popup 顯示
+3. POI extraction and geocoding
+   - Detect place names, addresses and landmarks from subtitles, descriptions and chapters
+   - Support configurable geocoding providers (e.g. Nominatim, Google Geocoding)
+   - Return coordinates, provider source and confidence score
 
-### 3. 地點（POI）抽取與地理編碼
+4. Route reconstruction
+   - Merge time-ordered POIs and detected locations into one or multiple LineStrings
+   - Include properties such as start_time, end_time, duration and source_video_time on features
 
-- 從文字（字幕、描述、章節）中抓取地名、地址、地標
-- 支援多種 geocoding providers（可配置），例如 Nominatim、Google Geocoding API
-- 回傳座標、信心度、解析來源
+5. Backend API and task management
+   - Submit jobs asynchronously (returns task_id)
+   - Poll status and download results (JSON/GeoJSON)
+   - Optional SSE or WebSocket progress updates for real-time UI
 
-### 4. 路線重建（Route reconstruction）
+6. Caching and persistence
+   - In-memory cache by default; optional Redis integration to share caches between instances
+   - Configurable cache expiry (days)
 
-- 將時間序列的 POI 與位置合併成一條或多條路線（LineString），並帶上時間區段
-- 產生 GeoJSON 屬性（例如 start_time、end_time、duration、source_video_time）
+7. Browser extension
+   - A popup UI to request analysis while watching YouTube and view the returned GeoJSON on a map
+   - Integrates with the backend API to fetch and render GeoJSON layers
 
-### 5. 後端 API 與任務管理
+8. CLI and automation
+   - A `crew`-style CLI to run single-video jobs programmatically
+   - Suitable for CI or scheduled cron jobs
 
-- 非同步任務提交（回傳 task_id）
-- 任務狀態查詢與結果下載（JSON / GeoJSON）
-- Server-Sent Events（SSE）或 WebSocket 支援，用於即時進度更新
-
-### 6. 快取與儲存
-
-- 支援記憶體快取與 Redis（如安裝與設定），避免重複分析
-- 可設定快取過期天數
-
-### 7. 瀏覽器擴充套件（extension）
-
-- popup/UI：允許使用者在觀看 YouTube 時一鍵發起分析並在側邊或新分頁顯示地圖
-- 與後端 API 結合，取得並呈現 GeoJSON layer
-
-### 8. CLI 與自動化 workflow
-
-- 提供單次執行 CLI：處理單一 video id 並儲存結果
-- 可在 CI / cron 中排程執行
-
-## API 快覽（常見端點範例）
+## API preview (examples)
 
 - POST /analyze
-  - 說明：提交影片分析請求
-  - 範例請求體：
+  - Description: Submit a video analysis job
+  - Example request body:
 
   ```json
   {
-   "video_id": "YOUTUBE_VIDEO_ID",
-   "callback_url": "https://example.com/webhook",
-   "options": {}
+    "video_id": "YOUTUBE_VIDEO_ID",
+    "callback_url": "https://example.com/webhook",
+    "options": {}
   }
   ```
 
-  - 回應：
+  - Example response:
 
   ```json
   {
-   "task_id": "...",
-   "status": "pending"
+    "task_id": "...",
+    "status": "pending"
   }
   ```
 
 - GET /status/{task_id}
-  - 說明：查詢任務狀態
-  - 回應：{ "task_id": "...", "status": "done", "progress": 100 }
+  - Description: Check job status
+  - Example response:
+
+  ```json
+  {
+    "task_id": "...",
+    "status": "done",
+    "progress": 100
+  }
+  ```
 
 - GET /results/{task_id}
-  - 說明：下載處理結果（JSON/GeoJSON）
-  - 回應：GeoJSON FeatureCollection，包含 route 與 points
+  - Description: Download job results (JSON/GeoJSON)
+  - Returns a GeoJSON FeatureCollection containing route and points
 
 - GET /map/{task_id}.geojson
-  - 說明：直接取得可放入地圖的 GeoJSON
+  - Description: Directly fetch a map-ready GeoJSON file
 
-（實際路由以 `src/api/routes.py` 為準）
+(Actual endpoints and parameters are implemented in `src/api/routes.py` — consult code for the canonical contract.)
 
-## 資料格式範例（GeoJSON 摘要）
+## Data format examples (GeoJSON)
 
-- route (LineString) feature properties 範例：
-
-```json
-{"type":"Feature","geometry":{"type":"LineString","coordinates":[...]},
- "properties": {"video_id":"abc","start_time":"00:01:30","end_time":"00:12:45","source":"detected"}}
-```
-
-- poi (Point) feature properties 範例：
+- Route (LineString) example properties:
 
 ```json
-{"type":"Feature","geometry":{"type":"Point","coordinates":[lng,lat]},
- "properties":{"title":"Eiffel Tower","time":"00:05:22","confidence":0.89,"source":"subtitle"}}
+{
+  "type":"Feature",
+  "geometry":{
+    "type":"LineString",
+    "coordinates":[...]
+  },
+  "properties":{
+    "video_id":"abc",
+    "start_time":"00:01:30",
+    "end_time":"00:12:45",
+    "source":"detected"
+  }
+}
 ```
 
-## 快速啟動（開發）
+- POI (Point) example properties:
 
-先決條件
+```json
+{
+  "type":"Feature",
+  "geometry":{
+    "type":"Point",
+    "coordinates":[lng, lat]
+  },
+  "properties":{
+    "title":"Eiffel Tower",
+    "time":"00:05:22",
+    "confidence":0.89,
+    "source":"subtitle"
+  }
+}
+```
 
-- Python 3.11+（見 `pyproject.toml`）
-- Node.js + npm（用於 extension）
-- 可選：Redis（若要快取或在多執行個體部署）
+## Quick start (development)
 
-啟動後端（開發模式，使用 uvicorn）：
+Prerequisites
+
+- Python 3.11+ (see `pyproject.toml`)
+- Node.js + npm (for the browser extension)
+- Optional: Redis (for shared caching)
+
+Start the backend in development mode (uvicorn):
 
 ```bash
 uvicorn src.api.main:app --host 0.0.0.0 --port 8010 --reload
 ```
 
-以命令列執行 Trailtag crew（單次執行）：
+Run the Trailtag crew CLI for a single video:
 
 ```bash
-python -m src.trailtag.main <VIDEO_ID>
+python -m src.trailtag.main VIDEO_ID
 ```
 
-開發與打包 extension：
+Develop and package the extension:
 
 ```bash
 cd src/extension
@@ -151,58 +174,63 @@ npm test
 npm run package
 ```
 
-測試
+Run tests
 
-- Python tests：在專案根目錄執行 `pytest`。
-- Extension tests：在 `src/extension` 執行 `npm test`。
+- Python tests: from repo root run `pytest`
+- Extension tests: `cd src/extension && npm test`
 
-## 環境變數（細節）
+## Environment variables (common)
 
-- `API_HOST` (default 0.0.0.0)
-- `API_PORT` (default 8010)
-- `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD` — Redis 連線設定
-- `REDIS_EXPIRY_DAYS` — 快取過期天數（整數）
-- `OPENAI_API_KEY` — 用於訪問 OpenAI API 的金鑰
-- `GOOGLE_API_KEY` — 用於訪問 Google API 的金鑰
+- `API_HOST` (default: 0.0.0.0)
+- `API_PORT` (default: 8010)
+- `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD` — Redis configuration
+- `REDIS_EXPIRY_DAYS` — cache expiry in days
+- `OPENAI_API_KEY` — for accessing the OpenAI API
+- `GOOGLE_API_KEY` — for accessing the Google API
 
-## 部署建議
+## Deployment notes
 
-- 小型測試：單一 uvicorn + 可選 Redis（docker-compose 或本機安裝）
-- 產線：以容器化（Docker）部署，多執行個體搭配共享 Redis 與負載平衡
-- 注意：geocoding API 可能有用量限制，建議加入快取並使用合適的 API keys
+- Small test deployment: a single uvicorn instance with optional Redis (docker-compose or local)
+- Production: containerize (Docker), run multiple instances behind a load balancer, use shared Redis
+- Geocoding providers often have rate limits — use caching and provider API keys appropriately
 
-## 開發者筆記與程式碼位置
+## Code locations
 
-- `src/api/` — FastAPI 應用、路由、模型、logger
-- `src/trailtag/` — crew、agent 工具與 CLI
-- `src/extension/` — 前端 extension 源碼與測試
-- `tests/` — 單元測試
+- `src/api/` — FastAPI app, routes, models and logging
+- `src/trailtag/` — crew, agents, tools and CLI
+- `src/extension/` — browser extension source & tests
+- `tests/` — unit tests
 
-## 合約與邊界情況（工程注意）
+## Edge cases and operational behavior
 
-- 輸入不包含有效字幕或語言辨識失敗時，系統會嘗試用 video description 或章節備援；若都失敗，會回傳部分結果或標記為 "needs_human_review"。
-- 大型影片（長時間）：處理可被切片並平行化；快取能減少重複負載。
-- 地理編碼無法解析的地名會標記為未解析並回傳原始字串供人工處理。
+- Missing or low-quality subtitles: the system will fall back to video description or chapter metadata; if nothing is available it may return partial results or mark the job as `needs_human_review`.
+- Long videos: jobs can be chunked and parallelized; caching reduces repeated work.
+- Unresolved geocoding: place names that cannot be geocoded are returned as unresolved with the original string for manual review.
 
-## 小型合約（Inputs/Outputs）
+## Inputs / Outputs (compact)
 
-- Inputs: { video_id: string } 或已解析 subtitle/timestamps JSON
-- Outputs: { task_id, status } + 最終 results: GeoJSON
+- Inputs: `{ video_id: string }` or pre-parsed subtitle/timestamps JSON
+- Outputs: `{ task_id, status }`, final results are GeoJSON files available via the API
 
-## 測試與品質門檻
+## Testing & quality gates
 
-- 寫入單元測試（tests/）覆蓋核心轉換與 geocoding 邏輯
-- 在修改公共 API 時請更新對應測試
+- Add unit tests in `tests/` for core transformation and geocoding logic
+- Update tests when changing public API behavior
 
-## 貢獻
+## Contributing
 
-- 歡迎提交 PR、Issue 或改善測試
-- 請遵循 repo 的 coding style 與在 PR 中描述修改原因
+- Pull requests and issues are welcome. Follow the repo's coding style and include tests for new behavior.
 
-## 授權
+## License
 
-- 授權請參考專案根目錄 `LICENSE`。
+- See the `LICENSE` file at the repository root for the project license.
 
 ---
 
-若你想要我把 README 精簡為英文版本、或新增範例 GeoJSON 檔案與自動化測試範例（我可以直接新增到 repo），請告訴我下一個優先項目。
+If you want, I can:
+
+1. Translate this file into the repository's `README.md` (replace existing), or
+2. Add an example GeoJSON file at `outputs/example.geojson` and a simple unit test that loads it, or
+3. Add CI badges and a short one-line project description to `README.en.md` or `README.md`.
+
+Tell me which next step you prefer and I'll implement it.

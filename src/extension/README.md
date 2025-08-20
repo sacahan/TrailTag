@@ -18,28 +18,28 @@
 
 1. 安裝相依套件（需要 Node.js 與 npm）：
 
-    ```bash
-    npm install
-    ```
+```bash
+npm install
+```
 
-2. 執行測試：
+1. 執行測試：
 
-    ```bash
-    npm test
-    ```
+```bash
+npm test
+```
 
-3. 本地打包（clean、TypeScript 編譯、複製必要檔案並壓縮）：
+1. 本地打包（clean、TypeScript 編譯、複製必要檔案並壓縮）：
 
-    ```bash
-    cd src/extension
-    npm run package
-    ```
+```bash
+cd src/extension
+npm run package
+```
 
-4. 若只要編譯並複製檔案：
+1. 若只要編譯並複製檔案：
 
-    ```bash
-    npm run build
-    ```
+```bash
+npm run build
+```
 
 ## 與後端整合
 
@@ -51,7 +51,7 @@
 - 打包後產生的資料夾：`dist/extension`
 - 壓縮檔：`dist/extension.zip`
 
-範例：`dist/extension` 會包含 `manifest.json`、`popup.html`、編譯後的 `.js` 檔案、`service_worker.js`、`styles.css`、`assets/` 與 `vendor/`。
+範例：`dist/extension` 會包含 `manifest.json`、`popup.html`、編譯後的 `.js` 檔案、`styles.css`、`assets/` 與 `vendor/`。
 
 ## 注意事項
 
@@ -59,7 +59,7 @@
 - 若要在不同作業系統上保持相容，建議改用 Node.js 腳本或安裝跨平台套件來處理複製與壓縮流程。
 - 上傳至 Chrome Web Store 或以開發者模式載入時，請使用 `dist/extension` 或 `dist/extension.zip`。
 
-Note: The project was refactored to move event handling into the popup (polling) and the service worker was removed; any references to `service_worker.js` have been deprecated.
+> 注意：專案已重構，事件處理改為在 popup（以輪詢實作），service worker 已移除；任何對 `service_worker.js` 的引用已被棄用。
 
 ## 授權
 
