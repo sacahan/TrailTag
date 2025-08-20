@@ -3,6 +3,12 @@
 
 TrailTag 將 YouTube 旅遊 Vlog 轉換成可互動的地圖與路線資料，讓使用者能在地圖上重現創作者的旅程、檢視重要地點與主題摘要。這份 README 會說明主要功能、輸入/輸出合約、API 與 CLI 使用範例、資料格式、部署與開發注意事項。
 
+<img width="1784" height="903" alt="截圖 2025-08-20 上午10 36 18" src="https://github.com/user-attachments/assets/77dae24a-d77e-48e7-a376-db48e372a55c" />
+
+
+[TrailTag Demo](https://youtu.be/DzmGJXYH4-g)
+
+
 ## 目標讀者
 
 - 想把旅遊影片自動化轉成地理資訊（開發者／資料工程師）
