@@ -4,6 +4,8 @@ Convert YouTube travel vlogs into interactive map data and route visualizations.
 
 TrailTag extracts meaningful places, timestamps, and routes from travel videos so viewers and developers can replay journeys on a map, inspect points-of-interest (POIs), and consume concise topic summaries.
 
+<img width="1784" height="903" alt="截圖 2025-08-20 上午10 36 18" src="https://github.com/user-attachments/assets/77dae24a-d77e-48e7-a376-db48e372a55c" />
+
 [TrailTag Demo](https://youtu.be/DzmGJXYH4-g)
 
 ## Who this is for
