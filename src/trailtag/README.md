@@ -33,9 +33,9 @@
 
 - 執行流程並列印結果：
 
-   ```bash
-   python -m src.trailtag.main https://www.youtube.com/watch?v=VIDEO_ID
-   ```
+  ```bash
+  python -m src.trailtag.main https://www.youtube.com/watch?v=VIDEO_ID
+  ```
 
 ## 授權
 

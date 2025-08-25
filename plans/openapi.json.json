@@ -205,9 +205,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "url"
-        ],
+        "required": ["url"],
         "title": "AnalyzeRequest",
         "description": "分析請求模型"
       },
@@ -281,13 +279,7 @@
       },
       "JobStatus": {
         "type": "string",
-        "enum": [
-          "queued",
-          "running",
-          "done",
-          "failed",
-          "canceled"
-        ],
+        "enum": ["queued", "running", "done", "failed", "canceled"],
         "title": "JobStatus",
         "description": "任務狀態列舉"
       },
@@ -306,21 +298,13 @@
           }
         },
         "type": "object",
-        "required": [
-          "video_id",
-          "routes"
-        ],
+        "required": ["video_id", "routes"],
         "title": "MapVisualization",
         "description": "地圖視覺化資料，包含影片ID與多個路線項目。"
       },
       "Phase": {
         "type": "string",
-        "enum": [
-          "metadata",
-          "compression",
-          "summary",
-          "geocode"
-        ],
+        "enum": ["metadata", "compression", "summary", "geocode"],
         "title": "Phase",
         "description": "處理階段列舉"
       },
@@ -393,9 +377,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "location"
-        ],
+        "required": ["location"],
         "title": "RouteItem",
         "description": "路線項目，描述地圖上一個地點與相關資訊。"
       },
@@ -425,11 +407,7 @@
           }
         },
         "type": "object",
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError"
       }
     }

@@ -18,12 +18,12 @@
 
 ## 主要端點
 
-| Method | Path | 說明 |
-| ------ | ---- | ---- |
-| POST | /api/videos/analyze | 提交分析任務，快取命中直接回傳 |
-| GET | /api/jobs/{job_id} | 查詢任務進度與狀態 |
-| GET | /api/jobs/{job_id}/stream | SSE 事件推播進度 |
-| GET | /api/videos/{video_id}/locations | 取得地點視覺化結果 |
+| Method | Path                             | 說明                           |
+| ------ | -------------------------------- | ------------------------------ |
+| POST   | /api/videos/analyze              | 提交分析任務，快取命中直接回傳 |
+| GET    | /api/jobs/{job_id}               | 查詢任務進度與狀態             |
+| GET    | /api/jobs/{job_id}/stream        | SSE 事件推播進度               |
+| GET    | /api/videos/{video_id}/locations | 取得地點視覺化結果             |
 
 ## Job 狀態與階段
 

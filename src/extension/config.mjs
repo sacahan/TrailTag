@@ -9,7 +9,7 @@
 */
 const DEFAULTS = {
   // API 基礎 URL（開發預設指向本地服務）
-  API_BASE_URL: 'https://tailtag.brianhan.cc',
+  API_BASE_URL: "https://tailtag.brianhan.cc",
   // fetch 重試次數
   FETCH_RETRIES: 2,
   // fetch 起始回退時間（毫秒），實作可基於此做指數回退
@@ -19,10 +19,9 @@ const DEFAULTS = {
   // popup 端輪詢間隔（毫秒）
   POLLING_INTERVAL_MS: 5000,
   // keepalive 的時間窗（毫秒）
-  KEEPALIVE_MS: 30000
-  ,
+  KEEPALIVE_MS: 30000,
   // persisted state TTL（毫秒）：預設 30 分鐘，可由 globalThis.TRAILTAG_CONFIG 或 chrome.storage 中的 trailtag_config 覆寫
-  STATE_TTL_MS: 30 * 60 * 1000
+  STATE_TTL_MS: 30 * 60 * 1000,
 };
 
 /**

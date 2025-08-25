@@ -1,4 +1,3 @@
-
 # TrailTag
 
 TrailTag 將 YouTube 旅遊 Vlog 轉換成可互動的地圖與路線資料，讓使用者能在地圖上重現創作者的旅程、檢視重要地點與主題摘要。這份 README 會說明主要功能、輸入/輸出合約、API 與 CLI 使用範例、資料格式、部署與開發注意事項。
@@ -77,14 +76,15 @@ TrailTag 將 YouTube 旅遊 Vlog 轉換成可互動的地圖與路線資料，�
 ## API 快覽（常見端點範例）
 
 - POST /analyze
+
   - 說明：提交影片分析請求
   - 範例請求體：
 
   ```json
   {
-   "video_id": "YOUTUBE_VIDEO_ID",
-   "callback_url": "https://example.com/webhook",
-   "options": {}
+    "video_id": "YOUTUBE_VIDEO_ID",
+    "callback_url": "https://example.com/webhook",
+    "options": {}
   }
   ```
 
@@ -92,16 +92,18 @@ TrailTag 將 YouTube 旅遊 Vlog 轉換成可互動的地圖與路線資料，�
 
   ```json
   {
-   "task_id": "...",
-   "status": "pending"
+    "task_id": "...",
+    "status": "pending"
   }
   ```
 
 - GET /status/{task_id}
+
   - 說明：查詢任務狀態
   - 回應：{ "task_id": "...", "status": "done", "progress": 100 }
 
 - GET /results/{task_id}
+
   - 說明：下載處理結果（JSON/GeoJSON）
   - 回應：GeoJSON FeatureCollection，包含 route 與 points
 

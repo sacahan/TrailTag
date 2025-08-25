@@ -138,12 +138,12 @@ outputs/
 
 ### 工具對應
 
-| 步驟 | 工具/模組 | 輸出 |
-| ---- | -------- | ---- |
-| 1. 影片資料擷取 | YoutubeMetadataTool | video_metadata.json |
-| 2. 字幕壓縮 | SubtitleCompressionTool | 壓縮字幕 (內嵌於 topic_summary.json) |
-| 3. 主題/地點摘要 | NLP/規則 | topic_summary.json |
-| 4. 地點座標化 | PlaceGeocodeTool | map_routes.json |
+| 步驟             | 工具/模組               | 輸出                                 |
+| ---------------- | ----------------------- | ------------------------------------ |
+| 1. 影片資料擷取  | YoutubeMetadataTool     | video_metadata.json                  |
+| 2. 字幕壓縮      | SubtitleCompressionTool | 壓縮字幕 (內嵌於 topic_summary.json) |
+| 3. 主題/地點摘要 | NLP/規則                | topic_summary.json                   |
+| 4. 地點座標化    | PlaceGeocodeTool        | map_routes.json                      |
 
 ---
 
@@ -178,12 +178,12 @@ outputs/
 
 ### 與後端互動考量
 
-| 挑戰 | 解法 |
-| ---- | ---- |
-| 任務長（數十秒） | SSE/輪詢 + partial push |
+| 挑戰             | 解法                                      |
+| ---------------- | ----------------------------------------- |
+| 任務長（數十秒） | SSE/輪詢 + partial push                   |
 | 使用者關閉 popup | 狀態保存於 chrome.storage，重新開啟再接續 |
-| 重複分析 | 後端 hash 快取 → 直接回傳 done |
-| API 失敗 | 指數退避 + 最多 3 次；前端顯示重試 |
+| 重複分析         | 後端 hash 快取 → 直接回傳 done            |
+| API 失敗         | 指數退避 + 最多 3 次；前端顯示重試        |
 
 ### 權限（最小化）
 

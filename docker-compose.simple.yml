@@ -2,7 +2,7 @@ services:
   redis:
     container_name: trailtag-redis
     image: redis:7-alpine
-    command: ["sh", "-c", "redis-server --requirepass \"\""]
+    command: ["sh", "-c", 'redis-server --requirepass ""']
     restart: always
     networks:
       - trailtag-network

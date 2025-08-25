@@ -34,32 +34,39 @@ TrailTag extracts meaningful places, timestamps, and routes from travel videos s
 ## Detailed features
 
 1. Video fetching and pre-processing
+
    - Download or parse YouTube metadata (title, description, upload date)
    - Retrieve subtitles (auto-generated or uploaded) and normalize timestamped text and chapters
 
 2. Topic extraction and time-aligned summaries
+
    - Lightweight NLP to extract main topics, key sentences and keywords
    - Produce short, time-aligned summaries useful for map popups
 
 3. POI extraction and geocoding
+
    - Detect place names, addresses and landmarks from subtitles, descriptions and chapters
    - Support configurable geocoding providers (e.g. Nominatim, Google Geocoding)
    - Return coordinates, provider source and confidence score
 
 4. Route reconstruction
+
    - Merge time-ordered POIs and detected locations into one or multiple LineStrings
    - Include properties such as start_time, end_time, duration and source_video_time on features
 
 5. Backend API and task management
+
    - Submit jobs asynchronously (returns task_id)
    - Poll status and download results (JSON/GeoJSON)
    - Optional SSE or WebSocket progress updates for real-time UI
 
 6. Caching and persistence
+
    - In-memory cache by default; optional Redis integration to share caches between instances
    - Configurable cache expiry (days)
 
 7. Browser extension
+
    - A popup UI to request analysis while watching YouTube and view the returned GeoJSON on a map
    - Integrates with the backend API to fetch and render GeoJSON layers
 
@@ -70,6 +77,7 @@ TrailTag extracts meaningful places, timestamps, and routes from travel videos s
 ## API preview (examples)
 
 - POST /analyze
+
   - Description: Submit a video analysis job
   - Example request body:
 
@@ -91,6 +99,7 @@ TrailTag extracts meaningful places, timestamps, and routes from travel videos s
   ```
 
 - GET /status/{task_id}
+
   - Description: Check job status
   - Example response:
 
@@ -103,6 +112,7 @@ TrailTag extracts meaningful places, timestamps, and routes from travel videos s
   ```
 
 - GET /results/{task_id}
+
   - Description: Download job results (JSON/GeoJSON)
   - Returns a GeoJSON FeatureCollection containing route and points
 

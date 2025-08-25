@@ -1,4 +1,4 @@
-import defaults from './config.mjs';
+import defaults from "./config.mjs";
 
 /*
  * popup.bootstrap.mjs
@@ -18,10 +18,10 @@ import defaults from './config.mjs';
 
   // dynamic import old modules in order and attach to window.TrailTag
   const scripts = [
-    { file: 'utils.js', ns: 'Utils' },
-    { file: 'api.js', ns: 'API' },
-    { file: 'map.js', ns: 'Map' },
-    { file: 'popup.js', ns: 'Popup' }
+    { file: "utils.js", ns: "Utils" },
+    { file: "api.js", ns: "API" },
+    { file: "map.js", ns: "Map" },
+    { file: "popup.js", ns: "Popup" },
   ];
 
   window.TrailTag = window.TrailTag || {};
@@ -31,10 +31,9 @@ import defaults from './config.mjs';
       const mod = await import(`./${s.file}`);
       window.TrailTag[s.ns] = mod;
     } catch (err) {
-      console.error('Failed to import module', s.file, err);
+      console.error("Failed to import module", s.file, err);
       throw err;
     }
   }
-
 })();
-  // 將解析後的設定放到全域，可被舊式腳本或測試讀取（命名為 TRAILTAG_CONFIG）
+// 將解析後的設定放到全域，可被舊式腳本或測試讀取（命名為 TRAILTAG_CONFIG）

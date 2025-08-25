@@ -139,34 +139,34 @@ Extension Popup 主要狀態轉換：
 
 ## 功能列表 (MVP)
 
-| 功能 | 描述 | 優先級 |
-| ---- | ---- | ------ |
-| 影片辨識 | 解析當前 tab YouTube video_id | P0 |
-| 查詢既有分析 | 快速判斷快取是否存在 | P0 |
-| 觸發分析 | 呼叫 /analyze 取得 job_id | P0 |
-| 進度顯示 | 百分比 + 階段文字 | P0 |
-| SSE 連線 | 接收 phase_update / completed / error | P0 |
-| 地點地圖渲染 | Leaflet 基本地圖 + Marker | P0 |
-| 結果呈現 | 任務完成後一次性載入全量地點 | P0 |
-| 錯誤處理與重試 | 基本重試 + 提示訊息 | P0 |
-| 匯出 GeoJSON | 從現有 locations 生成 | P1 |
-| Marker clustering | >20 地點時分群 | P1 |
-| 時間碼跳轉 | Marker popup 提供跳轉影片功能 | P1 |
-| 狀態快取 | chrome.storage 保存最近 job | P1 |
-| 主題顯示 | 顯示摘要主題或標籤 | P2 |
+| 功能              | 描述                                  | 優先級 |
+| ----------------- | ------------------------------------- | ------ |
+| 影片辨識          | 解析當前 tab YouTube video_id         | P0     |
+| 查詢既有分析      | 快速判斷快取是否存在                  | P0     |
+| 觸發分析          | 呼叫 /analyze 取得 job_id             | P0     |
+| 進度顯示          | 百分比 + 階段文字                     | P0     |
+| SSE 連線          | 接收 phase_update / completed / error | P0     |
+| 地點地圖渲染      | Leaflet 基本地圖 + Marker             | P0     |
+| 結果呈現          | 任務完成後一次性載入全量地點          | P0     |
+| 錯誤處理與重試    | 基本重試 + 提示訊息                   | P0     |
+| 匯出 GeoJSON      | 從現有 locations 生成                 | P1     |
+| Marker clustering | >20 地點時分群                        | P1     |
+| 時間碼跳轉        | Marker popup 提供跳轉影片功能         | P1     |
+| 狀態快取          | chrome.storage 保存最近 job           | P1     |
+| 主題顯示          | 顯示摘要主題或標籤                    | P2     |
 
 ## 架構與檔案
 
-| 檔案 | 角色 |
-| ---- | ---- |
-| manifest.json | MV3 設定、權限、service_worker 指定 |
-| service_worker.js | 背景：SSE 管理、重試、訊息轉發 |
-| popup.html | UI 容器 |
-| popup.js | 狀態管理（有限 state machine）+ DOM 更新 |
-| api.js | 抽象後端 API 呼叫（fetch wrapper + retry） |
-| map.js | 地圖初始化與 Marker 管理模組 |
-| styles.css | 基礎樣式 |
-| utils.js | 解析 video_id、格式化時間 |
+| 檔案              | 角色                                       |
+| ----------------- | ------------------------------------------ |
+| manifest.json     | MV3 設定、權限、service_worker 指定        |
+| service_worker.js | 背景：SSE 管理、重試、訊息轉發             |
+| popup.html        | UI 容器                                    |
+| popup.js          | 狀態管理（有限 state machine）+ DOM 更新   |
+| api.js            | 抽象後端 API 呼叫（fetch wrapper + retry） |
+| map.js            | 地圖初始化與 Marker 管理模組               |
+| styles.css        | 基礎樣式                                   |
+| utils.js          | 解析 video_id、格式化時間                  |
 
 ## State Machine (概念)
 
@@ -184,20 +184,20 @@ Transition:
 
 ## SSE 事件處理
 
-| 事件 | 動作 |
-| ---- | ---- |
-| phase_update | 更新階段標籤 + 百分比 |
-| completed | 切換 map_ready 狀態並觸發一次性抓取地點 |
-| error | 顯示錯誤並提供重試 |
+| 事件         | 動作                                    |
+| ------------ | --------------------------------------- |
+| phase_update | 更新階段標籤 + 百分比                   |
+| completed    | 切換 map_ready 狀態並觸發一次性抓取地點 |
+| error        | 顯示錯誤並提供重試                      |
 
 ## UI 規劃
 
-| 區塊 | 元件 | 說明 |
-| ---- | ---- | ---- |
-| Header | 標題 + 狀態徽章 | 顯示目前階段 |
-| Body | 狀態訊息 / 進度條 | analyzing 時顯示 |
-| Map | Leaflet 容器 | map_ready 顯示 |
-| Footer | 動作按鈕 | retry / export / open in new tab |
+| 區塊   | 元件              | 說明                             |
+| ------ | ----------------- | -------------------------------- |
+| Header | 標題 + 狀態徽章   | 顯示目前階段                     |
+| Body   | 狀態訊息 / 進度條 | analyzing 時顯示                 |
+| Map    | Leaflet 容器      | map_ready 顯示                   |
+| Footer | 動作按鈕          | retry / export / open in new tab |
 
 ## 畫面狀態與對應功能（實作範圍與優先）
 
@@ -210,37 +210,44 @@ Transition:
 每個狀態說明：
 
 - Idle（未分析 / 初始）
+
   - 顯示：`idle-view`，標題、簡短說明、主要按鈕「分析此影片」。
   - 主要動作：使用者點擊 `analyze-btn` → 呼 `startAnalysis()` → 切換到 `checking_cache` 或 `analyzing`。
   - 資料契約：無輸入；按下後呼 `POST /api/videos/analyze { url }`，得到 `{ job_id, cached? }`。
   - 要修改的檔案：`src/extension/popup.html`（view）、`src/extension/popup.ts`（行為）。
 
 - Checking_cache（檢查快取）
+
   - 顯示：`checking-view`，spinner 與說明文字。
   - 主要動作：呼 `GET /api/videos/{id}/locations`；若命中直接切 MAP_READY，否則觸發分析流程。
   - 要修改的檔案：`src/extension/popup.ts`、`src/extension/api.ts`（已存在）。
 
 - Analyzing（分析中 / 進度）
+
   - 顯示：`analyzing-view`，進度條（`progress-bar`）、階段文字（`phase-text`）、取消按鈕。
   - 主要動作：建立 SSE（由 service worker 建立並轉發），或在 SSE 失敗後以 polling 更新；可取消（停止 event listener 並回到 IDLE）。
   - 資料契約：phase_update events { progress, phase, optional partial payload }；completed / error events。
   - 要修改的檔案（必做）：`src/extension/popup.ts`（在 initialize 階段加入 restore/attach 邏輯）、`src/extension/service_worker.ts`（background attach 已具部分實作，可強化回應 attach 要求）。
 
 - Map_ready（已完成）
+
   - 顯示：`map-view`，Leaflet 地圖、地點數、匯出按鈕。
   - 主要動作：顯示 markers、提供 `exportGeoJSON()` 下載功能。
   - 要修改的檔案：`src/extension/popup.ts`（map 初始化）與 `src/extension/api.ts` / `src/extension/utils.ts`（GeoJSON 生成與下載已實作）。
 
 - Error（錯誤）
+
   - 顯示：`error-view`，錯誤友善訊息、主要按鈕「重試」、以及「回報錯誤」按鈕（本次將加上）。
   - 主要動作：錯誤會包含可分類資訊（HTTP code / message / debugId），UI 顯示分類後的建議文案；按「回報錯誤」會將錯誤摘要與 debugId 準備好以便用戶複製或觸發 mailto/issue（不自動上傳任何敏感資訊）。
   - 要修改的檔案（必做）：`src/extension/popup.html`（在 error view 加回報按鈕）、`src/extension/popup.ts`（錯誤顯示與回報邏輯）、`src/extension/api.ts`（在出錯時包含 code/debugId）。
 
 - Empty / Not supported（無可分析內容）
+
   - 顯示：目前會回到 IDLE 或顯示 ERROR（「請在 YouTube 影片頁使用」）；計畫中可新增 `empty-view` 以說明原因，但本次不為必做。若要處理 CSP 或 iframe 問題，會在 error 分類中標示為 "unsupported"。
   - 決策：此狀態不新增手動上傳按鈕（依指示不在 UI 顯示）。
 
 - Auth / Rate-limit（權限或配額）
+
   - 顯示：分類後的錯誤提示（如 401/403/429），說明性文案與下一步建議（例如稍後再試或聯絡維運）。
   - 決策：會在錯誤分類時顯示建議，但不提供「授權並重試」或「手動上傳」按鈕（按你要求）。
 
@@ -271,11 +278,11 @@ Transition:
 
 ## 錯誤與重試策略
 
-| 類型 | 行為 |
-| ---- | ---- |
-| Network / 5xx | 指數退避 (1s,2s,4s) 最多 3 次 |
-| 4xx (client error) | 顯示錯誤訊息，不自動重試 |
-| SSE 中斷 | 立即嘗試重新連線 1 次 → fallback 輪詢 |
+| 類型               | 行為                                  |
+| ------------------ | ------------------------------------- |
+| Network / 5xx      | 指數退避 (1s,2s,4s) 最多 3 次         |
+| 4xx (client error) | 顯示錯誤訊息，不自動重試              |
+| SSE 中斷           | 立即嘗試重新連線 1 次 → fallback 輪詢 |
 
 ## 安全與權限最小化
 
@@ -285,23 +292,23 @@ Transition:
 
 ## 高風險點與緩解
 
-| 風險 | 說明 | 緩解 |
-| ---- | ---- | ---- |
-| SSE 被阻擋 | 公司網路或瀏覽器策略 | fallback 輪詢 GET /jobs/{id} |
-| 地圖渲染延遲 | 大量 marker | clustering + lazy popup |
-| 記憶體累積 | 多次進出 popup | service_worker 清理 listener |
-| 重複任務 | 使用者反覆點擊 | disable 按鈕 + 後端冪等快取 |
+| 風險         | 說明                 | 緩解                         |
+| ------------ | -------------------- | ---------------------------- |
+| SSE 被阻擋   | 公司網路或瀏覽器策略 | fallback 輪詢 GET /jobs/{id} |
+| 地圖渲染延遲 | 大量 marker          | clustering + lazy popup      |
+| 記憶體累積   | 多次進出 popup       | service_worker 清理 listener |
+| 重複任務     | 使用者反覆點擊       | disable 按鈕 + 後端冪等快取  |
 
 ## Milestones
 
-| 里程碑 | 內容 | 完成判準 |
-| ------ | ---- | -------- |
-| E1 Skeleton | manifest + popup 初始 | popup 顯示 idle |
+| 里程碑      | 內容                       | 完成判準               |
+| ----------- | -------------------------- | ---------------------- |
+| E1 Skeleton | manifest + popup 初始      | popup 顯示 idle        |
 | E2 API 整合 | /locations + /analyze 串接 | 快取命中與觸發分析可行 |
-| E3 SSE | 即時進度（無地點增量） | 進度條更新 |
-| E4 地圖強化 | clustering + popup | >20 地點仍順暢 |
-| E5 匯出 | 產出 GeoJSON | 下載檔案成功 |
-| E6 穩健化 | 錯誤/重試/儲存 | 關閉再開仍接續 |
+| E3 SSE      | 即時進度（無地點增量）     | 進度條更新             |
+| E4 地圖強化 | clustering + popup         | >20 地點仍順暢         |
+| E5 匯出     | 產出 GeoJSON               | 下載檔案成功           |
+| E6 穩健化   | 錯誤/重試/儲存             | 關閉再開仍接續         |
 
 ## 任務分解 (Backlog)
 

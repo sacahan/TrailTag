@@ -17,13 +17,8 @@
     },
     "default_title": "TrailTag 地圖"
   },
-  "permissions": [
-    "tabs",
-    "storage"
-  ],
-  "host_permissions": [
-    "https://www.youtube.com/*"
-  ],
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["https://www.youtube.com/*"],
 
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"

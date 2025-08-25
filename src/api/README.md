@@ -20,7 +20,7 @@
 - 參數：JSON body，例如：
 
 ```json
-{"url": "https://..."}
+{ "url": "https://..." }
 ```
 
 - 回傳 job_id 與初始任務狀態。
