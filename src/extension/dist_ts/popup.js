@@ -364,7 +364,9 @@ export function stopEventListener() {
         chrome.storage.local &&
         typeof chrome.storage.local.remove === "function"
       ) {
-        chrome.storage.local.remove(["trailtag_state_v1"], () => {});
+        chrome.storage.local.remove(["trailtag_state_v1"], () => {
+          /* noop */
+        });
       }
     } catch (e) {
       /* ignore */
@@ -573,7 +575,9 @@ export async function initializeApp() {
           chrome.storage.local &&
           typeof chrome.storage.local.remove === "function"
         ) {
-          chrome.storage.local.remove(["trailtag_state_v1"], () => {});
+          chrome.storage.local.remove(["trailtag_state_v1"], () => {
+            /* noop */
+          });
         }
       } catch (e) {
         /* ignore */
@@ -705,7 +709,9 @@ export async function initializeApp() {
               chrome.storage.local &&
               typeof chrome.storage.local.remove === "function"
             ) {
-              chrome.storage.local.remove(["trailtag_state_v1"], () => {});
+              chrome.storage.local.remove(["trailtag_state_v1"], () => {
+                /* noop */
+              });
             }
             stopPolling();
           } catch (e) {
@@ -725,7 +731,9 @@ export async function initializeApp() {
             chrome.storage.local &&
             typeof chrome.storage.local.remove === "function"
           ) {
-            chrome.storage.local.remove(["trailtag_state_v1"], () => {});
+            chrome.storage.local.remove(["trailtag_state_v1"], () => {
+              /* noop */
+            });
           }
           stopPolling();
         } catch (e) {

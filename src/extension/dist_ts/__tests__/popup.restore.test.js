@@ -79,7 +79,9 @@ describe("popup initializeApp restore/attach", () => {
       return;
     };
     // mock API to return no cached locations
-    global.window.TrailTag = { API: { getVideoLocations: async () => null } };
+    global.window.TrailTag = {
+      API: { getVideoLocations: async () => null },
+    };
     createDomMocks();
     const popup = await import("../popup");
     const { initializeApp, state: popupState, AppState, queryElements } = popup;
