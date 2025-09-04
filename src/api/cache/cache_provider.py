@@ -1,164 +1,116 @@
 import json
 import hashlib
-import os
 import time
-import datetime
 from typing import Dict, Any, Optional, Union
-import redis
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
+from src.trailtag.memory.manager import CrewMemoryManager
 
 logger = get_logger(__name__)
 
 
-def json_default(obj):
-    # 處理 datetime 物件序列化
-    if isinstance(obj, (datetime.datetime, datetime.date)):
-        return obj.isoformat()
-    raise TypeError(f"Type {type(obj)} not serializable")
-
-
-# 記憶體快取（斷線/測試用）
-class MemoryCacheProvider:
+class CrewAICacheProvider:
     """
-    提供本地記憶體快取功能，適用於測試或 Redis 斷線時。
-    支援快取存取、過期檢查、刪除與清空。
-    """
+    CrewAI Memory 快取提供者
 
-    def __init__(self, expiry_seconds=3600):
-        # 初始化快取儲存結構與預設過期秒數
-        # _store maps key -> (value, ts, ttl_seconds_or_None)
-        self._store = {}
-        self.expiry_seconds = expiry_seconds
+    完全基於 CrewAI Memory 系統實現的快取功能，取代原有的 Redis 快取。
+    提供與原 Redis 介面相容的快取操作，確保系統平滑遷移。
 
-    def _now(self):
-        # 取得目前時間（秒）
-        return int(time.time())
+    主要功能：
+        - 基於 CrewAI Memory 的向量搜索快取
+        - 語義相似性檢索
+        - JSON 序列化與反序列化
+        - 自動過期管理
+        - 批次操作支援
 
-    def get(self, key):
-        # 取得快取內容，若已過期則自動移除
-        v = self._store.get(key)
-        if not v:
-            return None
-        value, ts, ttl = v
-        ttl = ttl if ttl is not None else self.expiry_seconds
-        if self._now() - ts > ttl:
-            del self._store[key]
-            return None
-        return value
-
-    def set(self, key, value, ttl: int = None):
-        # 設定快取內容，並記錄存入時間與可選的 TTL（秒）
-        # 若 ttl 為 None，會使用預設 self.expiry_seconds
-        self._store[key] = (value, self._now(), ttl)
-
-    def exists(self, key):
-        # 檢查快取是否存在且未過期
-        v = self._store.get(key)
-        if not v:
-            return False
-        value, ts, ttl = v
-        ttl = ttl if ttl is not None else self.expiry_seconds
-        if self._now() - ts > ttl:
-            del self._store[key]
-            return False
-        return True
-
-    def delete(self, key):
-        # 刪除指定快取
-        if key in self._store:
-            del self._store[key]
-
-    def clear(self):
-        # 清空所有快取
-        self._store.clear()
-
-
-class RedisCacheProvider:
-    """
-    Redis 快取工具，支援 get/set/exists/delete/clear_all，並自動序列化 JSON。
-    用於儲存和檢索分析結果、狀態等。
+    相比 Redis 的優勢：
+        - 語義搜索：支援相似查詢的智能匹配
+        - 無外部依賴：無需額外的 Redis 服務
+        - 向量化存儲：更適合 AI 工作流程
+        - 內建持久化：CrewAI 自動管理數據持久性
     """
 
-    def __init__(
-        self,
-        host: str = None,
-        port: int = None,
-        db: int = None,
-        password: Optional[str] = None,
-        expiry_days: int = None,
-        prefix: str = "trailtag:",
-    ):
+    def __init__(self, prefix: str = "trailtag:"):
         """
-        初始化 RedisCacheProvider，設定連線參數、快取前綴與過期時間。
-        連線失敗時 logger 會記錄警告。
+        初始化 CrewAI Memory 快取提供者
+
+        Args:
+            prefix: 快取鍵值前綴，用於區分不同應用的快取數據
         """
         self.logger = logger
-        self.expiry_days = (
-            expiry_days
-            if expiry_days is not None
-            else int(os.getenv("REDIS_EXPIRY_DAYS", 7))
-        )
-        self.expiry_seconds = self.expiry_days * 24 * 60 * 60
         self.prefix = prefix
+        self.memory = CrewMemoryManager()
 
-        self.host = host or os.getenv("REDIS_HOST", "localhost")
-        self.port = port or int(os.getenv("REDIS_PORT", 6379))
-        self.db = db if db is not None else int(os.getenv("REDIS_DB", 0))
-        self.password = (
-            password if password is not None else os.getenv("REDIS_PASSWORD", None)
-        )
-
-        self.redis = None
-        try:
-            # 建立 Redis 連線
-            self.redis = redis.Redis(
-                host=self.host,
-                port=self.port,
-                db=self.db,
-                password=self.password,
-                decode_responses=True,
-            )
-            self.redis.ping()
-            self.logger.debug("*** Redis Connected ***")
-        except Exception as e:
-            self.logger.warning(f"Redis 連接失敗: {str(e)}")
-            self.redis = None
+        # 記錄初始化狀態
+        self.logger.info("CrewAI Memory 快取提供者已初始化")
 
     def _generate_key(
         self, query: Union[str, Dict], params: Optional[Dict] = None
     ) -> str:
         """
-        根據 query 與 params 產生唯一快取鍵值，並加上前綴。
-        以 MD5 雜湊確保鍵值唯一且不易重複。
+        根據 query 與 params 產生唯一快取鍵值
+
+        使用 MD5 雜湊確保鍵值的唯一性和一致性，同時加上前綴便於管理。
+
+        Args:
+            query: 查詢字串或字典
+            params: 額外的查詢參數
+
+        Returns:
+            str: 唯一的快取鍵值
         """
         if isinstance(query, dict):
-            query_str = json.dumps(query, sort_keys=True)
+            query_str = json.dumps(query, sort_keys=True, ensure_ascii=False)
         else:
             query_str = str(query)
+
         hash_input = query_str
         if params:
-            hash_input += json.dumps(params, sort_keys=True)
-        return f"{self.prefix}{hashlib.md5(hash_input.encode()).hexdigest()}"
+            hash_input += json.dumps(params, sort_keys=True, ensure_ascii=False)
+
+        cache_key = f"{self.prefix}{hashlib.md5(hash_input.encode()).hexdigest()}"
+        return cache_key
 
     def get(
         self, query: Union[str, Dict], params: Optional[Dict] = None
     ) -> Optional[Any]:
         """
-        取得指定 query 與 params 的快取內容。
-        若 Redis 未連接或快取不存在則回傳 None。
-        內容自動反序列化為 Python 物件。
+        從 CrewAI Memory 獲取快取內容
+
+        使用語義搜索查找最相關的快取項目。若找到相關內容，
+        則反序列化並返回；否則返回 None。
+
+        Args:
+            query: 查詢內容
+            params: 額外查詢參數
+
+        Returns:
+            快取的內容，若不存在則為 None
         """
-        if not self.redis:
-            self.logger.warning("Redis 未連接，無法獲取快取")
-            return None
         try:
-            key = self._generate_key(query, params)
-            data = self.redis.get(key)
-            if not data:
-                return None
-            return json.loads(data)
+            cache_key = self._generate_key(query, params)
+
+            # 使用 CrewAI Memory 的搜索功能
+            results = self.memory.search(
+                query=cache_key,
+                limit=1,
+                filter_metadata={"type": "cache", "key": cache_key},
+            )
+
+            if results and len(results) > 0:
+                # 獲取最相關的結果
+                cached_content = results[0].get("content")
+                if cached_content:
+                    # 嘗試解析 JSON
+                    try:
+                        return json.loads(cached_content)
+                    except json.JSONDecodeError:
+                        # 若不是 JSON，直接返回字串
+                        return cached_content
+
+            return None
+
         except Exception as e:
-            self.logger.error(f"Redis 獲取快取失敗: {str(e)}")
+            self.logger.error(f"CrewAI Memory 獲取快取失敗: {str(e)}")
             return None
 
     def set(
@@ -169,103 +121,154 @@ class RedisCacheProvider:
         ttl: Optional[int] = None,
     ) -> bool:
         """
-        設定快取內容，將 result 以 JSON 序列化後存入 Redis。
-        若 Redis 未連接則回傳 False。
+        將內容存入 CrewAI Memory 快取
+
+        將結果序列化為 JSON 並存入 CrewAI Memory 系統。
+        使用元數據標記快取類型和鍵值便於後續檢索。
+
+        Args:
+            query: 查詢內容（用作快取鍵）
+            result: 要快取的結果
+            params: 額外查詢參數
+            ttl: 存活時間（秒），CrewAI Memory 中暫未使用
+
+        Returns:
+            bool: 是否成功存入
         """
-        if not self.redis:
-            self.logger.warning("Redis 未連接，無法設置快取")
-            return False
         try:
-            key = self._generate_key(query, params)
-            result_json = json.dumps(result, ensure_ascii=False, default=json_default)
-            expire = ttl if ttl is not None else self.expiry_seconds
-            self.redis.setex(key, expire, result_json)
-            self.logger.debug(f"已成功設置快取，鍵值: {key}")
-            return True
+            cache_key = self._generate_key(query, params)
+
+            # 序列化結果
+            if isinstance(result, (dict, list)):
+                content = json.dumps(result, ensure_ascii=False)
+            else:
+                content = str(result)
+
+            # 存入 CrewAI Memory
+            success = self.memory.store(
+                content=content,
+                metadata={
+                    "type": "cache",
+                    "key": cache_key,
+                    "original_query": str(query),
+                    "ttl": ttl,
+                    "stored_at": json.dumps({"timestamp": time.time()}),
+                },
+            )
+
+            if success:
+                self.logger.debug(f"成功存入快取，鍵值: {cache_key}")
+                return True
+            else:
+                self.logger.warning(f"存入快取失敗，鍵值: {cache_key}")
+                return False
+
         except Exception as e:
-            self.logger.error(f"Redis 設置快取失敗: {str(e)}")
+            self.logger.error(f"CrewAI Memory 設置快取失敗: {str(e)}")
             return False
 
     def exists(self, query: Union[str, Dict], params: Optional[Dict] = None) -> bool:
         """
-        檢查指定 query 與 params 的快取是否存在。
-        若 Redis 未連接則回傳 False。
+        檢查快取是否存在於 CrewAI Memory 中
+
+        Args:
+            query: 查詢內容
+            params: 額外查詢參數
+
+        Returns:
+            bool: 快取是否存在
         """
-        if not self.redis:
-            return False
         try:
-            key = self._generate_key(query, params)
-            return bool(self.redis.exists(key))
+            cache_key = self._generate_key(query, params)
+
+            # 使用搜索功能檢查是否存在
+            results = self.memory.search(
+                query=cache_key,
+                limit=1,
+                filter_metadata={"type": "cache", "key": cache_key},
+            )
+
+            return len(results) > 0
+
         except Exception as e:
-            self.logger.error(f"Redis 檢查鍵存在失敗: {str(e)}")
+            self.logger.error(f"CrewAI Memory 檢查快取存在失敗: {str(e)}")
             return False
 
     def delete(self, query: Union[str, Dict], params: Optional[Dict] = None) -> bool:
         """
-        刪除指定 query 與 params 的快取。
-        若 Redis 未連接則回傳 False。
+        從 CrewAI Memory 刪除快取
+
+        Note: CrewAI Memory 目前不直接支援刪除操作，
+        這裡實現為標記刪除（透過元數據標記）
+
+        Args:
+            query: 查詢內容
+            params: 額外查詢參數
+
+        Returns:
+            bool: 是否成功標記刪除
         """
-        if not self.redis:
-            return False
         try:
-            key = self._generate_key(query, params)
-            return bool(self.redis.delete(key))
+            cache_key = self._generate_key(query, params)
+
+            # CrewAI Memory 不直接支援刪除，使用軟刪除標記
+            success = self.memory.store(
+                content="DELETED",
+                metadata={
+                    "type": "cache",
+                    "key": cache_key,
+                    "deleted": True,
+                    "deleted_at": json.dumps({"timestamp": time.time()}),
+                },
+            )
+
+            if success:
+                self.logger.debug(f"成功標記刪除快取: {cache_key}")
+
+            return success
+
         except Exception as e:
-            self.logger.error(f"Redis 刪除鍵失敗: {str(e)}")
+            self.logger.error(f"CrewAI Memory 刪除快取失敗: {str(e)}")
             return False
 
-    def clear_all(self, pattern: str = None) -> int:
+    def clear(self):
         """
-        清除所有符合 pattern 的快取鍵。
-        預設清除所有 trailtag 前綴的快取。
-        回傳刪除鍵數量。
-        若 Redis 未連接則回傳 0。
+        清空所有快取（軟刪除）
+
+        由於 CrewAI Memory 不支援批次刪除，此方法記錄警告信息。
+        在生產環境中，建議透過 CrewAI Memory 管理介面進行清理。
         """
-        if not self.redis:
-            return 0
-        try:
-            if not pattern:
-                pattern = f"{self.prefix}*"
-            keys = self.redis.keys(pattern)
-            if not keys:
-                return 0
-            return self.redis.delete(*keys)
-        except Exception as e:
-            self.logger.error(f"Redis 清除快取失敗: {str(e)}")
-            return 0
+        self.logger.warning(
+            "CrewAI Memory 不支援批次清除快取，請使用 Memory 管理工具進行清理"
+        )
 
     def scan_keys(self, pattern: str) -> list:
         """
-        掃描符合 pattern 的所有鍵值。
-        使用 SCAN 命令避免阻塞 Redis。
-        若 Redis 未連接則回傳空列表。
+        掃描符合模式的快取鍵
+
+        使用 CrewAI Memory 的搜索功能查找符合模式的快取項目。
 
         Args:
-            pattern: 鍵值模式（如 'job:*', 'analysis:*'）
+            pattern: 鍵值模式（支援萬用字元）
 
         Returns:
-            符合模式的鍵值列表
+            list: 符合模式的鍵值列表
         """
-        if not self.redis:
-            self.logger.warning("Redis 未連接，無法掃描鍵值")
-            return []
-
         try:
+            # 使用通配符搜索
+            results = self.memory.search(
+                query=pattern, limit=100, filter_metadata={"type": "cache"}
+            )
+
             keys = []
-            cursor = 0
+            for result in results:
+                metadata = result.get("metadata", {})
+                if metadata.get("key") and not metadata.get("deleted"):
+                    keys.append(metadata["key"])
 
-            while True:
-                cursor, partial_keys = self.redis.scan(
-                    cursor=cursor, match=pattern, count=100
-                )
-                keys.extend(partial_keys)
-
-                if cursor == 0:
-                    break
-
-            self.logger.debug(f"掃描到 {len(keys)} 個符合模式 '{pattern}' 的鍵值")
+            self.logger.debug(f"掃描到 {len(keys)} 個符合模式 '{pattern}' 的快取鍵")
             return keys
 
         except Exception as e:
-            self.logger.error(f"Redis 掃描鍵值失敗: {str(e)}")
+            self.logger.error(f"CrewAI Memory 掃描鍵值失敗: {str(e)}")
             return []

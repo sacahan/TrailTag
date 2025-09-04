@@ -6,11 +6,11 @@
 
 from fastapi import APIRouter, HTTPException, Path, BackgroundTasks
 from fastapi.openapi.utils import get_openapi
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
 import uuid
 from datetime import datetime, timezone
 import re
-from src.api.models import (
+from src.api.core.models import (
     AnalyzeRequest,
     JobResponse,
     JobStatusResponse,
@@ -20,9 +20,9 @@ from src.api.models import (
     SubtitleStatus,
 )
 
-from .cache_manager import CacheManager
-from trailtag.crew import Trailtag
-from trailtag.tools.youtube_metadata_tool import YoutubeMetadataTool
+from src.api.cache.cache_manager import CacheManager
+from src.trailtag.core.crew import Trailtag
+from src.trailtag.tools.data_extraction.youtube_metadata import YoutubeMetadataTool
 
 
 logger = get_logger(__name__)
@@ -124,8 +124,9 @@ def run_trailtag_job(job_id, video_id):
             phase, progress, status=JobStatus.RUNNING, extra=None, ttl: int = None
         ):
             """
-            寫入/更新 job 狀態到快取，供進度查詢與 SSE 推播。
-            支援可選的 ttl（秒）參數以便設定短暫生命週期的完成狀態。
+                寫入/更新 job 狀態到快取，供進度查詢與 SSE 推播。
+                支援可選的 ttl（秒）參數以便設定短暫生命週期的完成狀態。
+            from src.api.cache.cache_manager import CacheManager
             """
             now = datetime.now(timezone.utc)
             job = cache.get(f"job:{job_id}") or {}

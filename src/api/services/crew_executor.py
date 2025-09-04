@@ -13,11 +13,11 @@ from concurrent.futures import ThreadPoolExecutor
 import threading
 
 from crewai import Crew
-from src.api.logger_config import get_logger
-from src.api.cache_manager import CacheManager
-from src.trailtag.memory_manager import get_memory_manager
-from src.trailtag.memory_models import JobStatus, JobPhase
-from src.api.observability import trace
+from src.api.core.logger_config import get_logger
+from src.api.cache.cache_manager import CacheManager
+from src.trailtag.memory.manager import get_memory_manager
+from src.trailtag.memory.models import JobStatus, JobPhase
+from src.api.monitoring.observability import trace
 
 logger = get_logger(__name__)
 

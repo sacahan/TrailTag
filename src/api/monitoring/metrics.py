@@ -11,10 +11,11 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
-from src.api.logger_config import get_logger
-from src.api.observability import get_metrics as get_observability_metrics
-from src.trailtag.observers import get_global_observer
-from src.api.cache_manager import CacheManager
+from src.api.core.logger_config import get_logger
+from src.api.monitoring.observability import get_metrics as get_observability_metrics
+
+# Import moved to function level to avoid circular import
+from src.api.cache.cache_manager import CacheManager
 
 logger = get_logger(__name__)
 
@@ -222,6 +223,8 @@ async def get_metrics_endpoint():
         observability_metrics = get_observability_metrics()
 
         # 獲取 CrewAI 觀察者指標
+        from src.trailtag.core.observers import get_global_observer
+
         observer = get_global_observer()
         crew_metrics = observer.get_performance_summary()
 
@@ -620,6 +623,9 @@ async def get_api_metrics():
 async def get_crew_metrics():
     """獲取 CrewAI 指標"""
     try:
+        # Import here to avoid circular dependency
+        from src.trailtag.core.observers import get_global_observer
+
         observer = get_global_observer()
         return observer.get_performance_summary()
     except Exception as e:

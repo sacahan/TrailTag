@@ -1,6 +1,6 @@
 import threading
 import time
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
 import os
 from crewai.tools import BaseTool
 from typing import Type

@@ -10,8 +10,8 @@
 包括處理 Token 限制、優化資料大小等。
 """
 
-from .subtitle_chunker import SubtitleChunkerTool
+from .subtitle_chunker import SubtitleChunker
 from .subtitle_compression import SubtitleCompressionTool
-from .token_counter import TokenCountTool
+from .token_counter import count_tokens
 
-__all__ = ["SubtitleChunkerTool", "SubtitleCompressionTool", "TokenCountTool"]
+__all__ = ["SubtitleChunker", "SubtitleCompressionTool", "count_tokens"]

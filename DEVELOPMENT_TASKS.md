@@ -525,7 +525,112 @@ A2 (地圖修復) → [等待 B4 完成] → 前端整合測試
 
 ---
 
-**總預估時間：** 10-12 天 (並行) vs 20-25 天 (依序)
+## 🔴 第五階段任務 (Redis 完全移除)
+
+### E1. Redis 架構清理
+
+**代理類型：** `python-dev-expert`
+**依賴：** 所有前期任務完成，CrewAI Memory 系統穩定運行
+**並行度：** ✅ 可獨立執行
+**優先級：** 中
+
+#### 背景說明
+
+基於第二階段 B1 任務已完成 CrewAI Memory 遷移，且檢查點 G2、G3 已驗證 Memory 系統完全可替代 Redis，現在可以安全地移除所有 Redis 相關程式碼，簡化系統架構。
+
+#### 子任務：
+
+- [ ] **E1.1** 移除 Redis 依賴與配置
+
+  - 移除 `requirements.txt` 或 `pyproject.toml` 中的 redis 相關依賴
+  - 清理環境變數配置（REDIS_HOST, REDIS_PORT, REDIS_PASSWORD 等）
+  - 移除 Docker Compose 中的 Redis 服務配置
+  - **檔案：** `requirements.txt`, `docker-compose.yml`, `.env.example`
+  - **時間：** 2 小時
+
+- [ ] **E1.2** 清理 API 層 Redis 程式碼
+
+  - 移除 `src/api/cache_manager.py` 中的 Redis 相關邏輯
+  - 清理 `src/api/main.py` 中的 Redis 連接與初始化程式碼
+  - 移除降級模式邏輯，僅保留 CrewAI Memory
+  - **檔案：** `src/api/cache/`, `src/api/core/`
+  - **時間：** 4 小時
+
+- [ ] **E1.3** 清理 TrailTag 核心模組
+
+  - 移除 `src/trailtag/main.py` 中的 Redis 快取邏輯
+  - 清理所有工具中的 Redis 相關程式碼
+  - 確保所有快取操作完全使用 CrewAI Memory
+  - **檔案：** `src/trailtag/core/`, `src/trailtag/tools/`
+  - **時間：** 3 小時
+
+- [ ] **E1.4** 更新測試程式碼
+
+  - 移除測試中的 Redis mock 與相關測試案例
+  - 更新整合測試，移除 Redis 相關驗證
+  - 確保所有測試僅依賴 CrewAI Memory
+  - **檔案：** `tests/`, `tests/integration/`
+  - **時間：** 3 小時
+
+- [ ] **E1.5** 清理遷移腳本
+  - 保留 `scripts/migrate_redis_to_memory.py` 作為歷史參考
+  - 新增警告訊息說明 Redis 已不再支援
+  - 創建反向清理腳本（若需要完全清理舊 Redis 資料）
+  - **檔案：** `scripts/`
+  - **時間：** 2 小時
+
+#### 驗證檢查點
+
+**檢查點 E1：Redis 完全移除驗證**
+
+- **觸發條件：** E1.1 至 E1.5 全部完成後
+- **檢查內容：**
+  - [ ] 系統在無 Redis 環境下正常啟動
+  - [ ] 所有 API 端點功能正常（僅使用 CrewAI Memory）
+  - [ ] 測試套件通過率 100%（無 Redis 相關測試失敗）
+  - [ ] 記憶體使用量無異常增長
+- **驗收標準：**
+  - ✅ 系統啟動不依賴任何 Redis 連接
+  - ✅ 所有快取操作透過 CrewAI Memory 完成
+  - ✅ API 回應時間與 Memory 系統時期一致
+  - ✅ 無任何 Redis 相關錯誤訊息或警告
+- **完成時間：** 預計 1 天
+
+### E2. 文檔更新
+
+**代理類型：** `general-purpose`
+**依賴：** E1 完成
+**並行度：** 🔶 可與程式碼清理並行
+**優先級：** 中
+
+#### 子任務：
+
+- [ ] **E2.1** CLAUDE.md 更新
+
+  - 移除 Redis 相關環境變數說明
+  - 更新系統架構說明（僅 CrewAI Memory）
+  - 修正開發命令與部署指南
+  - **檔案：** `CLAUDE.md`
+  - **時間：** 2 小時
+
+- [ ] **E2.2** README.md 更新
+
+  - 移除 Redis 安裝與配置說明
+  - 更新系統需求（不再需要 Redis）
+  - 簡化部署流程說明
+  - **檔案：** `README.md`
+  - **時間：** 2 小時
+
+- [ ] **E2.3** Docker 文檔更新
+  - 移除 Redis 服務說明
+  - 簡化 Docker Compose 配置
+  - 更新環境變數範例
+  - **檔案：** `docker-compose.yml`, `.env.example`
+  - **時間：** 1 小時
+
+---
+
+**總預估時間：** 12-14 天 (包含 Redis 移除)
 **建議子代理數量：** 3-4 個
 **檢查點時程：** 每階段增加 0.5-1 天檢查時間
 **每日檢查點：** 早上 9:00 同步進度，下午 15:00 代碼審查，晚上 18:00 成果驗收

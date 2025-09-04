@@ -20,7 +20,7 @@ TrailTag 是一個將 YouTube 旅遊 Vlog 轉換為互動地圖資料和路線�
 __version__ = "0.2.0"
 
 # 核心系統匯入
-from .core import TrailTagCrew, AgentObserver
+from .core import Trailtag, AgentObserver
 from .memory import CrewMemoryManager, get_memory_manager, ProgressTracker
 
 # 工具模組匯入 (需要時才匯入，避免循環依賴)
@@ -30,7 +30,7 @@ __all__ = [
     # 版本資訊
     "__version__",
     # 核心系統
-    "TrailTagCrew",
+    "Trailtag",
     "AgentObserver",
     # 記憶系統
     "CrewMemoryManager",

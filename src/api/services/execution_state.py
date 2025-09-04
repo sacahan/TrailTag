@@ -12,8 +12,8 @@ from enum import Enum
 from pathlib import Path
 import threading
 
-from src.api.logger_config import get_logger
-from src.api.observability import trace
+from src.api.core.logger_config import get_logger
+from src.api.monitoring.observability import trace
 
 logger = get_logger(__name__)
 

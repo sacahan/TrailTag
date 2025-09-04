@@ -10,14 +10,14 @@
 這些工具專門負責從外部來源獲取原始資料，為後續的處理和分析提供輸入。
 """
 
-from .youtube_metadata import YouTubeMetadataTool
-from .chapter_extractor import ChapterExtractorTool
-from .comment_miner import CommentMinerTool
-from .description_analyzer import DescriptionAnalyzerTool
+from .youtube_metadata import YoutubeMetadataTool
+from .chapter_extractor import ChapterExtractor
+from .comment_miner import CommentMiner
+from .description_analyzer import DescriptionAnalyzer
 
 __all__ = [
-    "YouTubeMetadataTool",
-    "ChapterExtractorTool",
-    "CommentMinerTool",
-    "DescriptionAnalyzerTool",
+    "YoutubeMetadataTool",
+    "ChapterExtractor",
+    "CommentMiner",
+    "DescriptionAnalyzer",
 ]

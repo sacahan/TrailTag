@@ -34,14 +34,14 @@ from src.trailtag.memory_manager import (
     get_memory_manager,
     reset_global_memory_manager,
 )
-from src.trailtag.memory_models import (
+from src.trailtag.memory.models import (
     JobStatus as MemoryJobStatus,
     JobPhase,
 )
 from src.api.crew_executor import (
     get_global_executor,
 )
-from src.api.cache_manager import CacheManager
+from src.api.cache.cache_manager import CacheManager
 from src.trailtag.tools.youtube_metadata_tool import YoutubeMetadataTool
 
 
@@ -164,8 +164,6 @@ class E2ETestBase:
         self.test_config = {
             "OPENAI_API_KEY": "test_key",
             "GOOGLE_API_KEY": "test_key",
-            "REDIS_HOST": "localhost",
-            "REDIS_PORT": 6379,
             "API_HOST": "127.0.0.1",
             "API_PORT": 8010,
         }
@@ -922,8 +920,8 @@ class TestPerformanceBenchmarking(E2ETestBase):
                 ), f"Analysis took {total_time}s, exceeds limit of {benchmarks['max_analysis_time_seconds']}s"
 
     @pytest.mark.asyncio
-    async def test_memory_vs_redis_performance_comparison(self):
-        """Test performance comparison between Memory system and Redis (if available)"""
+    async def test_memory_system_performance(self):
+        """Test CrewAI Memory system performance benchmarks"""
 
         # Test memory system performance
         memory_manager = get_memory_manager()
@@ -932,7 +930,7 @@ class TestPerformanceBenchmarking(E2ETestBase):
         num_operations = 50
         test_data = {"test": "data", "locations": ["Tokyo", "Osaka"]}
 
-        # Memory system benchmark
+        # Memory system save benchmark
         start_time = time.time()
         for i in range(num_operations):
             memory_manager.save_analysis_result(
@@ -944,46 +942,52 @@ class TestPerformanceBenchmarking(E2ETestBase):
             )
         memory_save_time = (time.time() - start_time) * 1000 / num_operations
 
+        # Memory system get benchmark
         start_time = time.time()
         for i in range(num_operations):
             memory_manager.get_analysis_result(f"test_{i}")
         memory_get_time = (time.time() - start_time) * 1000 / num_operations
 
+        # Agent memory benchmark
+        start_time = time.time()
+        for i in range(num_operations):
+            memory_manager.save_agent_memory(
+                agent_role="test_agent",
+                context=f"Test context {i}",
+                entities=[{"name": f"entity_{i}", "type": "location"}],
+                confidence=0.9,
+            )
+        memory_agent_save_time = (time.time() - start_time) * 1000 / num_operations
+
+        # Agent memory query benchmark
+        start_time = time.time()
+        for i in range(num_operations):
+            memory_manager.query_agent_memories("test_agent", f"context {i}")
+        memory_agent_query_time = (time.time() - start_time) * 1000 / num_operations
+
+        # Record performance metrics
         self.record_performance_metric("memory_save_time", memory_save_time)
         self.record_performance_metric("memory_get_time", memory_get_time)
+        self.record_performance_metric("memory_agent_save_time", memory_agent_save_time)
+        self.record_performance_metric(
+            "memory_agent_query_time", memory_agent_query_time
+        )
 
-        # Memory operations should be reasonably fast
+        # Performance assertions
         assert memory_save_time < 100, f"Memory save too slow: {memory_save_time}ms"
         assert memory_get_time < 50, f"Memory get too slow: {memory_get_time}ms"
+        assert (
+            memory_agent_save_time < 50
+        ), f"Agent memory save too slow: {memory_agent_save_time}ms"
+        assert (
+            memory_agent_query_time < 100
+        ), f"Agent memory query too slow: {memory_agent_query_time}ms"
 
-        # If Redis is available, compare performance
-        try:
-            cache_manager = CacheManager()
-            if hasattr(cache_manager, "set") and not cache_manager.is_degraded():
-                # Redis benchmark
-                start_time = time.time()
-                for i in range(num_operations):
-                    cache_manager.set(f"redis_test_{i}", test_data)
-                redis_save_time = (time.time() - start_time) * 1000 / num_operations
-
-                start_time = time.time()
-                for i in range(num_operations):
-                    cache_manager.get(f"redis_test_{i}")
-                redis_get_time = (time.time() - start_time) * 1000 / num_operations
-
-                self.record_performance_metric("redis_save_time", redis_save_time)
-                self.record_performance_metric("redis_get_time", redis_get_time)
-
-                print("Performance Comparison:")
-                print(
-                    f"Memory: Save={memory_save_time:.2f}ms, Get={memory_get_time:.2f}ms"
-                )
-                print(
-                    f"Redis: Save={redis_save_time:.2f}ms, Get={redis_get_time:.2f}ms"
-                )
-
-        except Exception as e:
-            print(f"Redis not available for performance comparison: {e}")
+        print("CrewAI Memory System Performance:")
+        print(f"Analysis Save: {memory_save_time:.2f}ms per operation")
+        print(f"Analysis Get: {memory_get_time:.2f}ms per operation")
+        print(f"Agent Memory Save: {memory_agent_save_time:.2f}ms per operation")
+        print(f"Agent Memory Query: {memory_agent_query_time:.2f}ms per operation")
 
     @pytest.mark.asyncio
     async def test_concurrent_load_performance(self):

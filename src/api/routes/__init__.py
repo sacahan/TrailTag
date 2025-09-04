@@ -14,8 +14,8 @@ API 路由模組 (API Routes)
 回應格式化等 HTTP 層面的處理工作。
 """
 
-from .main_routes import main_routes
+from .main_routes import router
 
 __all__ = [
-    "main_routes",
+    "router",
 ]

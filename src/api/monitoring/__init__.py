@@ -16,10 +16,10 @@ API 監控與可觀測性模組 (API Monitoring & Observability)
 幫助識別性能瓶頸和系統問題。
 """
 
-from .metrics import metrics
+from .metrics import metrics_collector
 from .observability import observability
 
 __all__ = [
-    "metrics",
+    "metrics_collector",
     "observability",
 ]

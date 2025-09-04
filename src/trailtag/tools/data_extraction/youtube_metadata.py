@@ -1,8 +1,8 @@
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
 from crewai.tools import BaseTool
 from typing import Type
 from pydantic import BaseModel, Field
-from ..models import VideoMetadata, SubtitleAvailability
+from src.trailtag.core.models import VideoMetadata, SubtitleAvailability
 import yt_dlp
 from datetime import datetime
 import requests

@@ -21,12 +21,12 @@ API 業務邏輯服務模組 (API Business Logic Services)
 提供高階的功能介面。
 """
 
-from .crew_executor import crew_executor
-from .execution_state import execution_state
-from .webhooks import webhooks
+from .crew_executor import get_global_executor
+from .execution_state import get_execution_state_manager
+from .webhooks import get_webhook_manager
 
 __all__ = [
-    "crew_executor",
-    "execution_state",
-    "webhooks",
+    "get_global_executor",
+    "get_execution_state_manager",
+    "get_webhook_manager",
 ]

@@ -1,14 +1,4 @@
 services:
-  trailtag-redis:
-    container_name: trailtag-redis
-    image: redis:7-alpine
-    command: ["sh", "-c", 'redis-server --requirepass "%@z%dVBRS2f8io"']
-    # ports:
-    #   - "6380:6379"
-    restart: unless-stopped
-    networks:
-      - trailtag-network
-
   trailtag-backend:
     container_name: trailtag-backend
     image: sacahan/trailtag-backend:latest
@@ -16,17 +6,7 @@ services:
     ports:
       - "8010:8010"
     env_file: .env
-    environment:
-      - REDIS_HOST=trailtag-redis
-      - REDIS_PORT=6379
-      - REDIS_DB=1
-      - REDIS_PASSWORD=%@z%dVBRS2f8io
-      - REDIS_EXPIRY_DAYS=7
-    depends_on:
-      - trailtag-redis
     restart: unless-stopped
-    networks:
-      - trailtag-network
 
 networks:
   trailtag-network:

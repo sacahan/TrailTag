@@ -16,10 +16,10 @@ API 快取系統模組 (API Cache System)
 減少 CrewAI 處理時間並提升使用者體驗。
 """
 
-from .cache_manager import cache_manager
-from .cache_provider import cache_provider
+from .cache_manager import CacheManager
+from .cache_provider import CrewAICacheProvider
 
 __all__ = [
-    "cache_manager",
-    "cache_provider",
+    "CacheManager",
+    "CrewAICacheProvider",
 ]

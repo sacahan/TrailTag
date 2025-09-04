@@ -10,12 +10,12 @@ TrailTag 核心系統模組 (Core System)
 代理程式協調以及系統監控。
 """
 
-from .crew import TrailTagCrew
-from .models import models
+from .crew import Trailtag
+from . import models
 from .observers import AgentObserver
 
 __all__ = [
-    "TrailTagCrew",
+    "Trailtag",
     "AgentObserver",
     "models",
 ]

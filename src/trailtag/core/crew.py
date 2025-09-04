@@ -1,22 +1,21 @@
 import os
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
 import datetime
 from typing import List, Tuple, Any
 from crewai import Agent, Crew, Process, Task, TaskOutput
 from crewai.project import CrewBase, before_kickoff, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
-from src.trailtag.tools.youtube_metadata_tool import YoutubeMetadataTool
-from src.trailtag.tools.place_geocode_tool import PlaceGeocodeTool
-from src.trailtag.tools.subtitle_chunker import SubtitleChunker
-from src.trailtag.tools.description_analyzer import DescriptionAnalyzer
-from src.trailtag.tools.chapter_extractor import ChapterExtractor
-from src.trailtag.tools.comment_miner import CommentMiner
-from src.api.cache_provider import RedisCacheProvider
-from src.api.cache_manager import CacheManager
-from src.trailtag.models import VideoMetadata, VideoTopicSummary, MapVisualization
-from src.trailtag.observers import get_global_observer
-from src.api.observability import trace
-from src.trailtag.memory_manager import get_memory_manager
+from src.trailtag.tools.data_extraction.youtube_metadata import YoutubeMetadataTool
+from src.trailtag.tools.geocoding.place_geocoder import PlaceGeocodeTool
+from src.trailtag.tools.processing.subtitle_chunker import SubtitleChunker
+from src.trailtag.tools.data_extraction.description_analyzer import DescriptionAnalyzer
+from src.trailtag.tools.data_extraction.chapter_extractor import ChapterExtractor
+from src.trailtag.tools.data_extraction.comment_miner import CommentMiner
+from src.api.cache.cache_manager import CacheManager
+from src.trailtag.core.models import VideoMetadata, VideoTopicSummary, MapVisualization
+from src.trailtag.core.observers import get_global_observer
+from src.api.monitoring.observability import trace
+from src.trailtag.memory.manager import get_memory_manager
 
 # 建立 logger 物件，供全域記錄除錯與執行狀態
 logger = get_logger(__name__)
@@ -105,7 +104,7 @@ class Trailtag:
 
     記憶與快取:
         - CrewAI Memory 系統: 長期記憶與向量搜尋
-        - Redis 快取: 任務狀態與中間結果
+        - CrewAI Memory: 任務狀態與中間結果
         - 檔案輸出: JSON 格式的執行結果
     """
 
@@ -290,7 +289,7 @@ class Trailtag:
 
     def _update_job_progress(self, phase, progress, status=None, extra=None):
         """
-        於分析流程各階段即時更新 job 狀態與進度到 Redis 快取，供 SSE 查詢。
+        於分析流程各階段即時更新 job 狀態與進度到 CrewAI Memory 快取，供 SSE 查詢。
         需由 kickoff_inputs 取得 job_id。
         phase: 當前階段名稱
         progress: 進度百分比
@@ -390,7 +389,7 @@ class Trailtag:
 
     def _store_map_routes_result(self, output: TaskOutput):
         """
-        將地圖路線結果存入 Redis 快取。
+        將地圖路線結果存入 CrewAI Memory 快取。
         若 output.pydantic 為空則跳過。
         """
         if output.pydantic is None:
@@ -401,7 +400,7 @@ class Trailtag:
             # 同步存入分析結果快取（分析結果 key 統一）
             cache = CacheManager()
             cache.set(f"analysis:{video_id}", output.pydantic.model_dump())
-            logger.info(f"已將地圖路線結果存入 Redis 快取: {video_id}")
+            logger.info(f"已將地圖路線結果存入 CrewAI Memory 快取: {video_id}")
         except Exception as e:
             logger.error(f"存儲地圖路線結果失敗: {e}")
         return output
@@ -410,20 +409,20 @@ class Trailtag:
     def before_kickoff_function(self, inputs):
         """
         任務啟動前的初始化函式。
-        若指定 clear_cache，則清除 Redis 快取。
+        若指定 clear_cache，則清除 CrewAI Memory 快取。
         並將 kickoff inputs 儲存於 self.kickoff_inputs 供 callback 使用。
         """
         logger.info(f"Before kickoff with inputs: {inputs}")
         self.kickoff_inputs = inputs.copy() if isinstance(inputs, dict) else inputs
-        # 如果指定了要清除快取，則清除 Redis 中所有 trailtag:* 相關快取
+        # 如果指定了要清除快取，則清除 CrewAI Memory 快取
         if inputs.get("clear_cache", False):
             try:
-                redis_tool = RedisCacheProvider()
-                cleared = redis_tool.clear_all("trailtag:*")
-                if cleared:
-                    logger.info(f"已清除 {cleared} 個 Redis 快取")
+                cache = CacheManager()
+                # CrewAI Memory 系統使用軟清除方式
+                cache.clear()
+                logger.info("已發送 CrewAI Memory 快取清除請求")
             except Exception as e:
-                logger.error(f"清除 Redis 快取失敗: {e}")
+                logger.error(f"清除 CrewAI Memory 快取失敗: {e}")
         return inputs
 
     @crew

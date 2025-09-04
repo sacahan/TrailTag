@@ -11,7 +11,7 @@ TrailTag 記憶系統模組 (Memory System)
 """
 
 from .manager import CrewMemoryManager, get_memory_manager, reset_global_memory_manager
-from .models import models
+from . import models
 from .progress_tracker import ProgressTracker
 
 __all__ = [

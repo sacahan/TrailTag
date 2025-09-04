@@ -12,17 +12,17 @@ from sse_starlette.sse import EventSourceResponse
 
 # 非同步與系統工具
 import asyncio
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
 
 import time
 import json
 from enum import Enum
 
 # 快取存取（查詢 job 狀態）
-from .cache_manager import CacheManager
+from src.api.cache.cache_manager import CacheManager
 
 # 任務狀態列舉
-from src.api.models import JobStatus
+from src.api.core.models import JobStatus
 
 
 # 設定 logger

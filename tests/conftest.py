@@ -14,8 +14,6 @@ def setup_test_environment():
     test_env = {
         "OPENAI_API_KEY": "test-key-for-testing",
         "GOOGLE_API_KEY": "test-key-for-testing",
-        "REDIS_HOST": "localhost",
-        "REDIS_PORT": "6379",
         "API_HOST": "127.0.0.1",
         "API_PORT": "8010",
         "OTEL_SDK_DISABLED": "true",

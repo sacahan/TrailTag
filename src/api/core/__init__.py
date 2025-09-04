@@ -9,10 +9,10 @@ API 核心組件模組 (Core API Components)
 日誌記錄等核心功能支援。
 """
 
-from .models import models
-from .logger_config import logger_config
+from . import models
+from .logger_config import get_logger
 
 __all__ = [
     "models",
-    "logger_config",
+    "get_logger",
 ]

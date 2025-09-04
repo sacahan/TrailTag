@@ -35,7 +35,7 @@ from crewai.utilities.events import (
 )
 
 # 本地模組匯入
-from .memory_models import (
+from .models import (
     MemoryEntry,
     JobProgressEntry,
     AnalysisResultEntry,
@@ -46,7 +46,7 @@ from .memory_models import (
     JobStatus,
     JobPhase,
 )
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
 
 logger = get_logger(__name__)
 

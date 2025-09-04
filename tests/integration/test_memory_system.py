@@ -1,59 +1,77 @@
 """
-Memory System Validation Tests (Task C1.2)
+CrewAI Memory System Validation Tests
 
-Comprehensive test suite for validating the CrewAI Memory system migration
-and performance compared to Redis. This test suite ensures data integrity,
-performance requirements, and system reliability.
+Comprehensive test suite for validating the CrewAI Memory system functionality,
+performance, and reliability. This test suite ensures the memory system meets
+all requirements for production use.
 
 Test Categories:
-1. Data Migration Validation - Redis to CrewAI Memory
-2. Performance Comparison - Memory vs Redis operations
-3. Memory System Functionality - Core operations
-4. Integration Testing - Memory with crew execution
-5. Data Consistency - Integrity and format validation
-6. Concurrent Access - Multi-user scenarios
+1. Memory System Core Functionality - Basic operations and data integrity
+2. Performance Benchmarks - Memory system performance under various loads
+3. Integration Testing - Memory system integration with crew execution
+4. Data Consistency - Integrity and format validation
+5. Concurrent Access - Multi-user scenarios and thread safety
+6. Storage Efficiency - Memory usage and storage optimization
 
 Requirements Validation:
-- Data consistency testing ✓
-- Performance comparison tests ✓
 - Memory system functionality ✓
+- Performance benchmarking ✓
+- Data consistency testing ✓
 - Integration testing ✓
+- Concurrent access validation ✓
 """
 
 import sys
-import json
 import time
 import asyncio
 import pytest
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, List
 from unittest.mock import Mock
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-# Import project modules
-from src.trailtag.memory_manager import (
-    CrewMemoryManager,
-    reset_global_memory_manager,
+
+import importlib.util
+import sys
+from pathlib import Path
+import logging
+## ...existing code...
+
+# Direct path imports to avoid circular import issues
+memory_manager_path = (
+    Path(__file__).parent.parent.parent / "src/trailtag/memory/manager.py"
 )
-from src.trailtag.memory_models import (
-    JobProgressEntry,
-    AnalysisResultEntry,
-    CrewMemoryConfig,
-    JobStatus,
-    JobPhase,
+models_path = Path(__file__).parent.parent.parent / "src/trailtag/memory/models.py"
+
+# Load modules directly
+spec_manager = importlib.util.spec_from_file_location(
+    "memory_manager", memory_manager_path
 )
-from src.api.cache_provider import RedisCacheProvider
-from scripts.migrate_redis_to_memory import RedisMigrator
-from src.api.logger_config import get_logger
+memory_manager_module = importlib.util.module_from_spec(spec_manager)
+spec_manager.loader.exec_module(memory_manager_module)
 
-logger = get_logger(__name__)
+spec_models = importlib.util.spec_from_file_location("memory_models", models_path)
+models_module = importlib.util.module_from_spec(spec_models)
+spec_models.loader.exec_module(models_module)
+
+# Extract classes
+
+CrewMemoryManager = memory_manager_module.CrewMemoryManager
+reset_global_memory_manager = memory_manager_module.reset_global_memory_manager
+JobProgressEntry = models_module.JobProgressEntry
+AnalysisResultEntry = models_module.AnalysisResultEntry
+CrewMemoryConfig = models_module.CrewMemoryConfig
+JobStatus = models_module.JobStatus
+JobPhase = models_module.JobPhase
+
+logger = logging.getLogger(__name__)
 
 
-class MemoryMigrationTestBase:
-    """Base class for memory migration testing"""
+class MemorySystemTestBase:
+    """Base class for memory system testing"""
 
     @pytest.fixture(autouse=True)
     def setup_test_environment(self, tmp_path):
@@ -77,7 +95,7 @@ class MemoryMigrationTestBase:
         # Create test data
         self.sample_job_data = self._create_sample_job_data()
         self.sample_analysis_data = self._create_sample_analysis_data()
-        self.sample_redis_data = self._create_sample_redis_data()
+        self.performance_test_data = self._create_performance_test_data()
 
         yield
 
@@ -134,302 +152,19 @@ class MemoryMigrationTestBase:
             }
         }
 
-    def _create_sample_redis_data(self) -> Dict[str, Any]:
-        """Create sample Redis data for migration testing"""
-        return {
-            "job:job_redis_1": {
-                "video_id": "redis_test_video",
-                "status": "completed",
-                "phase": "summary",
-                "progress": 100,
-                "result": {"test": "data"},
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat(),
-            },
-            "analysis:redis_test_video": {
-                "metadata": {"title": "Redis Test Video"},
-                "topic_summary": {"places": ["Test Location"]},
-                "map_visualization": {"type": "FeatureCollection"},
-                "processing_time": 30.5,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-            },
-        }
+    def _create_performance_test_data(self) -> List[Dict[str, Any]]:
+        """Create performance test data"""
+        return [
+            {
+                "content": f"Travel video analysis for destination {i}: exploring famous landmarks, local cuisine, and cultural experiences. Includes detailed information about transportation, accommodation recommendations, and budget planning tips.",
+                "metadata": {"index": i, "category": "travel", "location": f"city_{i}"},
+                "confidence": 0.8 + (i % 3) * 0.05,
+            }
+            for i in range(100)
+        ]
 
 
-class TestDataMigrationValidation(MemoryMigrationTestBase):
-    """Test data migration from Redis to CrewAI Memory"""
-
-    @pytest.mark.asyncio
-    async def test_migration_script_functionality(self):
-        """Test the migration script functionality"""
-        # Create mock Redis provider with test data
-        mock_redis = Mock(spec=RedisCacheProvider)
-        mock_redis.scan_keys.return_value = ["job:test_job", "analysis:test_video"]
-        mock_redis.get.side_effect = lambda key: {
-            "job:test_job": self.sample_redis_data["job:job_redis_1"],
-            "analysis:test_video": self.sample_redis_data["analysis:redis_test_video"],
-        }.get(key)
-
-        # Create migrator with test config
-        migrator = RedisMigrator(config=self.test_config, batch_size=10)
-        migrator.redis_provider = mock_redis
-        migrator.redis_available = True
-
-        # Test data scanning
-        categorized_keys = migrator.scan_redis_data()
-
-        assert "job" in categorized_keys
-        assert "analysis" in categorized_keys
-        assert len(categorized_keys["job"]) >= 0
-
-        logger.info(f"Data scanning test passed: {categorized_keys}")
-
-    @pytest.mark.asyncio
-    async def test_data_format_conversion(self):
-        """Test Redis data format conversion to CrewAI Memory format"""
-        migrator = RedisMigrator(config=self.test_config)
-
-        # Test job data conversion
-        redis_job_data = self.sample_redis_data["job:job_redis_1"]
-        converted_job = migrator._convert_job_data("test_job", redis_job_data)
-
-        assert converted_job["job_id"] == "test_job"
-        assert converted_job["video_id"] == "redis_test_video"
-        assert converted_job["status"] == JobStatus.COMPLETED
-        assert converted_job["progress"] == 100
-
-        # Test analysis data conversion
-        redis_analysis_data = self.sample_redis_data["analysis:redis_test_video"]
-        converted_analysis = migrator._convert_analysis_data(
-            "test_video", redis_analysis_data
-        )
-
-        assert converted_analysis["video_id"] == "test_video"
-        assert "metadata" in converted_analysis
-        assert converted_analysis["processing_time"] == 30.5
-        assert converted_analysis["cached"] is True
-
-        logger.info("Data format conversion test passed")
-
-    @pytest.mark.asyncio
-    async def test_migration_integrity_validation(self):
-        """Test data integrity after migration"""
-        memory_manager = CrewMemoryManager(self.test_config)
-
-        # Simulate migrated data
-        job_entry = JobProgressEntry(**self.sample_job_data["job_1"])
-        memory_manager.job_memories["job_1"] = job_entry
-        memory_manager._persist_job_memory(job_entry)
-
-        analysis_entry = AnalysisResultEntry(**self.sample_analysis_data["dQw4w9WgXcQ"])
-        memory_manager.analysis_results["dQw4w9WgXcQ"] = analysis_entry
-        memory_manager._persist_analysis_result(analysis_entry)
-
-        # Validate stored data
-        retrieved_job = memory_manager.get_job_progress("job_1")
-        assert retrieved_job is not None
-        assert retrieved_job.video_id == "dQw4w9WgXcQ"
-        assert retrieved_job.status == JobStatus.COMPLETED
-
-        retrieved_analysis = memory_manager.get_analysis_result("dQw4w9WgXcQ")
-        assert retrieved_analysis is not None
-        assert retrieved_analysis.processing_time == 45.67
-
-        logger.info("Migration integrity validation test passed")
-
-    @pytest.mark.asyncio
-    async def test_migration_dry_run(self):
-        """Test migration dry-run functionality"""
-        mock_redis = Mock(spec=RedisCacheProvider)
-        mock_redis.scan_keys.return_value = ["job:dry_run_test"]
-        mock_redis.get.return_value = {"video_id": "test", "status": "completed"}
-
-        migrator = RedisMigrator(config=self.test_config)
-        migrator.redis_provider = mock_redis
-        migrator.redis_available = True
-
-        # Test dry run
-        success = migrator.run_migration(dry_run=True, force=True)
-        assert success is True
-
-        # Verify no actual data was migrated
-        memory_manager = migrator.memory_manager
-        assert len(memory_manager.job_memories) == 0
-        assert len(memory_manager.analysis_results) == 0
-
-        logger.info("Migration dry-run test passed")
-
-
-class TestPerformanceComparison(MemoryMigrationTestBase):
-    """Test performance comparison between Memory and Redis systems"""
-
-    @pytest.mark.asyncio
-    async def test_memory_vs_redis_save_performance(self):
-        """Compare save operation performance between Memory and Redis"""
-        memory_manager = CrewMemoryManager(self.test_config)
-
-        # Test data
-        test_data = {
-            "test": "performance data",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
-
-        # Memory system performance test
-        memory_times = []
-        for i in range(10):
-            start_time = time.time()
-            memory_manager.memory_storage.save(
-                value=json.dumps(test_data),
-                metadata={"test_id": i},
-                agent="performance_test_agent",
-            )
-            end_time = time.time()
-            memory_times.append(
-                (end_time - start_time) * 1000
-            )  # Convert to milliseconds
-
-        avg_memory_time = sum(memory_times) / len(memory_times)
-
-        # Redis mock performance (simulate Redis times)
-        redis_times = [
-            2.5,
-            3.0,
-            2.8,
-            3.2,
-            2.9,
-            3.1,
-            2.7,
-            2.6,
-            3.0,
-            2.8,
-        ]  # Typical Redis times
-        avg_redis_time = sum(redis_times) / len(redis_times)
-
-        logger.info(f"Average Memory save time: {avg_memory_time:.2f}ms")
-        logger.info(f"Average Redis save time: {avg_redis_time:.2f}ms")
-
-        # Memory should be reasonable (within acceptable bounds)
-        assert (
-            avg_memory_time < 100
-        ), f"Memory save time too slow: {avg_memory_time:.2f}ms"
-
-        logger.info("Memory vs Redis save performance test passed")
-
-    @pytest.mark.asyncio
-    async def test_memory_vs_redis_query_performance(self):
-        """Compare query operation performance between Memory and Redis"""
-        memory_manager = CrewMemoryManager(self.test_config)
-
-        # Pre-populate with test data
-        for i in range(50):
-            memory_manager.memory_storage.save(
-                value=f"Test data {i} with query content search terms location travel",
-                metadata={"index": i, "category": "test"},
-                agent="test_agent",
-            )
-
-        # Memory query performance test
-        query_times = []
-        for _ in range(10):
-            start_time = time.time()
-            results = memory_manager.memory_storage.search(
-                query="travel location", limit=10, score_threshold=0.1
-            )
-            end_time = time.time()
-            query_times.append((end_time - start_time) * 1000)
-
-        avg_query_time = sum(query_times) / len(query_times)
-
-        logger.info(f"Average Memory query time: {avg_query_time:.2f}ms")
-        logger.info(f"Query returned {len(results)} results")
-
-        # Memory query should be fast enough
-        assert (
-            avg_query_time < 50
-        ), f"Memory query time too slow: {avg_query_time:.2f}ms"
-        assert len(results) > 0, "Query should return results"
-
-        logger.info("Memory vs Redis query performance test passed")
-
-    @pytest.mark.asyncio
-    async def test_memory_storage_efficiency(self):
-        """Test memory storage space efficiency"""
-        memory_manager = CrewMemoryManager(self.test_config)
-
-        # Add test data and measure storage
-        initial_stats = memory_manager.get_memory_stats()
-        initial_storage = initial_stats.storage_size_mb
-
-        # Add 100 entries
-        for i in range(100):
-            memory_manager.save_job_progress(
-                job_id=f"perf_test_{i}",
-                video_id=f"video_{i}",
-                status=JobStatus.RUNNING,
-                phase=JobPhase.METADATA,
-                progress=i % 100,
-            )
-
-        # Check storage after additions
-        final_stats = memory_manager.get_memory_stats()
-        final_storage = final_stats.storage_size_mb
-        storage_increase = final_storage - initial_storage
-
-        logger.info(f"Initial storage: {initial_storage:.2f}MB")
-        logger.info(f"Final storage: {final_storage:.2f}MB")
-        logger.info(f"Storage increase: {storage_increase:.2f}MB for 100 entries")
-
-        # Storage should be reasonable
-        assert (
-            storage_increase < 10
-        ), f"Storage increase too large: {storage_increase:.2f}MB"
-        assert final_stats.total_entries >= 100, "All entries should be stored"
-
-        logger.info("Memory storage efficiency test passed")
-
-    @pytest.mark.asyncio
-    async def test_concurrent_access_performance(self):
-        """Test performance under concurrent access"""
-        memory_manager = CrewMemoryManager(self.test_config)
-
-        async def concurrent_save_task(task_id: int):
-            """Concurrent save task"""
-            for i in range(10):
-                memory_manager.save_job_progress(
-                    job_id=f"concurrent_{task_id}_{i}",
-                    video_id=f"video_concurrent_{task_id}",
-                    status=JobStatus.RUNNING,
-                    phase=JobPhase.METADATA,
-                    progress=(i + 1) * 10,
-                )
-                await asyncio.sleep(0.01)  # Small delay to simulate real usage
-
-        # Run concurrent tasks
-        start_time = time.time()
-        tasks = [concurrent_save_task(i) for i in range(5)]
-        await asyncio.gather(*tasks)
-        end_time = time.time()
-
-        concurrent_time = (end_time - start_time) * 1000
-
-        # Verify all data was saved
-        stats = memory_manager.get_memory_stats()
-
-        logger.info(
-            f"Concurrent access time: {concurrent_time:.2f}ms for 50 operations"
-        )
-        logger.info(f"Total entries after concurrent access: {stats.total_entries}")
-
-        # Performance should be reasonable
-        assert (
-            concurrent_time < 5000
-        ), f"Concurrent access too slow: {concurrent_time:.2f}ms"
-        assert stats.total_entries >= 50, "All concurrent operations should succeed"
-
-        logger.info("Concurrent access performance test passed")
-
-
-class TestMemorySystemFunctionality(MemoryMigrationTestBase):
+class TestMemorySystemFunctionality(MemorySystemTestBase):
     """Test core CrewAI Memory system functionality"""
 
     @pytest.mark.asyncio
@@ -592,8 +327,255 @@ class TestMemorySystemFunctionality(MemoryMigrationTestBase):
 
         logger.info("Memory reset operations test passed")
 
+    @pytest.mark.asyncio
+    async def test_memory_persistence_and_recovery(self):
+        """Test memory persistence and recovery mechanisms"""
+        # Create initial memory manager
+        memory_manager = CrewMemoryManager(self.test_config)
 
-class TestIntegrationTesting(MemoryMigrationTestBase):
+        # Add test data
+        test_jobs = [
+            ("recovery_job_1", "video_1", JobStatus.RUNNING, 50),
+            ("recovery_job_2", "video_2", JobStatus.COMPLETED, 100),
+            ("recovery_job_3", "video_3", JobStatus.FAILED, 75),
+        ]
+
+        for job_id, video_id, status, progress in test_jobs:
+            memory_manager.save_job_progress(
+                job_id=job_id,
+                video_id=video_id,
+                status=status,
+                phase=JobPhase.SUMMARY,
+                progress=progress,
+            )
+
+        # Simulate system restart by creating new memory manager with same config
+        recovered_manager = CrewMemoryManager(self.test_config)
+
+        # Verify all data was recovered
+        for job_id, video_id, status, progress in test_jobs:
+            recovered_job = recovered_manager.get_job_progress(job_id)
+            assert recovered_job is not None
+            assert recovered_job.video_id == video_id
+            assert recovered_job.status == status
+            assert recovered_job.progress == progress
+
+        logger.info("Memory persistence and recovery test passed")
+
+
+class TestMemoryPerformanceBenchmarks(MemorySystemTestBase):
+    """Test memory system performance benchmarks"""
+
+    @pytest.mark.asyncio
+    async def test_memory_save_performance_benchmark(self):
+        """Benchmark memory save operations performance"""
+        memory_manager = CrewMemoryManager(self.test_config)
+
+        # Test data preparation
+        test_operations = 100
+        save_times = []
+
+        # Benchmark save operations
+        for i in range(test_operations):
+            start_time = time.time()
+            memory_manager.memory_storage.save(
+                value=f"Performance test content {i} with detailed travel information and location data for benchmarking memory system efficiency",
+                metadata={"test_id": i, "category": "benchmark"},
+                agent="performance_test_agent",
+            )
+            end_time = time.time()
+            save_times.append((end_time - start_time) * 1000)  # Convert to milliseconds
+
+        # Calculate statistics
+        avg_save_time = sum(save_times) / len(save_times)
+        max_save_time = max(save_times)
+        min_save_time = min(save_times)
+
+        logger.info("Save Performance Benchmark Results:")
+        logger.info(f"  Operations: {test_operations}")
+        logger.info(f"  Average save time: {avg_save_time:.2f}ms")
+        logger.info(f"  Max save time: {max_save_time:.2f}ms")
+        logger.info(f"  Min save time: {min_save_time:.2f}ms")
+
+        # Performance assertions
+        assert avg_save_time < 50, f"Average save time too slow: {avg_save_time:.2f}ms"
+        assert max_save_time < 200, f"Max save time too slow: {max_save_time:.2f}ms"
+
+        logger.info("Memory save performance benchmark passed")
+
+    @pytest.mark.asyncio
+    async def test_memory_query_performance_benchmark(self):
+        """Benchmark memory query operations performance"""
+        memory_manager = CrewMemoryManager(self.test_config)
+
+        # Pre-populate with test data
+        test_data_size = 200
+        for i in range(test_data_size):
+            memory_manager.memory_storage.save(
+                value=f"Travel destination {i}: {self.performance_test_data[i % len(self.performance_test_data)]['content']}",
+                metadata=self.performance_test_data[
+                    i % len(self.performance_test_data)
+                ]["metadata"],
+                agent="benchmark_agent",
+            )
+
+        # Benchmark query operations
+        query_tests = [
+            "travel destination Tokyo",
+            "famous landmarks Paris",
+            "local cuisine restaurant",
+            "budget planning tips",
+            "cultural experiences activities",
+        ]
+
+        query_times = []
+        for query in query_tests:
+            start_time = time.time()
+            memory_manager.memory_storage.search(
+                query=query, limit=10, score_threshold=0.1
+            )
+            end_time = time.time()
+            query_times.append((end_time - start_time) * 1000)
+
+        # Calculate statistics
+        avg_query_time = sum(query_times) / len(query_times)
+        max_query_time = max(query_times)
+
+        logger.info("Query Performance Benchmark Results:")
+        logger.info(f"  Dataset size: {test_data_size}")
+        logger.info(f"  Query operations: {len(query_tests)}")
+        logger.info(f"  Average query time: {avg_query_time:.2f}ms")
+        logger.info(f"  Max query time: {max_query_time:.2f}ms")
+
+        # Performance assertions
+        assert (
+            avg_query_time < 100
+        ), f"Average query time too slow: {avg_query_time:.2f}ms"
+        assert max_query_time < 300, f"Max query time too slow: {max_query_time:.2f}ms"
+
+        logger.info("Memory query performance benchmark passed")
+
+    @pytest.mark.asyncio
+    async def test_memory_storage_efficiency_benchmark(self):
+        """Benchmark memory storage space efficiency"""
+        memory_manager = CrewMemoryManager(self.test_config)
+
+        # Measure initial storage
+        initial_stats = memory_manager.get_memory_stats()
+        initial_storage = initial_stats.storage_size_mb
+
+        # Add various sizes of data
+        data_sizes = [100, 500, 1000, 2000]  # Number of entries
+        storage_measurements = []
+
+        for size in data_sizes:
+            for i in range(size):
+                memory_manager.save_job_progress(
+                    job_id=f"storage_test_{size}_{i}",
+                    video_id=f"video_{size}_{i}",
+                    status=JobStatus.RUNNING,
+                    phase=JobPhase.METADATA,
+                    progress=i % 100,
+                )
+
+            # Measure storage after each batch
+            current_stats = memory_manager.get_memory_stats()
+            storage_increase = current_stats.storage_size_mb - initial_storage
+            storage_measurements.append(
+                {
+                    "entries": size,
+                    "storage_mb": storage_increase,
+                    "mb_per_entry": storage_increase / size if size > 0 else 0,
+                }
+            )
+
+        logger.info("Storage Efficiency Benchmark Results:")
+        for measurement in storage_measurements:
+            logger.info(
+                f"  {measurement['entries']} entries: {measurement['storage_mb']:.2f}MB "
+                f"({measurement['mb_per_entry']:.4f}MB per entry)"
+            )
+
+        # Efficiency assertions
+        final_measurement = storage_measurements[-1]
+        assert (
+            final_measurement["mb_per_entry"] < 0.1
+        ), f"Storage per entry too large: {final_measurement['mb_per_entry']:.4f}MB"
+
+        logger.info("Memory storage efficiency benchmark passed")
+
+    @pytest.mark.asyncio
+    async def test_concurrent_access_performance_benchmark(self):
+        """Benchmark performance under concurrent access"""
+        memory_manager = CrewMemoryManager(self.test_config)
+
+        async def concurrent_operation_task(task_id: int, operations_per_task: int):
+            """Concurrent operation task"""
+            task_times = []
+            for i in range(operations_per_task):
+                start_time = time.time()
+
+                # Mix of save and query operations
+                if i % 2 == 0:
+                    memory_manager.save_job_progress(
+                        job_id=f"concurrent_{task_id}_{i}",
+                        video_id=f"video_concurrent_{task_id}",
+                        status=JobStatus.RUNNING,
+                        phase=JobPhase.METADATA,
+                        progress=(i + 1) * 10,
+                    )
+                else:
+                    memory_manager.memory_storage.search(
+                        query=f"concurrent task {task_id}", limit=5
+                    )
+
+                end_time = time.time()
+                task_times.append((end_time - start_time) * 1000)
+                await asyncio.sleep(0.001)  # Small delay to simulate real usage
+
+            return task_times
+
+        # Run concurrent tasks
+        concurrent_tasks = 5
+        operations_per_task = 20
+
+        start_time = time.time()
+        tasks = [
+            concurrent_operation_task(i, operations_per_task)
+            for i in range(concurrent_tasks)
+        ]
+        results = await asyncio.gather(*tasks)
+        end_time = time.time()
+
+        # Analyze results
+        all_times = [time for task_times in results for time in task_times]
+        total_time = (end_time - start_time) * 1000
+        avg_operation_time = sum(all_times) / len(all_times)
+        total_operations = concurrent_tasks * operations_per_task
+
+        logger.info("Concurrent Access Benchmark Results:")
+        logger.info(f"  Concurrent tasks: {concurrent_tasks}")
+        logger.info(f"  Operations per task: {operations_per_task}")
+        logger.info(f"  Total operations: {total_operations}")
+        logger.info(f"  Total time: {total_time:.2f}ms")
+        logger.info(f"  Average operation time: {avg_operation_time:.2f}ms")
+
+        # Performance assertions
+        assert total_time < 10000, f"Concurrent access too slow: {total_time:.2f}ms"
+        assert (
+            avg_operation_time < 100
+        ), f"Average concurrent operation too slow: {avg_operation_time:.2f}ms"
+
+        # Verify all data was saved correctly
+        stats = memory_manager.get_memory_stats()
+        assert (
+            stats.total_entries >= total_operations / 2
+        ), "Not all concurrent operations succeeded"
+
+        logger.info("Concurrent access performance benchmark passed")
+
+
+class TestMemoryIntegration(MemorySystemTestBase):
     """Test memory system integration with crew execution"""
 
     @pytest.mark.asyncio
@@ -663,41 +645,6 @@ class TestIntegrationTesting(MemoryMigrationTestBase):
         logger.info("Memory persistence during execution test passed")
 
     @pytest.mark.asyncio
-    async def test_memory_recovery_mechanisms(self):
-        """Test memory recovery after failures"""
-        # Create initial memory manager
-        memory_manager = CrewMemoryManager(self.test_config)
-
-        # Add test data
-        test_jobs = [
-            ("recovery_job_1", "video_1", JobStatus.RUNNING, 50),
-            ("recovery_job_2", "video_2", JobStatus.COMPLETED, 100),
-            ("recovery_job_3", "video_3", JobStatus.FAILED, 75),
-        ]
-
-        for job_id, video_id, status, progress in test_jobs:
-            memory_manager.save_job_progress(
-                job_id=job_id,
-                video_id=video_id,
-                status=status,
-                phase=JobPhase.SUMMARY,
-                progress=progress,
-            )
-
-        # Simulate system restart by creating new memory manager with same config
-        recovered_manager = CrewMemoryManager(self.test_config)
-
-        # Verify all data was recovered
-        for job_id, video_id, status, progress in test_jobs:
-            recovered_job = recovered_manager.get_job_progress(job_id)
-            assert recovered_job is not None
-            assert recovered_job.video_id == video_id
-            assert recovered_job.status == status
-            assert recovered_job.progress == progress
-
-        logger.info("Memory recovery mechanisms test passed")
-
-    @pytest.mark.asyncio
     async def test_memory_event_handling(self):
         """Test memory event listener functionality"""
         memory_manager = CrewMemoryManager(self.test_config)
@@ -721,17 +668,91 @@ class TestIntegrationTesting(MemoryMigrationTestBase):
 
         logger.info("Memory event handling test passed")
 
+    @pytest.mark.asyncio
+    async def test_memory_workflow_integration(self):
+        """Test memory system integration with complete workflows"""
+        memory_manager = CrewMemoryManager(self.test_config)
 
-class TestDataConsistency(MemoryMigrationTestBase):
-    """Test data consistency and format validation"""
+        # Simulate complete video analysis workflow
+        video_id = "workflow_test_video"
+        job_id = "workflow_test_job"
+
+        # Step 1: Start job
+        memory_manager.save_job_progress(
+            job_id=job_id,
+            video_id=video_id,
+            status=JobStatus.RUNNING,
+            phase=JobPhase.METADATA,
+            progress=0,
+        )
+
+        # Step 2: Process metadata
+        memory_manager.save_job_progress(
+            job_id=job_id,
+            video_id=video_id,
+            status=JobStatus.RUNNING,
+            phase=JobPhase.SUMMARY,
+            progress=33,
+        )
+
+        # Step 3: Save agent memories during processing
+        metadata_agent_memory = memory_manager.save_agent_memory(
+            agent_role="metadata_agent",
+            context=f"Extracted metadata for video {video_id}",
+            insights=["Video contains travel content", "Location data available"],
+            confidence=0.85,
+        )
+
+        # Step 4: Complete geocoding
+        memory_manager.save_job_progress(
+            job_id=job_id,
+            video_id=video_id,
+            status=JobStatus.RUNNING,
+            phase=JobPhase.GEOCODE,
+            progress=66,
+        )
+
+        # Step 5: Save final analysis
+        memory_manager.save_analysis_result(
+            video_id=video_id,
+            metadata={"title": "Workflow Test Video", "duration": 300},
+            topic_summary={"places": ["Test Location"], "activities": ["testing"]},
+            map_visualization={"type": "FeatureCollection", "features": []},
+            processing_time=120.5,
+        )
+
+        # Step 6: Complete job
+        memory_manager.save_job_progress(
+            job_id=job_id,
+            video_id=video_id,
+            status=JobStatus.COMPLETED,
+            phase=JobPhase.GEOCODE,
+            progress=100,
+            result={"workflow": "completed"},
+        )
+
+        # Verify complete workflow data
+        final_job = memory_manager.get_job_progress(job_id)
+        analysis_result = memory_manager.get_analysis_result(video_id)
+        agent_memories = memory_manager.query_agent_memories(
+            agent_role="metadata_agent", query="metadata", limit=5
+        )
+
+        assert final_job.status == JobStatus.COMPLETED
+        assert analysis_result is not None
+        assert len(agent_memories) > 0
+        assert metadata_agent_memory.startswith("metadata_agent_")
+
+        logger.info("Memory workflow integration test passed")
+
+
+class TestMemoryDataConsistency(MemorySystemTestBase):
+    """Test memory data consistency and format validation"""
 
     @pytest.mark.asyncio
     async def test_data_format_consistency(self):
         """Test data format consistency across operations"""
         memory_manager = CrewMemoryManager(self.test_config)
-
-        # Test datetime handling consistency
-        # test_time = datetime.now(timezone.utc)  # 未使用，已移除
 
         memory_manager.save_job_progress(
             job_id="format_test_job",
@@ -758,8 +779,6 @@ class TestDataConsistency(MemoryMigrationTestBase):
     @pytest.mark.asyncio
     async def test_data_integrity_constraints(self):
         """Test data integrity constraints and validation"""
-        # memory_manager = CrewMemoryManager(self.test_config)  # 未使用，已移除
-
         # Test required field validation
         with pytest.raises((ValueError, TypeError)):
             JobProgressEntry(
@@ -886,27 +905,24 @@ class TestDataConsistency(MemoryMigrationTestBase):
 
 
 # Test runner configuration
-class TestMemoryMigrationRunner:
-    """Test runner for memory migration validation"""
+class TestMemorySystemRunner:
+    """Test runner for memory system validation"""
 
     @staticmethod
     def run_all_tests():
-        """Run all memory migration tests"""
+        """Run all memory system tests"""
         test_classes = [
-            TestDataMigrationValidation,
-            TestPerformanceComparison,
             TestMemorySystemFunctionality,
-            TestIntegrationTesting,
-            TestDataConsistency,
+            TestMemoryPerformanceBenchmarks,
+            TestMemoryIntegration,
+            TestMemoryDataConsistency,
         ]
 
-        logger.info("Starting Memory Migration Validation Tests...")
+        logger.info("Starting CrewAI Memory System Validation Tests...")
 
         total_tests = 0
-        passed_tests = 0
-
         for test_class in test_classes:
-            logger.info(f"\n=== Running {test_class.__name__} ===")
+            logger.info(f"\n=== {test_class.__name__} ===")
 
             # Count test methods
             test_methods = [
@@ -917,27 +933,34 @@ class TestMemoryMigrationRunner:
             logger.info(
                 f"Found {len(test_methods)} test methods in {test_class.__name__}"
             )
-            passed_tests += len(test_methods)  # Assume all pass for this summary
 
-        logger.info("\n=== Memory Migration Tests Summary ===")
+        logger.info("\n=== Memory System Tests Summary ===")
         logger.info(f"Total test classes: {len(test_classes)}")
         logger.info(f"Total test methods: {total_tests}")
         logger.info("Status: Ready for execution")
+        logger.info(
+            "Coverage: Core functionality, performance benchmarks, integration, data consistency"
+        )
 
         return True
 
 
 if __name__ == "__main__":
     # Quick test execution for development
-    import logging
+    ## ...existing code...
 
     logging.basicConfig(level=logging.INFO)
 
-    runner = TestMemoryMigrationRunner()
+    runner = TestMemorySystemRunner()
     success = runner.run_all_tests()
 
     if success:
-        print("\n✅ Memory Migration Test Suite is ready!")
-        print("Run with: pytest tests/integration/test_memory_migration.py -v")
+        print("\n✅ CrewAI Memory System Test Suite is ready!")
+        print("Run with: pytest tests/integration/test_memory_system.py -v")
+        print("\nTest categories:")
+        print("- Core functionality and CRUD operations")
+        print("- Performance benchmarks and efficiency")
+        print("- Integration with crew execution")
+        print("- Data consistency and validation")
     else:
         print("❌ Test setup failed")

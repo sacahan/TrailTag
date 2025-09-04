@@ -21,7 +21,7 @@ TrailTag extracts meaningful places, timestamps, and routes from travel videos s
 - Geocode place names to coordinates (configurable provider) and assemble routes (LineString)
 - Output GeoJSON for routes and points with useful properties (time, label, confidence)
 - Provide a FastAPI backend, CLI crew for offline processing, and a browser extension to trigger analyses from the YouTube UI
-- Support caching (in-memory or Redis) and asynchronous task status reporting
+- Support CrewAI Memory-based caching and asynchronous task status reporting
 
 ## Contract (brief)
 
@@ -67,7 +67,7 @@ TrailTag extracts meaningful places, timestamps, and routes from travel videos s
 6. **Memory and persistence**
 
    - **CrewAI Memory system** as primary storage with vector search capabilities
-   - Optional Redis fallback for backward compatibility
+   - Native in-memory persistence with enhanced data consistency
    - **Performance monitoring** with Langtrace integration and detailed metrics
 
 7. **Browser extension**
@@ -79,7 +79,7 @@ TrailTag extracts meaningful places, timestamps, and routes from travel videos s
 8. **CLI and automation**
    - A `crew`-style CLI to run single-video jobs programmatically
    - Suitable for CI or scheduled cron jobs
-   - **Migration tools** for transitioning from Redis to CrewAI Memory
+   - **Built-in persistence** with automatic data consistency management
 
 ## API Reference
 
@@ -142,7 +142,6 @@ TrailTag extracts meaningful places, timestamps, and routes from travel videos s
   {
     "status": "healthy",
     "memory_system": "operational",
-    "redis_status": "fallback_to_memory",
     "subtitle_detection": "active",
     "performance_monitoring": "enabled"
   }
@@ -225,7 +224,7 @@ Prerequisites
 
 - Python 3.11+ (see `pyproject.toml`)
 - Node.js + npm (for the browser extension)
-- Optional: Redis (for shared caching)
+- CrewAI Memory system (included in dependencies)
 
 Start the backend in development mode (uvicorn):
 
@@ -253,7 +252,7 @@ Run tests
 - **Unit tests**: `pytest` (Python) or `cd src/extension && npm test` (Extension)
 - **Integration tests**: `uv run pytest tests/integration/test_memory_migration.py -v` (Memory system validation)
 - **End-to-end tests**: `uv run python run_e2e_tests.py` (Complete workflow validation)
-- **Migration testing**: `uv run python scripts/migrate_redis_to_memory.py --dry-run` (Data migration)
+- **Memory system testing**: `uv run pytest tests/integration/test_memory_migration.py -v` (Memory system validation)
 
 ## Environment variables (common)
 
@@ -274,16 +273,11 @@ Run tests
 - `LANGTRACE_API_KEY` — Langtrace API key for performance tracing
 - `ENABLE_PERFORMANCE_MONITORING` — enable/disable monitoring (default: true)
 
-### Legacy Redis Support (Optional)
-
-- `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD` — Redis configuration
-- `REDIS_EXPIRY_DAYS` — cache expiry in days
-
 ## Deployment notes
 
-- Small test deployment: a single uvicorn instance with optional Redis (docker-compose or local)
-- Production: containerize (Docker), run multiple instances behind a load balancer, use shared Redis
-- Geocoding providers often have rate limits — use caching and provider API keys appropriately
+- Small test deployment: a single uvicorn instance with built-in CrewAI Memory
+- Production: containerize (Docker), run multiple instances behind a load balancer with persistent storage
+- Geocoding providers often have rate limits — use CrewAI Memory caching and provider API keys appropriately
 
 ## Code locations (Updated Architecture)
 
@@ -294,7 +288,7 @@ Run tests
   - `src/api/routes/` — API endpoints and route handlers
   - `src/api/middleware/` — Middleware (SSE, CORS handling)
   - `src/api/services/` — Business logic services (CrewAI execution, state management, webhooks)
-  - `src/api/cache/` — Caching system (Redis + in-memory fallback)
+  - `src/api/cache/` — Caching system with CrewAI Memory integration
   - `src/api/monitoring/` — Performance monitoring and observability
 
 ### CrewAI System

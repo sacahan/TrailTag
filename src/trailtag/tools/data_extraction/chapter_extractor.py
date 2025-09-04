@@ -19,7 +19,7 @@ except ImportError as e:
     YT_DLP_AVAILABLE = False
     logging.warning(f"yt-dlp not available for chapter extraction: {e}")
 
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
 
 logger = get_logger(__name__)
 

@@ -19,8 +19,11 @@ from datetime import datetime, timezone
 from enum import Enum
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from src.api.logger_config import get_logger
-from src.trailtag.tools.subtitle_chunker import SubtitleChunk, SubtitleChunker
+from src.api.core.logger_config import get_logger
+from src.trailtag.tools.processing.subtitle_chunker import (
+    SubtitleChunk,
+    SubtitleChunker,
+)
 
 logger = get_logger(__name__)
 

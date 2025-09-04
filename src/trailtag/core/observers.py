@@ -13,8 +13,8 @@ from crewai.task import Task
 from crewai.crew import Crew
 
 # 移除不存在的 CrewAI 內部導入，使用通用事件處理
-from src.api.logger_config import get_logger
-from src.api.observability import trace, record_metric
+from src.api.core.logger_config import get_logger
+from src.api.monitoring.observability import trace, record_metric
 
 logger = get_logger(__name__)
 

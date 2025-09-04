@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import re
 import hashlib
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
 from typing import List, Dict, Optional, Type
 from pydantic import BaseModel, Field
 from crewai.tools import BaseTool

@@ -11,8 +11,8 @@ API 中間件模組 (API Middleware)
 包括身份驗證、CORS 處理、即時通訊等功能。
 """
 
-from .sse_handler import sse_handler
+from .sse_handler import router as sse_router
 
 __all__ = [
-    "sse_handler",
+    "sse_router",
 ]

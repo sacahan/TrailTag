@@ -16,7 +16,7 @@ from typing import List, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
 import tiktoken
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
 
 logger = get_logger(__name__)
 

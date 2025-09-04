@@ -39,12 +39,12 @@ TrailTag API 主應用程式模組
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Dict, Any
-from src.api.logger_config import get_logger
+from src.api.core.logger_config import get_logger
 from .routes import router as videos_router
-from .sse import router as sse_router
-from .metrics import router as metrics_router, MetricsMiddleware
-from .cache_manager import CacheManager
-from .observability import observability
+from .middleware.sse_handler import router as sse_router
+from .monitoring.metrics import router as metrics_router, MetricsMiddleware
+from .cache.cache_manager import CacheManager
+from .monitoring.observability import observability
 import time
 import sys
 import os
