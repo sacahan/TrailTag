@@ -1,0 +1,43 @@
+[
+  {
+    "video_id": "dQw4w9WgXcQ",
+    "metadata": {
+      "test": "data"
+    },
+    "topic_summary": {
+      "summary": "test"
+    },
+    "map_visualization": {
+      "video_id": "dQw4w9WgXcQ",
+      "routes": [
+        {
+          "location": "Tokyo Station",
+          "coordinates": [139.7673068, 35.6809591],
+          "description": "Major railway hub in Tokyo",
+          "timecode": "00:30",
+          "tags": ["transportation", "landmark"],
+          "marker": "station"
+        },
+        {
+          "location": "Senso-ji Temple",
+          "coordinates": [139.7966936, 35.7148016],
+          "description": "Ancient Buddhist temple in Asakusa",
+          "timecode": "05:15",
+          "tags": ["temple", "culture", "tourism"],
+          "marker": "temple"
+        },
+        {
+          "location": "Mount Fuji",
+          "coordinates": [138.7274, 35.3606],
+          "description": "Japan's highest mountain and sacred symbol",
+          "timecode": "10:45",
+          "tags": ["mountain", "nature", "landmark"],
+          "marker": "mountain"
+        }
+      ]
+    },
+    "processing_time": 120.5,
+    "created_at": "2025-09-03T03:09:55.622492+00:00",
+    "cached": false
+  }
+]

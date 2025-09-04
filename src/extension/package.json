@@ -7,7 +7,7 @@
     "test": "jest --config jest.config.cjs --runInBand",
     "clean": "rm -rf ../../dist && rm -rf dist_ts && mkdir -p dist_ts",
     "ts:build": "tsc -p tsconfig.json --noEmitOnError",
-    "copy:static": "mkdir -p ../../dist/extension && (if [ -d dist_ts ] && [ \"$(ls -A dist_ts)\" ]; then cp -R dist_ts/* ../../dist/extension/; fi) && for f in manifest.json popup.html styles.css assets vendor README.md config.mjs popup.bootstrap.mjs; do if [ -e \"$f\" ]; then cp -R \"$f\" ../../dist/extension/; fi; done && if [ ! -e dist_ts/service_worker.js ] && [ -e service_worker.js ]; then cp -R service_worker.js ../../dist/extension/; fi && rm -rf ../../dist/extension/__tests__",
+    "copy:static": "mkdir -p ../../dist/extension && (if [ -d dist_ts ] && [ \"$(ls -A dist_ts)\" ]; then cp -R dist_ts/* ../../dist/extension/; fi) && for f in manifest.json popup.html styles.css assets vendor README.md config.mjs popup.bootstrap.mjs map-optimization.js; do if [ -e \"$f\" ]; then cp -R \"$f\" ../../dist/extension/; fi; done && if [ ! -e dist_ts/service_worker.js ] && [ -e service_worker.js ]; then cp -R service_worker.js ../../dist/extension/; fi && mkdir -p ../../dist/extension/node_modules/leaflet.markercluster/dist && cp -R node_modules/leaflet.markercluster/dist/* ../../dist/extension/node_modules/leaflet.markercluster/dist/ && rm -rf ../../dist/extension/__tests__",
     "build": "npm run clean && npm run ts:build && npm run copy:static",
     "zip": "npm run build && (cd ../../dist && zip -r extension.zip extension)",
     "package": "npm run zip"
@@ -19,5 +19,8 @@
     "jest-environment-jsdom": "^29.2.1",
     "ts-jest": "^29.4.1",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "leaflet.markercluster": "^1.5.3"
   }
 }

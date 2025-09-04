@@ -1,0 +1,50 @@
+{
+  "timestamp": "2025-09-02T18:11:01.855053",
+  "total_tests": 5,
+  "correct_predictions": 5,
+  "accuracy": 100.0,
+  "average_confidence": 0.71,
+  "g1_checkpoint_passed": true,
+  "detailed_results": [
+    {
+      "video_id": "jNQXAC9IVRw",
+      "description": "YouTube 第一個影片 (應該有字幕)",
+      "expected": true,
+      "actual": true,
+      "correct": true,
+      "confidence": 0.95
+    },
+    {
+      "video_id": "9bZkp7q19f0",
+      "description": "知名音樂影片 (應該有多語言字幕)",
+      "expected": true,
+      "actual": true,
+      "correct": true,
+      "confidence": 0.75
+    },
+    {
+      "video_id": "kJQP7kiw5Fk",
+      "description": "受歡迎音樂影片 (應該有自動字幕)",
+      "expected": true,
+      "actual": true,
+      "correct": true,
+      "confidence": 0.9
+    },
+    {
+      "video_id": "dQw4w9WgXcQ",
+      "description": "經典影片 (應該有字幕)",
+      "expected": true,
+      "actual": true,
+      "correct": true,
+      "confidence": 0.95
+    },
+    {
+      "video_id": "invalid_video",
+      "description": "無效影片 ID (應該檢測為無字幕)",
+      "expected": false,
+      "actual": false,
+      "correct": true,
+      "confidence": 0.0
+    }
+  ]
+}

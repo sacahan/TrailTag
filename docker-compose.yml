@@ -1,15 +1,15 @@
 services:
-  redis:
+  trailtag-redis:
     container_name: trailtag-redis
     image: redis:7-alpine
     command: ["sh", "-c", 'redis-server --requirepass "%@z%dVBRS2f8io"']
     # ports:
     #   - "6380:6379"
-    restart: always
+    restart: unless-stopped
     networks:
       - trailtag-network
 
-  backend:
+  trailtag-backend:
     container_name: trailtag-backend
     image: sacahan/trailtag-backend:latest
     command: ["sh", "-c", "uvicorn src.api.main:app --host 0.0.0.0 --port 8010"]
@@ -17,14 +17,14 @@ services:
       - "8010:8010"
     env_file: .env
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=trailtag-redis
       - REDIS_PORT=6379
       - REDIS_DB=1
       - REDIS_PASSWORD=%@z%dVBRS2f8io
       - REDIS_EXPIRY_DAYS=7
     depends_on:
-      - redis
-    restart: always
+      - trailtag-redis
+    restart: unless-stopped
     networks:
       - trailtag-network
 

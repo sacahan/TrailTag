@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TrailTag</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="vendor/leaflet.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>TrailTag</h1>
+        <div class="status-badge" id="status-badge">閒置</div>
+      </header>
+
+      <main>
+        <!-- 初始狀態 -->
+        <div class="view" id="idle-view">
+          <p class="description">將 YouTube 旅遊影片中的地點轉換為互動地圖。</p>
+          <!-- 字幕狀態檢查區域 -->
+          <div id="subtitle-status"></div>
+          <button id="analyze-btn" class="primary-btn">分析此影片</button>
+        </div>
+
+        <!-- 檢查快取狀態 / 從後端取得最新資料 -->
+        <div class="view hidden" id="checking-view">
+          <div class="spinner"></div>
+          <p class="loading-text">正在從伺服器取得此影片的地點資訊，請稍候…</p>
+          <p class="loading-subtext">（每次開啟都會向伺服器請求最新資料）</p>
+        </div>
+
+        <!-- 分析中狀態 -->
+        <div class="view hidden" id="analyzing-view">
+          <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          <p id="phase-text">我們正在處理影片與字幕，請稍候…</p>
+          <p id="progress-text">0%</p>
+          <button id="cancel-btn" class="secondary-btn">取消</button>
+        </div>
+
+        <!-- 地圖視圖 -->
+        <div class="view hidden" id="map-view">
+          <!-- 地圖載入狀態指示器 -->
+          <div class="map-loading-overlay" id="map-loading-overlay">
+            <div class="map-loading-spinner"></div>
+            <p class="map-loading-text">正在載入地圖...</p>
+          </div>
+
+          <!-- 地圖容器 -->
+          <div id="map"></div>
+
+          <!-- 地圖控制項 -->
+          <div class="map-controls">
+            <div class="map-info">
+              <span id="locations-count">0 個地點</span>
+              <span class="map-performance" id="map-performance"></span>
+            </div>
+            <div class="map-actions">
+              <button
+                id="refresh-map-btn"
+                class="secondary-btn"
+                title="重新整理地圖"
+              >
+                🔄
+              </button>
+              <button id="export-btn" class="secondary-btn">
+                匯出 GeoJSON
+              </button>
+            </div>
+          </div>
+
+          <!-- 地圖錯誤提示 -->
+          <div class="map-error-banner hidden" id="map-error-banner">
+            <div class="map-error-content">
+              <span class="map-error-icon">⚠️</span>
+              <span class="map-error-message" id="map-error-message"
+                >地圖載入失敗</span
+              >
+              <button class="map-error-close" id="map-error-close">×</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 錯誤視圖 -->
+        <div class="view hidden" id="error-view">
+          <div class="error-icon">❌</div>
+          <p id="error-message">發生錯誤</p>
+          <button id="retry-btn" class="primary-btn">重試</button>
+          <button id="report-btn" class="secondary-btn">回報錯誤</button>
+        </div>
+      </main>
+
+      <footer>
+        <a href="https://github.com/sacahan/TrailTag" target="_blank"
+          >關於 TrailTag</a
+        >
+      </footer>
+    </div>
+
+    <!-- 使用本地 vendor/leaflet.js（避免 CSP 阻擋外部腳本） -->
+    <script src="vendor/leaflet.js"></script>
+
+    <!-- 載入 leaflet.markercluster -->
+    <script src="node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <link
+      rel="stylesheet"
+      href="node_modules/leaflet.markercluster/dist/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
+    />
+
+    <!-- 載入地圖優化腳本 -->
+    <script src="map-optimization.js"></script>
+
+    <!-- 然後載入我們的腳本 via module bootstrap (resolves config then injects legacy scripts) -->
+    <script type="module" src="popup.bootstrap.mjs"></script>
+  </body>
+</html>

@@ -35,17 +35,20 @@ TrailTag 將 YouTube 旅遊 Vlog 轉換成可互動的地圖與路線資料，�
 
 - 下載或解析 YouTube metadata（title、description、upload date）
 - 取得字幕（自動生成的字幕或上傳字幕），並解析時間戳與章節（chapters）
+- **字幕檢測系統**：自動偵測影片字幕可用性，並對無字幕影片提供警告
 
 ### 2. 主題抽取與摘要
 
 - 透過 NLP（lightweight agent）抽出影片的主題、重點句與關鍵詞
 - 產生時間戳對應的短摘要，便於在地圖 popup 顯示
+- **智能 Token 管理**：針對長影片進行智能分割處理，避免 Token 限制問題
 
 ### 3. 地點（POI）抽取與地理編碼
 
 - 從文字（字幕、描述、章節）中抓取地名、地址、地標
 - 支援多種 geocoding providers（可配置），例如 Nominatim、Google Geocoding API
 - 回傳座標、信心度、解析來源
+- **多源資料擷取**：整合影片描述、章節資訊與評論區資料提取
 
 ### 4. 路線重建（Route reconstruction）
 
@@ -57,21 +60,25 @@ TrailTag 將 YouTube 旅遊 Vlog 轉換成可互動的地圖與路線資料，�
 - 非同步任務提交（回傳 task_id）
 - 任務狀態查詢與結果下載（JSON / GeoJSON）
 - Server-Sent Events（SSE）或 WebSocket 支援，用於即時進度更新
+- **強化狀態管理**：持久化任務追蹤與恢復機制
 
-### 6. 快取與儲存
+### 6. 記憶體與持久化系統
 
-- 支援記憶體快取與 Redis（如安裝與設定），避免重複分析
-- 可設定快取過期天數
+- **CrewAI Memory 系統**：主要儲存解決方案，具備向量搜尋能力
+- 可選 Redis 備援，提供向下相容性
+- **性能監控**：整合 Langtrace 追蹤與詳細指標收集
 
 ### 7. 瀏覽器擴充套件（extension）
 
 - popup/UI：允許使用者在觀看 YouTube 時一鍵發起分析並在側邊或新分頁顯示地圖
 - 與後端 API 結合，取得並呈現 GeoJSON layer
+- **改善地圖性能**：標記聚類與最佳化渲染
 
 ### 8. CLI 與自動化 workflow
 
 - 提供單次執行 CLI：處理單一 video id 並儲存結果
 - 可在 CI / cron 中排程執行
+- **遷移工具**：從 Redis 遷移到 CrewAI Memory 的完整支援
 
 ## API 快覽（常見端點範例）
 
@@ -159,17 +166,34 @@ npm run package
 
 測試
 
-- Python tests：在專案根目錄執行 `pytest`。
-- Extension tests：在 `src/extension` 執行 `npm test`。
+- **單元測試**：`pytest`（Python）或 `cd src/extension && npm test`（Extension）
+- **整合測試**：`uv run pytest tests/integration/test_memory_migration.py -v`（Memory 系統驗證）
+- **端對端測試**：`uv run python run_e2e_tests.py`（完整工作流程驗證）
+- **遷移測試**：`uv run python scripts/migrate_redis_to_memory.py --dry-run`（資料遷移）
 
 ## 環境變數（細節）
 
+### 核心配置
+
 - `API_HOST` (default 0.0.0.0)
 - `API_PORT` (default 8010)
-- `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD` — Redis 連線設定
-- `REDIS_EXPIRY_DAYS` — 快取過期天數（整數）
 - `OPENAI_API_KEY` — 用於訪問 OpenAI API 的金鑰
 - `GOOGLE_API_KEY` — 用於訪問 Google API 的金鑰
+
+### 記憶體系統（CrewAI）
+
+- `CREW_MEMORY_STORAGE_PATH` — CrewAI Memory 儲存位置（預設：./memory_storage）
+- `CREW_MEMORY_EMBEDDER_PROVIDER` — 嵌入向量提供者（預設：openai）
+
+### 可觀測性與監控
+
+- `LANGTRACE_API_KEY` — Langtrace API 金鑰，用於性能追蹤
+- `ENABLE_PERFORMANCE_MONITORING` — 啟用/停用監控（預設：true）
+
+### 傳統 Redis 支援（可選）
+
+- `REDIS_HOST`, `REDIS_PORT`, `REDIS_DB`, `REDIS_PASSWORD` — Redis 連線設定
+- `REDIS_EXPIRY_DAYS` — 快取過期天數（整數）
 
 ## 部署建議
 
@@ -177,12 +201,44 @@ npm run package
 - 產線：以容器化（Docker）部署，多執行個體搭配共享 Redis 與負載平衡
 - 注意：geocoding API 可能有用量限制，建議加入快取並使用合適的 API keys
 
-## 開發者筆記與程式碼位置
+## 開發者筆記與程式碼位置（重構後架構）
 
-- `src/api/` — FastAPI 應用、路由、模型、logger
-- `src/trailtag/` — crew、agent 工具與 CLI
-- `src/extension/` — 前端 extension 源碼與測試
-- `tests/` — 單元測試
+### 後端組件
+
+- `src/api/` — **模組化 FastAPI 後端**
+  - `src/api/core/` — API 核心組件（模型定義、日誌配置）
+  - `src/api/routes/` — API 端點與路由處理器
+  - `src/api/middleware/` — 中間件（SSE、CORS 處理）
+  - `src/api/services/` — 業務邏輯服務（CrewAI 執行、狀態管理、Webhooks）
+  - `src/api/cache/` — 快取系統（Redis + 記憶體備案）
+  - `src/api/monitoring/` — 性能監控與可觀測性
+
+### CrewAI 系統
+
+- `src/trailtag/` — **增強的 CrewAI 實現**
+  - `src/trailtag/core/` — 核心系統（Crew 定義、模型、觀察器）
+  - `src/trailtag/memory/` — CrewAI Memory 系統（管理器、進度追蹤）
+  - `src/trailtag/tools/` — **分類工具套件**
+    - `src/trailtag/tools/data_extraction/` — YouTube 元資料、章節、評論、描述
+    - `src/trailtag/tools/processing/` — 字幕處理、壓縮、Token 管理
+    - `src/trailtag/tools/geocoding/` — 地理座標解析
+
+### 前端擴充套件
+
+- `src/extension/` — **重構的 Chrome 擴充套件**
+  - `src/extension/src/core/` — 核心功能（地圖渲染、彈出視窗控制、字幕檢測）
+  - `src/extension/src/services/` — API 通訊服務
+  - `src/extension/src/utils/` — 工具函式與最佳化工具
+  - `src/extension/ui/` — 使用者介面組件與樣式
+  - `src/extension/config/` — 建置與配置檔案
+  - `src/extension/tests/` — 測試套件
+
+### 測試與文件
+
+- `tests/` — **完整測試套件**
+  - `tests/integration/` — 整合測試（E2E、Memory 遷移驗證）
+  - 各模組分散的單元測試
+- `scripts/` — 遷移與工具腳本
 
 ## 邊界注意
 

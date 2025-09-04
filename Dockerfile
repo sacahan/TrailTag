@@ -9,9 +9,9 @@ COPY src/__init__.py src/__init__.py
 COPY src/api/ src/api/
 COPY src/trailtag/ src/trailtag/
 
-# 建立虛擬環境並安裝套件
+# 安裝套件
 RUN pip install --upgrade pip setuptools wheel \
-    && pip install . --no-cache-dir
+  && pip install . --no-cache-dir
 
 # 暴露埠號
 EXPOSE 8010
