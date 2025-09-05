@@ -14,6 +14,23 @@
 - `__tests__/`：Jest 測試檔案與測試工具。
 - `manifest.json`：擴充功能設定（manifest v3）。
 
+## 環境變數配置
+
+TrailTag 擴充功能支援透過環境變數進行配置。詳細說明請參考 [CONFIG.md](CONFIG.md)。
+
+### 快速開始
+
+```bash
+# 開發環境
+export TRAILTAG_API_BASE_URL="http://localhost:8010"
+npm run build
+
+# 正式環境
+export TRAILTAG_API_BASE_URL="https://api.trailtag.com"
+export TRAILTAG_FETCH_RETRIES="3"
+npm run build
+```
+
 ## 開發指引
 
 1. 安裝相依套件（需要 Node.js 與 npm）：
@@ -28,7 +45,7 @@ npm install
 npm test
 ```
 
-1. 本地打包（clean、TypeScript 編譯、複製必要檔案並壓縮）：
+1. 本地打包（clean、配置注入、TypeScript 編譯、複製必要檔案並壓縮）：
 
 ```bash
 cd src/extension
@@ -44,6 +61,7 @@ npm run build
 ## 與後端整合
 
 - 預設後端 API 位址：`http://localhost:8010`。請確保 API 正在執行並允許來自 extension 的 CORS。
+- 可透過 `TRAILTAG_API_BASE_URL` 環境變數修改 API 位址。
 - `api.js` 包含與 `/api/videos/analyze`、`/api/jobs/{job_id}`、`/api/videos/{video_id}/locations` 的互動範例。
 
 ## 打包輸出

@@ -19,12 +19,20 @@ TrailTag 是一個將 YouTube 旅遊 Vlog 轉換為互動地圖資料和路線�
 
 __version__ = "0.2.0"
 
-# 核心系統匯入
-from .core import Trailtag, AgentObserver
+# 核心系統匯入 (使用延遲匯入避免循環依賴)
+from .core import AgentObserver, get_trailtag
 from .memory import CrewMemoryManager, get_memory_manager, ProgressTracker
 
 # 工具模組匯入 (需要時才匯入，避免循環依賴)
 from . import tools
+
+
+# 延遲匯入核心類別
+def __getattr__(name):
+    if name == "Trailtag":
+        return get_trailtag()
+    raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
+
 
 __all__ = [
     # 版本資訊

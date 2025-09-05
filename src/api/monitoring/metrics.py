@@ -14,8 +14,7 @@ from pydantic import BaseModel
 from src.api.core.logger_config import get_logger
 from src.api.monitoring.observability import get_metrics as get_observability_metrics
 
-# Import moved to function level to avoid circular import
-from src.api.cache.cache_manager import CacheManager
+# CacheManager 將在需要時動態匯入以避免循環依賴
 
 logger = get_logger(__name__)
 
@@ -229,6 +228,8 @@ async def get_metrics_endpoint():
         crew_metrics = observer.get_performance_summary()
 
         # 獲取快取狀態
+        from src.api.cache.cache_manager import CacheManager
+
         cache = CacheManager()
         cache_status = {
             "is_degraded": cache.is_degraded(),

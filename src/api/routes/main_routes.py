@@ -20,8 +20,7 @@ from src.api.core.models import (
     SubtitleStatus,
 )
 
-from src.api.cache.cache_manager import CacheManager
-from src.trailtag.core.crew import Trailtag
+# CacheManager 和 Trailtag 將在需要時動態匯入以避免循環依賴
 from src.trailtag.tools.data_extraction.youtube_metadata import YoutubeMetadataTool
 
 
@@ -45,8 +44,18 @@ def custom_openapi():
 router.openapi = custom_openapi
 
 
-# 快取提供者（Redis/Memory fallback），統一管理 job 狀態與分析結果
-cache = CacheManager()
+def get_cache():
+    """獲取快取管理器實例（延遲匯入）"""
+    from src.api.cache.cache_manager import CacheManager
+
+    return CacheManager()
+
+
+def get_trailtag():
+    """獲取 Trailtag 實例（延遲匯入）"""
+    from src.trailtag.core.crew import Trailtag
+
+    return Trailtag
 
 
 def extract_video_id(url: str) -> str:
@@ -119,14 +128,15 @@ def run_trailtag_job(job_id, video_id):
     3. 若失敗則記錄錯誤並更新 job 狀態。
     """
     try:
+        # 延遲匯入避免循環依賴
+        cache = get_cache()
 
         def update_job(
             phase, progress, status=JobStatus.RUNNING, extra=None, ttl: int = None
         ):
             """
-                寫入/更新 job 狀態到快取，供進度查詢與 SSE 推播。
-                支援可選的 ttl（秒）參數以便設定短暫生命週期的完成狀態。
-            from src.api.cache.cache_manager import CacheManager
+            寫入/更新 job 狀態到快取，供進度查詢與 SSE 推播。
+            支援可選的 ttl（秒）參數以便設定短暫生命週期的完成狀態。
             """
             now = datetime.now(timezone.utc)
             job = cache.get(f"job:{job_id}") or {}
@@ -159,6 +169,7 @@ def run_trailtag_job(job_id, video_id):
             # 進度: metadata
             update_job("metadata", 5)
             # 執行 crewai 主流程（同步呼叫，實際可依需求細分進度）
+            Trailtag = get_trailtag()
             output = Trailtag().crew().kickoff(inputs=inputs)
             # 進度: geocode 完成 — 將完成的 job TTL 設為 60 秒
             update_job("geocode", 100, status=JobStatus.DONE, ttl=60)
@@ -241,6 +252,7 @@ async def analyze_video(
         )
 
     # 檢查是否已有此影片的分析結果（查快取）
+    cache = get_cache()
     cache_key = f"analysis:{video_id}"
     cached_result = cache.get(cache_key)
     if cached_result:
@@ -314,6 +326,7 @@ async def get_job_status(job_id: str = Path(..., description="任務 ID")) -> Jo
     根據 job_id 查詢任務狀態，回傳進度、階段、錯誤等資訊。
     若 job 不存在則回傳 404。
     """
+    cache = get_cache()
     job = cache.get(f"job:{job_id}")
     if not job:
         logger.warning({"event": "job_not_found", "job_id": job_id})
@@ -335,6 +348,7 @@ async def get_video_locations(
     根據 video_id 查詢分析後的地點視覺化資料（地圖路線等）。
     若查無資料則回傳 404。
     """
+    cache = get_cache()
     cache_key = f"analysis:{video_id}"
     result = cache.get(cache_key)
     if not result:
@@ -380,6 +394,7 @@ async def get_job_by_video(
     先嘗試使用 video_job:{video_id} 映射取得對應 job_id，若未命中則回傳 404。
     若命中則回傳該 job 的簡要狀態（job_id, status, phase, progress, stats, error）。
     """
+    cache = get_cache()
     # 嘗試直接查找映射
     try:
         mapped = cache.get(f"video_job:{video_id}")

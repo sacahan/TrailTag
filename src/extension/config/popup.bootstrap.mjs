@@ -1,4 +1,8 @@
 import defaults from "./config.mjs";
+import * as Utils from "./utils/helpers.js";
+import * as API from "./services/api.js";
+import * as Map from "./core/map-renderer.js";
+import * as Popup from "./core/popup-controller.js";
 
 /*
  * popup.bootstrap.mjs
@@ -9,31 +13,20 @@ import defaults from "./config.mjs";
  */
 
 // bootstrap module for popup: resolve config and load legacy scripts in order
-(async function bootstrap() {
+(function bootstrap() {
   // always use packaged defaults; do not read from chrome.storage
   const resolved = Object.assign({}, defaults);
 
   // expose config globally
   window.TRAILTAG_CONFIG = resolved;
 
-  // dynamic import old modules in order and attach to window.TrailTag
-  const scripts = [
-    { file: "utils.js", ns: "Utils" },
-    { file: "api.js", ns: "API" },
-    { file: "map.js", ns: "Map" },
-    { file: "popup.js", ns: "Popup" },
-  ];
-
+  // attach modules to window.TrailTag
   window.TrailTag = window.TrailTag || {};
+  window.TrailTag.Utils = Utils;
+  window.TrailTag.API = API;
+  window.TrailTag.Map = Map;
+  window.TrailTag.Popup = Popup;
 
-  for (const s of scripts) {
-    try {
-      const mod = await import(`./${s.file}`);
-      window.TrailTag[s.ns] = mod;
-    } catch (err) {
-      console.error("Failed to import module", s.file, err);
-      throw err;
-    }
-  }
+  console.log("TrailTag bootstrap completed", window.TrailTag);
 })();
 // 將解析後的設定放到全域，可被舊式腳本或測試讀取（命名為 TRAILTAG_CONFIG）

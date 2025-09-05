@@ -88,7 +88,7 @@ describe("popup initializeApp restore/attach", () => {
     };
 
     createDomMocks();
-    const popup = await import("../popup");
+    const popup = await import("../../src/core/popup-controller");
     const {
       initializeApp,
       state: popupState,
@@ -124,7 +124,7 @@ describe("popup initializeApp restore/attach", () => {
       return;
     };
     // no need to mock chrome messaging; popup should call startPolling
-    const popup = await import("../popup");
+    const popup = await import("../../src/core/popup-controller");
     const { initializeApp, queryElements } = popup as any;
     if (typeof queryElements === "function") queryElements();
 

@@ -1,4 +1,3 @@
-
 #!/usr/bin/env zsh
 
 set -euo pipefail
@@ -11,8 +10,33 @@ err()  { echo "[ERROR] $*" >&2; }
 SCRIPT_DIR="$(cd "$(dirname "$0")" >/dev/null 2>&1 && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." >/dev/null 2>&1 && pwd)"
 
+info "=== 開始前端建制流程 ==="
+
+# 處理環境變數配置
+info "設定 TrailTag 配置環境變數..."
+
+# 設定預設環境變數（如果未提供）
+export TRAILTAG_API_BASE_URL="${TRAILTAG_API_BASE_URL:-http://localhost:8010}"
+export TRAILTAG_FETCH_RETRIES="${TRAILTAG_FETCH_RETRIES:-2}"
+export TRAILTAG_FETCH_BACKOFF_MS="${TRAILTAG_FETCH_BACKOFF_MS:-500}"
+export TRAILTAG_MAX_RECONNECT="${TRAILTAG_MAX_RECONNECT:-1}"
+export TRAILTAG_POLLING_INTERVAL_MS="${TRAILTAG_POLLING_INTERVAL_MS:-5000}"
+export TRAILTAG_KEEPALIVE_MS="${TRAILTAG_KEEPALIVE_MS:-30000}"
+export TRAILTAG_STATE_TTL_MS="${TRAILTAG_STATE_TTL_MS:-1800000}"
+
+# 顯示當前配置
+info "當前 TrailTag 配置:"
+info "  API_BASE_URL: $TRAILTAG_API_BASE_URL"
+info "  FETCH_RETRIES: $TRAILTAG_FETCH_RETRIES"
+info "  FETCH_BACKOFF_MS: $TRAILTAG_FETCH_BACKOFF_MS"
+info "  MAX_RECONNECT: $TRAILTAG_MAX_RECONNECT"
+info "  POLLING_INTERVAL_MS: $TRAILTAG_POLLING_INTERVAL_MS"
+info "  KEEPALIVE_MS: $TRAILTAG_KEEPALIVE_MS"
+info "  STATE_TTL_MS: $TRAILTAG_STATE_TTL_MS"
+
 # 前端 extension 的路徑（假設存放於 src/extension）
 EXT_DIR="$PROJECT_ROOT/src/extension"
+
 if [ -d "$EXT_DIR" ]; then
     info "Packaging extension in $EXT_DIR"
     cd "$EXT_DIR"
@@ -31,8 +55,8 @@ if [ -d "$EXT_DIR" ]; then
             fi
         else
             # 如果系統沒有安裝 npm，回報錯誤並停止前端打包流程
-            err "npm is not installed or not in PATH; skipping frontend packaging"
-            return 1
+            err "npm is not installed or not in PATH; frontend packaging failed"
+            exit 1
         fi
     fi
 
@@ -40,40 +64,11 @@ if [ -d "$EXT_DIR" ]; then
     info "Running: npm run package"
     npm run package
     info "Extension packaging finished"
+
+    info "=== 前端建制完成 ==="
 else
-    # 找不到前端目錄時，記錄並略過打包步驟
-    err "Extension directory not found: $EXT_DIR — skipping frontend packaging"
-fi
-
-
-# 預設要支援的平台
-# PLATFORMS="linux/amd64,linux/arm64"
-PLATFORMS="linux/amd64"
-# 預設的映像名稱
-IMAGE_NAME="sacahan/trailtag-backend"
-
-# 檢查 Docker 是否安裝
-if ! command -v docker &> /dev/null
-then
-    err "Docker 未安裝，請先安裝 Docker。"
+    # 找不到前端目錄時，記錄並停止流程
+    err "Extension directory not found: $EXT_DIR"
+    err "=== 前端建制失敗 ==="
     exit 1
 fi
-
-BUILDER_NAME="multiarch-builder"
-if ! docker buildx inspect "$BUILDER_NAME" &> /dev/null; then
-    info "建立 buildx builder: $BUILDER_NAME"
-    docker buildx create --name "$BUILDER_NAME" --driver docker-container --use
-else
-    info "使用已存在的 buildx builder: $BUILDER_NAME"
-    docker buildx use "$BUILDER_NAME"
-fi
-docker buildx inspect --bootstrap
-info "註冊 QEMU multiarch binfmt 支援 (需要 Docker 允許 --privileged) ..."
-docker run --rm --privileged tonistiigi/binfmt:latest --install all || \
-docker run --rm --privileged multiarch/qemu-user-static --reset -p yes || true
-
-DOCKERFILE_PATH="$PROJECT_ROOT/Dockerfile"
-IMAGE_TAG="${IMAGE_NAME}:latest"
-info "建置並推送多平台映像: image=$IMAGE_TAG, dockerfile=$DOCKERFILE_PATH"
-# buildx --push 只推送，不保留本地 image
-docker buildx build --platform "$PLATFORMS" --push -t "$IMAGE_TAG" -f "$DOCKERFILE_PATH" "$PROJECT_ROOT"

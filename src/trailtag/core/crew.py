@@ -11,7 +11,8 @@ from src.trailtag.tools.processing.subtitle_chunker import SubtitleChunker
 from src.trailtag.tools.data_extraction.description_analyzer import DescriptionAnalyzer
 from src.trailtag.tools.data_extraction.chapter_extractor import ChapterExtractor
 from src.trailtag.tools.data_extraction.comment_miner import CommentMiner
-from src.api.cache.cache_manager import CacheManager
+
+# CacheManager 將在需要時動態匯入以避免循環依賴
 from src.trailtag.core.models import VideoMetadata, VideoTopicSummary, MapVisualization
 from src.trailtag.core.observers import get_global_observer
 from src.api.monitoring.observability import trace
@@ -301,6 +302,9 @@ class Trailtag:
         if not job_id:
             return
 
+        # 使用延遲匯入避免循環依賴
+        from src.api.cache.cache_manager import CacheManager
+
         cache = CacheManager()
         now = datetime.datetime.now(datetime.timezone.utc)
         job = cache.get(f"job:{job_id}") or {}
@@ -398,6 +402,9 @@ class Trailtag:
         try:
             video_id = self.kickoff_inputs.get("video_id")
             # 同步存入分析結果快取（分析結果 key 統一）
+            # 使用延遲匯入避免循環依賴
+            from src.api.cache.cache_manager import CacheManager
+
             cache = CacheManager()
             cache.set(f"analysis:{video_id}", output.pydantic.model_dump())
             logger.info(f"已將地圖路線結果存入 CrewAI Memory 快取: {video_id}")
@@ -417,6 +424,9 @@ class Trailtag:
         # 如果指定了要清除快取，則清除 CrewAI Memory 快取
         if inputs.get("clear_cache", False):
             try:
+                # 使用延遲匯入避免循環依賴
+                from src.api.cache.cache_manager import CacheManager
+
                 cache = CacheManager()
                 # CrewAI Memory 系統使用軟清除方式
                 cache.clear()

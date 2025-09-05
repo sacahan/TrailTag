@@ -773,6 +773,30 @@ class CrewMemoryManager:
         except Exception as e:
             logger.error(f"清除所有持久化資料失敗: {e}")
 
+    def search(
+        self,
+        query: str,
+        limit: int = 10,
+        score_threshold: float = 0.5,
+        filter_metadata: Optional[Dict] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        搜尋記憶條目
+
+        Args:
+            query: 查詢字串
+            limit: 結果數量限制
+            score_threshold: 相似度閾值
+            filter_metadata: 過濾條件（為了兼容 cache_provider 的調用）
+
+        Returns:
+            搜尋結果列表
+        """
+        # 委派給 memory_storage 的 search 方法
+        return self.memory_storage.search(
+            query=query, limit=limit, score_threshold=score_threshold
+        )
+
 
 # 全域記憶管理器實例
 _global_memory_manager: Optional[CrewMemoryManager] = None

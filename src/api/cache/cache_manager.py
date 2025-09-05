@@ -1,8 +1,11 @@
+# 匯入共享介面
+from src.common.interfaces import CacheInterface
+
 # 匯入 CrewAI Memory 快取提供者
 from .cache_provider import CrewAICacheProvider
 
 
-class CacheManager:
+class CacheManager(CacheInterface):
     """
     CrewAI Memory 快取管理器
 

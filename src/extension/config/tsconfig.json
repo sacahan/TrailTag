@@ -4,12 +4,13 @@
     "module": "ES2020",
     "moduleResolution": "node",
     "lib": ["DOM", "ES2019"],
-    "outDir": "./dist_ts",
+    "outDir": "../dist_ts",
     "allowJs": true,
     "strict": false,
     "esModuleInterop": true,
     "noEmitOnError": false,
     "skipLibCheck": true
   },
-  "include": ["./**/*.ts", "./**/*.test.ts"]
+  "include": ["../src/**/*.ts"],
+  "exclude": ["../dist_ts", "../node_modules", "../tests"]
 }

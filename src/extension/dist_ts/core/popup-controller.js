@@ -9,14 +9,8 @@
  *
  * 本次重排僅調整函式順序與區塊結構，提高可讀性與維護性，不改變行為。
  */
-
-/* Ambient globals used by extension runtime */
-declare const chrome: any; // chrome extension API
-declare const TRAILTAG_CONFIG: any; // 可由環境注入的設定
-
 // 導入字幕檢查器
 import { SubtitleChecker } from "./subtitle-detector.js";
-
 // 優先使用全域註冊的 Utils（若存在）以便測試或 runtime 相容
 const Utils =
   (typeof window !== "undefined" && window.TrailTag && window.TrailTag.Utils) ||
@@ -24,43 +18,18 @@ const Utils =
 const getCurrentVideoId = Utils
   ? Utils.getCurrentVideoId
   : typeof window !== "undefined"
-    ? (window as any).getCurrentVideoId
+    ? window.getCurrentVideoId
     : undefined;
 const loadState = Utils
   ? Utils.loadState
   : typeof window !== "undefined"
-    ? (window as any).loadState
+    ? window.loadState
     : undefined;
 const saveState = Utils
   ? Utils.saveState
   : typeof window !== "undefined"
-    ? (window as any).saveState
+    ? window.saveState
     : undefined;
-
-// 擴充全域 Window 型別，讓測試或舊有程式可使用 window 上的 helper
-declare global {
-  interface Window {
-    TrailTag?: any;
-    startAnalysis?: any;
-    stopEventListener?: any;
-    changeState?: any;
-    exportGeoJSON?: any;
-    startPolling?: any;
-    stopPolling?: any;
-    downloadGeoJSON?: ((geoJSON: any, videoId: string) => void) | any;
-    __registerPopupTestingHelpers?: ((arg: any) => void) | any;
-  }
-}
-
-/* 其他可能綁在 window 上的函式（在某些環境由外部模組提供） */
-declare function initMap(containerId: string): any;
-declare function addMarkersFromMapVisualization(
-  mapVisualization: any,
-  videoId: string | null,
-): number;
-declare function downloadGeoJSON(geoJSON: any, videoId: string): void;
-declare function __registerPopupTestingHelpers(arg: any): void;
-
 // 應用的幾個狀態常數
 export const AppState = {
   IDLE: "idle",
@@ -68,11 +37,9 @@ export const AppState = {
   ANALYZING: "analyzing",
   MAP_READY: "map_ready",
   ERROR: "error",
-} as const;
-export type AppStateKey = (typeof AppState)[keyof typeof AppState];
-
+};
 // 全域可變的應用狀態物件（儲存在 popup 的記憶體中）
-export let state: any = {
+export let state = {
   currentState: AppState.IDLE,
   videoId: null,
   jobId: null,
@@ -84,23 +51,20 @@ export let state: any = {
   subtitleChecker: null, // 字幕檢查器實例
   lastUpdated: Date.now(),
 };
-
 // cache DOM 元素引用與地圖實例以避免重複查詢
-let elements: any = null;
-let map: any = null;
-
+let elements = null;
+let map = null;
 // ----------------------
 // UI helpers / text
 // ----------------------
 /** Internal helper: safeTextContent - set textContent if element exists */
-function safeTextContent(el: any, text: string) {
+function safeTextContent(el, text) {
   if (!el) return;
   try {
     el.textContent = text;
   } catch (e) {}
 }
-
-export function getStatusText(appState: string) {
+export function getStatusText(appState) {
   switch (appState) {
     case AppState.IDLE:
       return "閒置";
@@ -116,8 +80,7 @@ export function getStatusText(appState: string) {
       return "未知";
   }
 }
-
-export function getPhaseText(phase: string) {
+export function getPhaseText(phase) {
   switch (phase) {
     case "metadata":
       return "正在抓取影片資料...";
@@ -131,7 +94,6 @@ export function getPhaseText(phase: string) {
       return "正在處理...";
   }
 }
-
 /**
  * 查詢並快取必要的 DOM 元素引用
  * - 將常用的 DOM 節點保存在 elements，供 updateUI 與事件處理器使用
@@ -159,7 +121,6 @@ export function queryElements() {
     locationsCount: document.getElementById("locations-count"),
   };
 }
-
 /**
  * 準備回報錯誤的簡短摘要並嘗試複製到剪貼簿，同時開啟 mailto 以便使用者進一步貼上。
  */
@@ -174,19 +135,13 @@ export function reportError() {
   const body = `TrailTag 錯誤回報%0AvideoId: ${videoId}%0AjobId: ${jobId}%0AdebugId: ${debugId}%0Amessage: ${errText}`;
   const subject = encodeURIComponent("TrailTag 錯誤回報");
   const mailto = `mailto:sacahan@gmail.com?subject=${subject}&body=${body}`;
-
   // 複製摘要到剪貼簿（若可用）
   try {
     const clipboardText = `videoId:${videoId}\njobId:${jobId}\ndebugId:${debugId}\nmessage:${errText}`;
-    if (
-      navigator &&
-      (navigator as any).clipboard &&
-      (navigator as any).clipboard.writeText
-    ) {
-      (navigator as any).clipboard.writeText(clipboardText).catch(() => {});
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(clipboardText).catch(() => {});
     }
   } catch (e) {}
-
   // 開啟 mailto 以便使用者寄出或貼上內容
   try {
     window.open(mailto, "_blank");
@@ -194,7 +149,6 @@ export function reportError() {
     /* ignore */
   }
 }
-
 /**
  * 根據目前 state 更新 popup 的 UI
  * - 隱藏/顯示不同視圖、更新進度條與文字說明
@@ -202,12 +156,9 @@ export function reportError() {
  */
 export function updateUI() {
   if (!elements) return;
-  Object.values(elements.views).forEach((view: any) =>
-    view.classList.add("hidden"),
-  );
+  Object.values(elements.views).forEach((view) => view.classList.add("hidden"));
   elements.statusBadge.textContent = getStatusText(state.currentState);
   elements.statusBadge.className = "status-badge";
-
   /**
    * 根據目前的應用狀態切換 UI 顯示區塊與狀態徽章樣式
    * - IDLE: 顯示閒置視圖
@@ -258,7 +209,7 @@ export function updateUI() {
       }
       if (state.mapVisualization) {
         // 嘗試將地點資料加到地圖上，並顯示地點數
-        let addFn: any = null;
+        let addFn = null;
         if (
           typeof window !== "undefined" &&
           window.TrailTag &&
@@ -289,13 +240,12 @@ export function updateUI() {
       break;
   }
 }
-
 /**
  * 切換應用狀態並保存至 chrome.storage（若可用），之後更新 UI
  * - newState: 目標狀態
  * - data: 可選的狀態補充欄位，例如 videoId / jobId / progress
  */
-export function changeState(newState: string, data: any = {}) {
+export function changeState(newState, data = {}) {
   console.log(`State change: ${state.currentState} -> ${newState}`, data);
   state = {
     ...state,
@@ -306,7 +256,6 @@ export function changeState(newState: string, data: any = {}) {
   saveState(state);
   updateUI();
 }
-
 /**
  * 啟動分析流程：
  * 1. 嘗試從目前分頁取得 videoId
@@ -335,10 +284,8 @@ export async function startAnalysis() {
       });
       return;
     }
-
     // 2. 切換至檢查快取狀態
     changeState(AppState.CHECKING_CACHE, { videoId });
-
     // 3. 檢查是否已有地點資料（快取）
     try {
       const locations = await (typeof window !== "undefined" &&
@@ -356,7 +303,6 @@ export async function startAnalysis() {
       // 快取查詢失敗僅記錄錯誤，不中斷流程
       console.error("Check cache error:", error);
     }
-
     // 4. 呼叫 submitAnalysis 開始分析
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
     const response = await (typeof window !== "undefined" &&
@@ -365,7 +311,6 @@ export async function startAnalysis() {
     typeof window.TrailTag.API.submitAnalysis === "function"
       ? window.TrailTag.API.submitAnalysis(videoUrl)
       : Promise.resolve({ cached: false, job_id: null, phase: null }));
-
     if (response.cached) {
       // 若 API 回傳 cached，則再取一次地點資料並顯示地圖
       try {
@@ -384,7 +329,6 @@ export async function startAnalysis() {
         console.error("Get locations after cache hit error:", error);
       }
     }
-
     // 5. 切換至分析中狀態，並啟動事件監聽
     changeState(AppState.ANALYZING, {
       jobId: response.job_id,
@@ -398,12 +342,11 @@ export async function startAnalysis() {
     changeState(AppState.ERROR, { error: `分析請求失敗: ${error.message}` });
   }
 }
-
 /**
  * 通知 background/service worker 開始監聽指定 jobId 的事件串流（SSE）
  * @param jobId 要監聽的 job id
  */
-export function startEventListener(jobId: string) {
+export function startEventListener(jobId) {
   // Start local polling as the popup-managed fallback (no service worker usage)
   try {
     startPolling(jobId);
@@ -411,7 +354,6 @@ export function startEventListener(jobId: string) {
     console.error("Failed to start local polling for events:", e);
   }
 }
-
 /**
  * 停止事件監聽（通知 background）並停止任何備援輪詢
  */
@@ -436,18 +378,16 @@ export function stopEventListener() {
     state.jobId = null;
   }
 }
-
-let pollingIntervalId: any = null;
+let pollingIntervalId = null;
 const POLLING_INTERVAL_MS =
   typeof TRAILTAG_CONFIG !== "undefined" && TRAILTAG_CONFIG.POLLING_INTERVAL_MS
     ? TRAILTAG_CONFIG.POLLING_INTERVAL_MS
     : 2500;
-
 /**
  * 透過 API 輪詢 job 狀態，用於 SSE 無法使用時作為備援
  * - 會更新進度並在完成或失敗時做相對應處理
  */
-export async function pollJobStatus(jobId: string) {
+export async function pollJobStatus(jobId) {
   /**
    * 輪詢指定 jobId 的狀態：
    * 1. 取得任務狀態（API）
@@ -464,7 +404,6 @@ export async function pollJobStatus(jobId: string) {
       ? window.TrailTag.API.getJobStatus(jobId)
       : Promise.resolve(null));
     if (!status) return;
-
     // 2. 若有進度則更新 UI
     if (status.progress != null) {
       changeState(AppState.ANALYZING, {
@@ -472,7 +411,6 @@ export async function pollJobStatus(jobId: string) {
         phase: status.phase || state.phase,
       });
     }
-
     // 3. 若已完成則停止輪詢並處理完成流程
     if (status.status === "completed" || status.status === "done") {
       stopPolling();
@@ -488,9 +426,8 @@ export async function pollJobStatus(jobId: string) {
     console.error("Polling job status error:", error);
   }
 }
-
 /** 啟動備援輪詢（會先停止現有輪詢） */
-export function startPolling(jobId: string) {
+export function startPolling(jobId) {
   stopPolling();
   pollingIntervalId = setInterval(
     () => pollJobStatus(jobId),
@@ -506,7 +443,6 @@ export function stopPolling() {
     console.log("Stopped polling");
   }
 }
-
 /**
  * 任務完成後的處理流程：
  * - 取得地點資料
@@ -565,7 +501,6 @@ export async function handleJobCompleted() {
     });
   }
 }
-
 /**
  * 將目前的 mapVisualization 轉為 GeoJSON 並觸發下載
  * - 需有 state.mapVisualization 與 state.videoId
@@ -590,7 +525,6 @@ export function exportGeoJSON() {
     downloadGeoJSON(geoJSON, state.videoId);
   }
 }
-
 /**
  * initializeApp - 初始化 popup 應用邏輯
  *
@@ -621,12 +555,10 @@ export async function initializeApp() {
     });
     return;
   }
-
   // 初始化字幕檢查器
   if (!state.subtitleChecker) {
     state.subtitleChecker = new SubtitleChecker("subtitle-status");
   }
-
   // 檢查當前影片的字幕可用性
   try {
     const canAnalyze =
@@ -634,9 +566,7 @@ export async function initializeApp() {
     // 如果沒有字幕，暫停初始化流程，讓用戶看到提示
     if (!canAnalyze) {
       // 更新按鈕狀態為不可用
-      const analyzeBtn = document.getElementById(
-        "analyze-btn",
-      ) as HTMLButtonElement;
+      const analyzeBtn = document.getElementById("analyze-btn");
       if (analyzeBtn) {
         analyzeBtn.disabled = true;
         analyzeBtn.textContent = "此影片無字幕，無法分析";
@@ -647,7 +577,6 @@ export async function initializeApp() {
   } catch (error) {
     console.warn("字幕檢查失敗，繼續初始化流程:", error);
   }
-
   // 1) 先嘗試取得地點資料，若有則直接顯示地圖並嘗試移除先前儲存的任務狀態
   try {
     const latestLocations = await (typeof window !== "undefined" &&
@@ -656,7 +585,6 @@ export async function initializeApp() {
     typeof window.TrailTag.API.getVideoLocations === "function"
       ? window.TrailTag.API.getVideoLocations(currentVideoId)
       : Promise.resolve(null));
-
     if (latestLocations) {
       changeState(AppState.MAP_READY, {
         videoId: currentVideoId,
@@ -685,7 +613,6 @@ export async function initializeApp() {
   } catch (e) {
     console.warn("Failed to fetch locations on init:", e);
   }
-
   // 2) 無快取地點資料 -> 重設本地 state 並進入 CHECKING_CACHE
   state = {
     ...state,
@@ -697,7 +624,6 @@ export async function initializeApp() {
     phase: null,
   };
   updateUI();
-
   // 3) 嘗試恢復先前儲存的分析任務；若 chrome.storage.local 有保存任務則忽略儲存的狀態值
   //    直接呼叫後端 API 取得最新 job 狀態並以該狀態更新與保存 local state
   try {
@@ -711,7 +637,6 @@ export async function initializeApp() {
         typeof window.TrailTag.API.getJobByVideo === "function"
           ? window.TrailTag.API.getJobByVideo(currentVideoId)
           : Promise.resolve(null));
-
         // 如果後端回傳了對應的 job_id，再向後端查詢該 job 的詳細狀態；否則視為沒有可恢復的任務
         let latestStatus = null;
         if (mapped && mapped.job_id) {
@@ -722,20 +647,18 @@ export async function initializeApp() {
             ? window.TrailTag.API.getJobStatus(mapped.job_id)
             : Promise.resolve(null));
         }
-
         /**
-         * {
-            "job_id": "55309d4c-ce65-457e-be4f-2ed08374bc6d",
-            "video_id": "sROac3CHrI4",
-            "status": "running",
-            "phase": "metadata",
-            "progress": 5,
-            "cached": false,
-            "created_at": "2025-08-19T10:41:59.207297Z",
-            "updated_at": "2025-08-19T10:41:59.233663Z"
-            }
-         */
-
+                 * {
+                    "job_id": "55309d4c-ce65-457e-be4f-2ed08374bc6d",
+                    "video_id": "sROac3CHrI4",
+                    "status": "running",
+                    "phase": "metadata",
+                    "progress": 5,
+                    "cached": false,
+                    "created_at": "2025-08-19T10:41:59.207297Z",
+                    "updated_at": "2025-08-19T10:41:59.233663Z"
+                    }
+                 */
         if (latestStatus) {
           // 根據後端回傳的最新狀態決定本地狀態（ignore saved.currentState）
           const isCompleted =
@@ -847,15 +770,12 @@ export async function initializeApp() {
   } catch (e) {
     console.warn("loadState error:", e);
   }
-
   // 4) 若無可恢復的任務或同步失敗，進入閒置狀態
   changeState(AppState.IDLE, { videoId: currentVideoId });
   stopPolling();
 }
-
 // popup 不再監聽 background/service worker 的 runtime messages；
 // popup 改以直接向後端輪詢 (polling) 取得 job 狀態。
-
 /**
  * 註冊 popup 應用的事件處理器與初始化邏輯
  * - 綁定 UI 按鈕事件（分析、取消、重試、匯出、回報錯誤）
@@ -866,7 +786,6 @@ export async function initializeApp() {
 export function registerApp() {
   // 查詢並快取 DOM 元素
   queryElements();
-
   // 綁定分析按鈕事件：啟動分析流程
   if (elements && elements.analyzeBtn) {
     elements.analyzeBtn.addEventListener("click", () => {
@@ -877,7 +796,6 @@ export function registerApp() {
       return fn();
     });
   }
-
   // 綁定取消按鈕事件：停止事件監聽並切換至閒置狀態
   if (elements && elements.cancelBtn) {
     elements.cancelBtn.addEventListener("click", () => {
@@ -893,7 +811,6 @@ export function registerApp() {
       changeFn(AppState.IDLE);
     });
   }
-
   // 綁定重試按鈕事件：重新啟動分析流程
   if (elements && elements.retryBtn) {
     elements.retryBtn.addEventListener("click", () => {
@@ -904,7 +821,6 @@ export function registerApp() {
       return fn();
     });
   }
-
   // 綁定匯出按鈕事件：匯出 GeoJSON
   if (elements && elements.exportBtn) {
     elements.exportBtn.addEventListener("click", () => {
@@ -915,19 +831,15 @@ export function registerApp() {
       return fn();
     });
   }
-
   // 綁定回報錯誤按鈕事件：回報錯誤摘要
   if (elements && elements.reportBtn) {
     elements.reportBtn.addEventListener("click", () => {
       reportError();
     });
   }
-
   // 初始化應用狀態與 UI
   initializeApp();
-
   // (已移除) 先前此處會定期向 background/service worker 發送 keepAlive。
-
   // 當 popup 被關閉或切換（visibilitychange / beforeunload）時，確保當前 state 被儲存到 storage
   // 以便重新打開 popup 時能夠恢復到分析中的狀態。
   const saveNow = () => {
@@ -937,16 +849,14 @@ export function registerApp() {
       /* ignore */
     }
   };
-
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
       saveNow();
     }
   });
-
   // storage onChanged handler: 當 background 或 service worker 更新 persisted state 時，
   // popup 可即時反映並嘗試 re-attach
-  const storageChangeHandler = (changes: any, areaName: string) => {
+  const storageChangeHandler = (changes, areaName) => {
     if (areaName !== "local") return;
     if (!changes || !changes.trailtag_state_v1) return;
     const newVal = changes.trailtag_state_v1.newValue;
@@ -977,7 +887,6 @@ export function registerApp() {
       }
     }
   };
-
   try {
     if (
       chrome &&
@@ -990,7 +899,6 @@ export function registerApp() {
   } catch (e) {
     /* ignore */
   }
-
   window.addEventListener("beforeunload", () => {
     saveNow();
     try {
@@ -1006,7 +914,6 @@ export function registerApp() {
       /* ignore */
     }
   });
-
   // 註冊測試輔助函式於 window，方便測試與除錯
   try {
     if (
@@ -1014,7 +921,7 @@ export function registerApp() {
       typeof window.__registerPopupTestingHelpers === "function"
     ) {
       window.__registerPopupTestingHelpers({
-        setState: (patch: any) => Object.assign(state, patch),
+        setState: (patch) => Object.assign(state, patch),
         getState: () => state,
         startPolling,
         stopPolling,
@@ -1031,7 +938,6 @@ export function registerApp() {
     }
   } catch (e) {}
 }
-
 // 當 DOM 尚未載入完成時，監聽 DOMContentLoaded 事件以延後初始化；
 // 若已載入則直接執行 registerApp 初始化 popup 應用邏輯。
 if (document.readyState === "loading") {
@@ -1039,5 +945,4 @@ if (document.readyState === "loading") {
 } else {
   registerApp();
 }
-
 export default null;

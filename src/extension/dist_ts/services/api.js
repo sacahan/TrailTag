@@ -28,35 +28,19 @@
  *   - 瀏覽器 API: Fetch、EventSource、Blob
  *   - Chrome 擴充功能環境
  */
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-/**
- * 全域配置物件類型聲明
- *
- * 可由打包工具、測試環境或運行時動態注入的配置物件。
- * 支援 API 端點、重試參數等可配置項目。
- *
- * 配置項目:
- *   - API_BASE_URL: 後端 API 基礎 URL
- *   - FETCH_RETRIES: HTTP 請求重試次數
- *   - FETCH_BACKOFF_MS: 重試退避時間 (毫秒)
- */
-declare const TRAILTAG_CONFIG: any;
-
 /**
  * 嘗試從多種環境取得同步設定物件（先檢查全域常數，接著檢查 window/self）
  * @returns 設定物件或 null
  */
-function getConfigSync(): any | null {
+function getConfigSync() {
   // 如果在編譯/執行環境中有注入 TRAILTAG_CONFIG，直接回傳
   if (typeof TRAILTAG_CONFIG !== "undefined") return TRAILTAG_CONFIG;
   // 瀏覽器環境：window 可能含有設定
-  if (typeof window !== "undefined" && (window as any).TRAILTAG_CONFIG)
-    return (window as any).TRAILTAG_CONFIG;
+  if (typeof window !== "undefined" && window.TRAILTAG_CONFIG)
+    return window.TRAILTAG_CONFIG;
   // WebWorker 或 ServiceWorker 環境：self 可能含有設定
-  if (typeof self !== "undefined" && (self as any).TRAILTAG_CONFIG)
-    return (self as any).TRAILTAG_CONFIG;
+  if (typeof self !== "undefined" && self.TRAILTAG_CONFIG)
+    return self.TRAILTAG_CONFIG;
   // 嘗試載入建制時注入的配置
   try {
     if (typeof require !== "undefined") {
@@ -69,13 +53,11 @@ function getConfigSync(): any | null {
   // 未找到設定
   return null;
 }
-
 // 取得同步設定一次性快照
 const _cfg = getConfigSync();
 // API_BASE_URL 優先使用注入的設定，否則回退到本地開發預設值
 export const API_BASE_URL =
   _cfg && _cfg.API_BASE_URL ? _cfg.API_BASE_URL : "http://localhost:8010";
-
 /**
  * 具有智慧重試機制的 HTTP 請求封裝函式
  *
@@ -117,15 +99,15 @@ export const API_BASE_URL =
  * ```
  */
 export async function fetchWithRetry(
-  url: string,
-  options: RequestInit = {},
+  url,
+  options = {},
   retries = typeof TRAILTAG_CONFIG !== "undefined"
     ? TRAILTAG_CONFIG.FETCH_RETRIES
     : 2,
   backoffMs = typeof TRAILTAG_CONFIG !== "undefined"
     ? TRAILTAG_CONFIG.FETCH_BACKOFF_MS
     : 500,
-): Promise<Response> {
+) {
   let attempt = 0;
   while (true) {
     try {
@@ -142,9 +124,7 @@ export async function fetchWithRetry(
         try {
           bodyText = await res.text();
         } catch (e) {}
-        const err: any = new Error(
-          `API error: ${res.status} ${res.statusText}`,
-        );
+        const err = new Error(`API error: ${res.status} ${res.statusText}`);
         err.code = res.status;
         try {
           const parsed = bodyText ? JSON.parse(bodyText) : null;
@@ -175,14 +155,13 @@ export async function fetchWithRetry(
     }
   }
 }
-
 /**
  * 向後端送出影片分析請求。
  *
  * 輸入：videoUrl（影片完整 URL）
  * 輸出：解析後的 JSON 回應內容或拋出錯誤
  */
-export async function submitAnalysis(videoUrl: string): Promise<any> {
+export async function submitAnalysis(videoUrl) {
   try {
     const response = await fetchWithRetry(
       `${API_BASE_URL}/api/videos/analyze`,
@@ -194,7 +173,6 @@ export async function submitAnalysis(videoUrl: string): Promise<any> {
       2,
       500,
     );
-
     if (!response.ok) {
       // 非 2xx 直接視為錯誤
       throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -208,14 +186,13 @@ export async function submitAnalysis(videoUrl: string): Promise<any> {
     throw error;
   }
 }
-
 /**
  * 查詢某 Job 的狀態
  *
  * 輸入：jobId
  * 回傳：API 的 JSON 回應
  */
-export async function getJobStatus(jobId: string): Promise<any> {
+export async function getJobStatus(jobId) {
   try {
     const response = await fetchWithRetry(
       `${API_BASE_URL}/api/jobs/${jobId}`,
@@ -232,14 +209,13 @@ export async function getJobStatus(jobId: string): Promise<any> {
     throw error;
   }
 }
-
 /**
  * 以 videoId 查詢對應的 job 簡要狀態（如果沒有對應 job，API 會回傳 404）
  *
  * 輸入：videoId
  * 回傳：若存在則回傳 JSON（含 job_id / status / phase / progress / stats / error），若不存在回傳 null
  */
-export async function getJobByVideo(videoId: string): Promise<any | null> {
+export async function getJobByVideo(videoId) {
   try {
     const response = await fetchWithRetry(
       `${API_BASE_URL}/api/videos/${videoId}/job`,
@@ -257,14 +233,13 @@ export async function getJobByVideo(videoId: string): Promise<any | null> {
     throw error;
   }
 }
-
 /**
  * 取得影片的地點標註列表（如果不存在回傳 null）
  *
  * 輸入：videoId
  * 回傳：地點資料的 JSON 或 null（404 表示沒有資料）
  */
-export async function getVideoLocations(videoId: string): Promise<any | null> {
+export async function getVideoLocations(videoId) {
   try {
     const response = await fetchWithRetry(
       `${API_BASE_URL}/api/videos/${videoId}/locations`,
@@ -283,7 +258,6 @@ export async function getVideoLocations(videoId: string): Promise<any | null> {
     throw error;
   }
 }
-
 /**
  * 使用 Server-Sent Events (EventSource) 連線到 job 的事件串流，並以 callbacks 回報事件
  *
@@ -294,42 +268,32 @@ export async function getVideoLocations(videoId: string): Promise<any | null> {
  *
  * 回傳一個物件，包含 close() 方法以手動關閉連線。
  */
-export function connectToEventStream(
-  jobId: string,
-  callbacks: {
-    onPhaseUpdate?: (d: any) => void;
-    onCompleted?: (d: any) => void;
-    onError?: (d: any) => void;
-  },
-) {
+export function connectToEventStream(jobId, callbacks) {
   const eventSource = new EventSource(
     `${API_BASE_URL}/api/jobs/${jobId}/stream`,
   );
-
   // 當收到階段更新事件時解析 JSON 並呼叫對應 callback
-  eventSource.addEventListener("phase_update", (event: MessageEvent) => {
+  eventSource.addEventListener("phase_update", (event) => {
     try {
-      callbacks.onPhaseUpdate?.(JSON.parse((event as any).data));
+      callbacks.onPhaseUpdate?.(JSON.parse(event.data));
     } catch (error) {
       console.error("Parse phase_update error:", error);
     }
   });
-
   // job 完成後觸發 completed，解析完呼叫 callback 並關閉連線
-  eventSource.addEventListener("completed", (event: MessageEvent) => {
+  eventSource.addEventListener("completed", (event) => {
     try {
-      callbacks.onCompleted?.(JSON.parse((event as any).data));
+      callbacks.onCompleted?.(JSON.parse(event.data));
       eventSource.close();
     } catch (error) {
       console.error("Parse completed error:", error);
     }
   });
-
   // 一般性的錯誤事件，嘗試解析錯誤內容並回報
-  eventSource.addEventListener("error", (event: MessageEvent) => {
+  eventSource.addEventListener("error", (event) => {
     try {
-      const data = (event as any).data
-        ? JSON.parse((event as any).data)
+      const data = event.data
+        ? JSON.parse(event.data)
         : { message: "Unknown error" };
       callbacks.onError?.(data);
       eventSource.close();
@@ -338,46 +302,25 @@ export function connectToEventStream(
       callbacks.onError?.({ message: "Error parsing error event" });
     }
   });
-
   // 心跳訊號（可用於偵測連線活性）
   eventSource.addEventListener("heartbeat", () => {
     console.debug(">>> Heartbeat received");
   });
-
   // 當底層 EventSource 發生錯誤時的 fallback 處理
   eventSource.onerror = (error) => {
     console.error("EventSource error:", error);
     callbacks.onError?.({ message: "Connection error" });
     eventSource.close();
   };
-
   // 提供外部關閉連線的 API
   return { close: () => eventSource.close() };
 }
-
-// Minimal GeoJSON generation
-/**
- * Route 型別描述地點項目，coordinates 以 [lat, lon] 儲存（注意：產生 GeoJSON 時會轉為 [lon, lat]）
- */
-type Route = {
-  coordinates?: [number, number];
-  location?: string;
-  description?: string;
-  timecode?: string;
-  tags?: string[];
-  marker?: string;
-};
-/**
- * MapVisualization 包含多個 routes 以及可選的 video_id
- */
-type MapVisualization = { routes: Route[]; video_id?: string };
-
 /**
  * 將內部的地點資料轉換為簡易的 GeoJSON FeatureCollection
  * - 只會處理 coordinates 欄位為兩元素陣列的項目
  * - 將 coordinates 從 [lat, lon] 轉為 GeoJSON 所需的 [lon, lat]
  */
-export function generateGeoJSON(mapVisualization: MapVisualization) {
+export function generateGeoJSON(mapVisualization) {
   const features = (mapVisualization.routes || [])
     // 過濾出有效的 coordinates
     .filter(
@@ -386,7 +329,7 @@ export function generateGeoJSON(mapVisualization: MapVisualization) {
     )
     .map((route) => {
       // 內部使用 [lat, lon]，但 GeoJSON 要求 [lon, lat]
-      const [lat, lon] = route.coordinates as [number, number];
+      const [lat, lon] = route.coordinates;
       return {
         type: "Feature",
         geometry: { type: "Point", coordinates: [lon, lat] },
@@ -399,7 +342,6 @@ export function generateGeoJSON(mapVisualization: MapVisualization) {
         },
       };
     });
-
   return {
     type: "FeatureCollection",
     features,
@@ -408,13 +350,12 @@ export function generateGeoJSON(mapVisualization: MapVisualization) {
       video_id: mapVisualization.video_id,
       generated_at: new Date().toISOString(),
     },
-  } as const;
+  };
 }
-
 /**
  * 將 GeoJSON 內容打包成檔案並觸發瀏覽器下載（使用 Blob 與 a 元素）
  */
-export function downloadGeoJSON(geoJSON: any, videoId: string) {
+export function downloadGeoJSON(geoJSON, videoId) {
   const blob = new Blob([JSON.stringify(geoJSON, null, 2)], {
     type: "application/json",
   });

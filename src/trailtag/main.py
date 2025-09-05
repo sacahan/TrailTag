@@ -3,11 +3,18 @@ import sys
 import os
 import uuid
 import warnings
-from dotenv import load_dotenv
-from src.api.core.logger_config import get_logger
-from trailtag.crew import Trailtag
-from src.trailtag.memory.manager import MemoryManager
 import json
+from dotenv import load_dotenv
+
+# 將專案根目錄添加到 Python 路徑
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(current_dir))
+sys.path.insert(0, project_root)
+
+# ruff: noqa: E402
+from src.api.core.logger_config import get_logger
+from src.trailtag.core.crew import Trailtag
+from src.trailtag.memory.manager import CrewMemoryManager
 
 logger = get_logger(__name__)
 
@@ -28,7 +35,7 @@ load_dotenv(override=True)
 AGENTOPS_API_KEY = os.getenv("AGENTOPS_API_KEY")
 
 # 初始化 CrewAI Memory 管理器，用於儲存分析結果與狀態
-memory_manager = MemoryManager()
+memory_manager = CrewMemoryManager()
 
 
 def run(video_id: str = None):
@@ -44,7 +51,7 @@ def run(video_id: str = None):
 
     # 若未提供 YouTube 影片網址，則記錄錯誤並結束流程
     if not video_id:
-        print("No YouTube video ID provided.")
+        print("⚠️ No YouTube video ID provided. Please provide a video ID or URL. ❌")
         return
 
     try:
@@ -105,19 +112,19 @@ def run(video_id: str = None):
     except Exception as e:
         # 若發生例外，記錄失敗狀態並拋出詳細錯誤
         # agentops.end_trace(trace_context=trace_context, end_state="FAILED")
-        raise Exception(f"An error occurred while running the crew: {e}")
+        raise Exception(f"❌ An error occurred while running the crew: {e} 🚨")
 
 
 if __name__ == "__main__":
     # 若以 --help 參數執行，顯示使用說明並結束
     if len(sys.argv) > 1 and sys.argv[1] == "--help":
-        print("Usage: python main.py")
-        print("Run the Trailtag crew with the default inputs.")
+        print("📖 Usage: python main.py")
+        print("🚀 Run the Trailtag crew with the default inputs. 🏞️")
         sys.exit(0)
 
     # 預設以指定的 YouTube 影片網址執行主流程: https://www.youtube.com/watch?v=3VWiIFqy65M
     run()
 
     # 執行結束後提示使用者檢查輸出檔案
-    print("Trailtag crew has been successfully executed.")
-    print("Check the output file 'report.md' for the results.")
+    print("✅ Trailtag crew has been successfully executed. 🎉")
+    print("📄 Check the output file 'report.md' for the results. 📝")

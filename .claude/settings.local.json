@@ -8,7 +8,10 @@
       "Bash(chmod:*)",
       "Bash(mkdir:*)",
       "Bash(tree:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(./scripts/build_frontend.sh:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

@@ -2,6 +2,7 @@ import json
 import hashlib
 import time
 from typing import Dict, Any, Optional, Union
+from datetime import datetime
 from src.api.core.logger_config import get_logger
 from src.trailtag.memory.manager import CrewMemoryManager
 
@@ -138,23 +139,26 @@ class CrewAICacheProvider:
         try:
             cache_key = self._generate_key(query, params)
 
-            # 序列化結果
+            # 序列化結果（處理 datetime 對象）
             if isinstance(result, (dict, list)):
-                content = json.dumps(result, ensure_ascii=False)
+                content = json.dumps(
+                    result, ensure_ascii=False, default=self._json_serializer
+                )
             else:
                 content = str(result)
 
             # 存入 CrewAI Memory
-            success = self.memory.store(
-                content=content,
+            memory_id = self.memory.memory_storage.save(
+                value=content,
                 metadata={
                     "type": "cache",
                     "key": cache_key,
                     "original_query": str(query),
                     "ttl": ttl,
-                    "stored_at": json.dumps({"timestamp": time.time()}),
+                    "stored_at": time.time(),  # 直接使用數字時間戳
                 },
             )
+            success = memory_id is not None
 
             if success:
                 self.logger.debug(f"成功存入快取，鍵值: {cache_key}")
@@ -212,15 +216,16 @@ class CrewAICacheProvider:
             cache_key = self._generate_key(query, params)
 
             # CrewAI Memory 不直接支援刪除，使用軟刪除標記
-            success = self.memory.store(
-                content="DELETED",
+            memory_id = self.memory.memory_storage.save(
+                value="DELETED",
                 metadata={
                     "type": "cache",
                     "key": cache_key,
                     "deleted": True,
-                    "deleted_at": json.dumps({"timestamp": time.time()}),
+                    "deleted_at": time.time(),  # 直接使用數字時間戳
                 },
             )
+            success = memory_id is not None
 
             if success:
                 self.logger.debug(f"成功標記刪除快取: {cache_key}")
@@ -272,3 +277,12 @@ class CrewAICacheProvider:
         except Exception as e:
             self.logger.error(f"CrewAI Memory 掃描鍵值失敗: {str(e)}")
             return []
+
+    def _json_serializer(self, obj):
+        """JSON 序列化處理器，處理 datetime 和其他特殊對象"""
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        elif hasattr(obj, "__dict__"):
+            return obj.__dict__
+        else:
+            return str(obj)

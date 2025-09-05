@@ -11,9 +11,16 @@ TrailTag is a YouTube travel vlog analysis system that converts videos into inte
 - **src/trailtag/** - crewAI crew implementation with agents and tools for video analysis
 - **src/api/** - FastAPI backend with async task management, caching, and SSE support
 - **src/extension/** - Chrome browser extension (TypeScript) for YouTube integration
-- **tests/** - Unit tests
+- **tests/** - Comprehensive test suites (unit, integration, e2e)
 
 The system follows an agent-based architecture where specialized crewAI agents handle different aspects of video analysis (metadata extraction, place detection, geocoding, route generation).
+
+### Key Architectural Patterns
+
+- **Async Task Management**: Jobs submitted via API return task_id, with status polling and SSE updates
+- **Multi-layered Processing**: YouTube → Metadata/Subtitles → Place Extraction → Geocoding → GeoJSON
+- **Memory-first Caching**: CrewAI Memory system with vector search for intelligent result reuse
+- **Extension Integration**: Chrome extension triggers analysis directly from YouTube UI
 
 ## Development Commands
 
@@ -92,8 +99,18 @@ The test suites validate:
 cd src/extension
 npm install
 npm test
-npm run build    # Build TypeScript and copy assets
-npm run package  # Create dist/extension.zip
+
+# Development build (compiles TypeScript and copies assets)
+npm run build
+
+# Production package (creates dist/extension.zip)
+npm run package
+
+# Individual build steps
+npm run clean           # Clean build directories
+npm run inject:config   # Inject configuration
+npm run ts:build        # Compile TypeScript only
+npm run copy:static     # Copy static assets only
 ```
 
 ### Memory System Management
@@ -129,28 +146,33 @@ CrewAI Memory system is used exclusively for caching - no external cache configu
 
 ## Project Structure Specifics
 
-### crewAI Implementation
+### crewAI Implementation (src/trailtag/)
 
-- **src/trailtag/crew.py** - Main crew definition with agents and tasks
-- **src/trailtag/main.py** - CLI entry point with caching logic
-- **src/trailtag/tools/** - Custom tools for YouTube metadata, geocoding, place extraction
-- **src/trailtag/models.py** - Pydantic models for crew outputs
-- **src/trailtag/memory/manager.py** - CrewAI Memory system manager
-- **src/trailtag/memory/models.py** - Memory system data models and types
-- **src/trailtag/observers.py** - CrewAI event listeners for monitoring
-- **src/trailtag/progress_tracker.py** - Task progress tracking system
+- **crew.py** - Main crew definition with agents and tasks
+- **main.py** - CLI entry point with caching logic
+- **models.py** - Pydantic models for crew outputs
+- **observers.py** - CrewAI event listeners for monitoring
+- **progress_tracker.py** - Task progress tracking system
+- **memory/** - CrewAI Memory system components
+  - **manager.py** - Memory system manager with vector search
+  - **models.py** - Memory data models and types
+- **tools/** - Categorized tool suite for different processing stages
+  - **data_extraction/** - YouTube metadata, chapters, comments, descriptions
+  - **processing/** - Subtitle processing, compression, token management
+  - **geocoding/** - Geographic coordinate resolution
 
-### API Layer
+### API Layer (src/api/)
 
-- **src/api/main.py** - FastAPI app with CORS for extension support
-- **src/api/routes.py** - Video analysis endpoints with async task management
-- **src/api/sse.py** - Server-sent events for real-time progress updates
-- **src/api/cache/cache_manager.py** - CrewAI Memory-based caching system
-- **src/api/metrics.py** - Performance monitoring and observability
-- **src/api/observability.py** - Langtrace integration for tracing
-- **src/api/crew_executor.py** - Async crew execution management
-- **src/api/execution_state.py** - Job state persistence and recovery
-- **src/api/webhooks.py** - Callback system for external integrations
+- **main.py** - FastAPI app with CORS for extension support
+- **core/** - Core API components and models
+- **routes/** - Video analysis endpoints with async task management
+- **middleware/** - SSE, CORS, and request handling middleware
+- **services/** - Business logic services
+  - **crew_executor.py** - Async crew execution management
+  - **execution_state.py** - Job state persistence and recovery
+  - **webhooks.py** - Callback system for external integrations
+- **cache/** - CrewAI Memory-based caching system
+- **monitoring/** - Performance monitoring and observability (Langtrace integration)
 
 ### Data Flow
 
@@ -169,12 +191,24 @@ CrewAI Memory system is used exclusively for caching - no external cache configu
 - **Performance Monitoring**: Langtrace integration with execution metrics
 - **State Management**: Persistent task state with recovery mechanisms
 
+## Extension Build System
+
+The extension uses a multi-step build process:
+
+1. **Configuration Injection**: `inject:config` - Injects runtime config into TypeScript
+2. **TypeScript Compilation**: `ts:build` - Compiles `.ts` files to `dist_ts/`
+3. **Static Asset Copy**: `copy:static` - Copies compiled JS, HTML, CSS, manifest to `../../dist/extension/`
+4. **Bootstrap Integration**: `popup.bootstrap.mjs` loads compiled modules dynamically
+
+**Important**: The bootstrap file references compiled JavaScript in `dist_ts/`, not source TypeScript files.
+
 ## Common Issues
 
 - **Missing dependencies**: Use `uv add` to install Python packages
 - **Extension CORS**: Extension uses `chrome-extension://` origins - CORS configured in main.py
 - **Memory system**: Pure CrewAI Memory system with no external dependencies
 - **Video processing timeouts**: Long videos may require chunking (handled by crew logic)
+- **Extension import errors**: Check that `npm run build` completed and `dist_ts/` contains compiled JS files
 
 ## API Endpoints
 
