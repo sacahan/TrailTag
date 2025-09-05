@@ -11,23 +11,9 @@ logger = get_logger(__name__)
 
 class CrewAICacheProvider:
     """
-    CrewAI Memory 快取提供者
+    CrewAI Memory 快取提供者 (最终修复版本)
 
-    完全基於 CrewAI Memory 系統實現的快取功能，取代原有的 Redis 快取。
-    提供與原 Redis 介面相容的快取操作，確保系統平滑遷移。
-
-    主要功能：
-        - 基於 CrewAI Memory 的向量搜索快取
-        - 語義相似性檢索
-        - JSON 序列化與反序列化
-        - 自動過期管理
-        - 批次操作支援
-
-    相比 Redis 的優勢：
-        - 語義搜索：支援相似查詢的智能匹配
-        - 無外部依賴：無需額外的 Redis 服務
-        - 向量化存儲：更適合 AI 工作流程
-        - 內建持久化：CrewAI 自動管理數據持久性
+    完全基於 CrewAI Memory 系統實現的快取功能，修复了搜索逻辑问题，特别是冒号字符的处理。
     """
 
     def __init__(self, prefix: str = "trailtag:"):
@@ -75,10 +61,7 @@ class CrewAICacheProvider:
         self, query: Union[str, Dict], params: Optional[Dict] = None
     ) -> Optional[Any]:
         """
-        從 CrewAI Memory 獲取快取內容
-
-        使用語義搜索查找最相關的快取項目。若找到相關內容，
-        則反序列化並返回；否則返回 None。
+        從 CrewAI Memory 獲取快取內容 (最终修复版本)
 
         Args:
             query: 查詢內容
@@ -89,24 +72,53 @@ class CrewAICacheProvider:
         """
         try:
             cache_key = self._generate_key(query, params)
+            query_str = str(query)
 
-            # 使用 CrewAI Memory 的搜索功能
-            results = self.memory.search(
-                query=cache_key,
-                limit=1,
-                filter_metadata={"type": "cache", "key": cache_key},
-            )
+            # CrewMemoryStorage的搜索对冒号有问题，需要使用不同的搜索策略
+            # 1. 直接遍历所有内存记录进行精确匹配（最可靠）
+            for memory_id, memory_entry in self.memory.memory_storage.memories.items():
+                metadata = memory_entry.metadata
 
-            if results and len(results) > 0:
-                # 獲取最相關的結果
-                cached_content = results[0].get("content")
-                if cached_content:
-                    # 嘗試解析 JSON
-                    try:
-                        return json.loads(cached_content)
-                    except json.JSONDecodeError:
-                        # 若不是 JSON，直接返回字串
-                        return cached_content
+                # 检查是否为cache类型且未被删除
+                if metadata.get("type") == "cache" and not metadata.get(
+                    "deleted", False
+                ):
+                    original_query = metadata.get("original_query", "")
+                    result_key = metadata.get("key", "")
+
+                    # 精确匹配
+                    if original_query == query_str or result_key == cache_key:
+                        cached_content = memory_entry.content
+                        if cached_content:
+                            # 尝试解析 JSON
+                            try:
+                                return json.loads(cached_content)
+                            except json.JSONDecodeError:
+                                # 若不是 JSON，直接返回字串
+                                return cached_content
+
+            # 2. 如果精确匹配失败，尝试搜索（避免冒号问题）
+            # 提取job ID进行搜索
+            if query_str.startswith("job:"):
+                job_id = query_str[4:]  # 去掉 "job:" 前缀
+                search_results = self.memory.search(
+                    query=job_id, limit=20, score_threshold=0.0
+                )
+
+                # 手动过滤cache类型的记录
+                for result in search_results:
+                    metadata = result.get("metadata", {})
+                    if metadata.get("type") == "cache" and not metadata.get(
+                        "deleted", False
+                    ):
+                        original_query = metadata.get("original_query", "")
+                        if original_query == query_str:
+                            cached_content = result.get("content")
+                            if cached_content:
+                                try:
+                                    return json.loads(cached_content)
+                                except json.JSONDecodeError:
+                                    return cached_content
 
             return None
 
@@ -123,9 +135,6 @@ class CrewAICacheProvider:
     ) -> bool:
         """
         將內容存入 CrewAI Memory 快取
-
-        將結果序列化為 JSON 並存入 CrewAI Memory 系統。
-        使用元數據標記快取類型和鍵值便於後續檢索。
 
         Args:
             query: 查詢內容（用作快取鍵）
@@ -155,7 +164,7 @@ class CrewAICacheProvider:
                     "key": cache_key,
                     "original_query": str(query),
                     "ttl": ttl,
-                    "stored_at": time.time(),  # 直接使用數字時間戳
+                    "stored_at": time.time(),
                 },
             )
             success = memory_id is not None
@@ -183,17 +192,7 @@ class CrewAICacheProvider:
             bool: 快取是否存在
         """
         try:
-            cache_key = self._generate_key(query, params)
-
-            # 使用搜索功能檢查是否存在
-            results = self.memory.search(
-                query=cache_key,
-                limit=1,
-                filter_metadata={"type": "cache", "key": cache_key},
-            )
-
-            return len(results) > 0
-
+            return self.get(query, params) is not None
         except Exception as e:
             self.logger.error(f"CrewAI Memory 檢查快取存在失敗: {str(e)}")
             return False
@@ -222,7 +221,7 @@ class CrewAICacheProvider:
                     "type": "cache",
                     "key": cache_key,
                     "deleted": True,
-                    "deleted_at": time.time(),  # 直接使用數字時間戳
+                    "deleted_at": time.time(),
                 },
             )
             success = memory_id is not None
@@ -260,16 +259,18 @@ class CrewAICacheProvider:
             list: 符合模式的鍵值列表
         """
         try:
-            # 使用通配符搜索
-            results = self.memory.search(
-                query=pattern, limit=100, filter_metadata={"type": "cache"}
-            )
-
+            # 直接遍历所有记录进行模式匹配
             keys = []
-            for result in results:
-                metadata = result.get("metadata", {})
-                if metadata.get("key") and not metadata.get("deleted"):
-                    keys.append(metadata["key"])
+            for memory_id, memory_entry in self.memory.memory_storage.memories.items():
+                metadata = memory_entry.metadata
+                if (
+                    metadata.get("type") == "cache"
+                    and metadata.get("key")
+                    and not metadata.get("deleted")
+                ):
+                    key = metadata["key"]
+                    if pattern in key:  # 简单包含匹配
+                        keys.append(key)
 
             self.logger.debug(f"掃描到 {len(keys)} 個符合模式 '{pattern}' 的快取鍵")
             return keys

@@ -445,8 +445,10 @@ class Trailtag:
         # 獲取全域觀察者實例
         observer = get_global_observer()
 
-        # 使用記憶管理器創建具有記憶功能的 Crew 實例
-        crew_instance = self.memory_manager.create_crew_with_memory(
+        # 直接使用標準 Crew 創建方式
+        from crewai import Crew
+
+        crew_instance = Crew(
             agents=[
                 self.video_fetch_agent(),
                 self.content_extraction_agent(),
@@ -459,6 +461,7 @@ class Trailtag:
             ],
             process=Process.sequential,
             verbose=True,
+            memory=True,  # 啟用基本記憶功能
         )
 
         # 擴展 Crew 以支持觀察者功能

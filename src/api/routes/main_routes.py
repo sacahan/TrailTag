@@ -175,10 +175,14 @@ def run_trailtag_job(job_id, video_id):
             update_job("geocode", 100, status=JobStatus.DONE, ttl=60)
 
             # 結果寫入 analysis 快取，供地圖查詢
-            if hasattr(output, ""):
+            if hasattr(output, "pydantic") and output.pydantic:
                 cache.set(
                     f"analysis:{video_id}",
-                    output.model_dump() if hasattr(output, "model_dump") else output,
+                    (
+                        output.pydantic.model_dump()
+                        if hasattr(output.pydantic, "model_dump")
+                        else output.pydantic
+                    ),
                 )
             # 任務完成，移除 video->job 映射以避免 stale state
             try:
