@@ -287,3 +287,20 @@ class CrewAICacheProvider:
             return obj.__dict__
         else:
             return str(obj)
+
+
+# Global cache instance
+_cache_provider = None
+
+
+def get_cache() -> CrewAICacheProvider:
+    """
+    獲取全域快取提供者實例（單例模式）
+
+    Returns:
+        CrewAICacheProvider: 快取提供者實例
+    """
+    global _cache_provider
+    if _cache_provider is None:
+        _cache_provider = CrewAICacheProvider()
+    return _cache_provider

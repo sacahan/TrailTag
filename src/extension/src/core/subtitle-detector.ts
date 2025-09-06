@@ -142,7 +142,7 @@ export class SubtitleChecker {
    */
   private generateUserMessage(status: SubtitleStatus): string {
     if (!status.available) {
-      return "⚠️ 此影片沒有可用的字幕或自動字幕，無法進行分析";
+      return "⚠️ 此影片沒有可用的字幕，無法進行分析";
     }
 
     const messages: string[] = ["✅ 字幕檢測通過"];
@@ -233,7 +233,7 @@ export class SubtitleChecker {
     this.statusElement.className = "subtitle-status-container status-loading";
     this.statusElement.innerHTML = `
       <div class="subtitle-status-content">
-        <div class="status-message">🔍 檢查字幕可用性中...</div>
+        <div class="status-message">🔍 分析影片資訊...</div>
         <div class="status-details">請稍候</div>
       </div>
     `;

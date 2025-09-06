@@ -112,7 +112,6 @@ describe("popup initializeApp restore/attach", () => {
     jest.resetModules();
     (global as any).window = (global as any).window || {};
     (global as any).window.getCurrentVideoId = async () => "video-2";
-    // Return a plain string for currentState to avoid needing AppState before import
     (global as any).window.loadState = async () => ({
       videoId: "video-2",
       jobId: "saved-job",
@@ -122,6 +121,21 @@ describe("popup initializeApp restore/attach", () => {
     });
     (global as any).window.saveState = async () => {
       return;
+    };
+    (global as any).window.TrailTag = {
+      API: {
+        getJobStatus: async (jobId) => {
+          if (jobId === "saved-job") {
+            return {
+              status: "running",
+              progress: 42,
+              phase: "geocode",
+            };
+          }
+          return null;
+        },
+        getVideoLocations: async () => null, // Ensure this is mocked as well
+      },
     };
     // no need to mock chrome messaging; popup should call startPolling
     const popup = await import("../../src/core/popup-controller");

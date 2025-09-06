@@ -57,3 +57,4 @@ dev = ["pytest>=8.4.1"]
 minversion = "6.0"
 addopts = "-ra -q"
 testpaths = ["tests"]
+pythonpath = ["src"]

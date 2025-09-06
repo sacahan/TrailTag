@@ -77,6 +77,7 @@ def extract_video_id(url: str) -> str:
 def check_subtitle_availability(video_id: str) -> SubtitleStatus:
     """
     快速檢測影片字幕可用性，用於在分析開始前提供用戶提示。
+    優先檢查緩存，避免重複下載字幕導致 Too Many Requests 錯誤。
 
     Args:
         video_id (str): YouTube 影片 ID
@@ -85,7 +86,26 @@ def check_subtitle_availability(video_id: str) -> SubtitleStatus:
         SubtitleStatus: 字幕狀態資訊
     """
     try:
-        # 使用 YouTube Metadata Tool 來檢測字幕
+        # 延遲匯入避免循環依賴
+        from src.api.cache.cache_provider import get_cache
+
+        cache = get_cache()
+
+        # 先檢查是否有快取的分析結果
+        cached_result = cache.get(f"analysis:{video_id}")
+        if cached_result:
+            logger.info(f"從快取獲取影片 {video_id} 的字幕狀態")
+            # 如果有分析結果，說明字幕是可用的（否則分析不會成功）
+            return SubtitleStatus(
+                available=True,
+                manual_subtitles=[],  # 快取結果沒有詳細字幕類型資訊
+                auto_captions=[],
+                selected_lang="cached",  # 標記來源為快取
+                confidence_score=0.9,  # 已分析過的影片信心度較高
+            )
+
+        # 如果沒有快取，才進行實際檢測
+        logger.info(f"快取未命中，檢測影片 {video_id} 字幕可用性")
         metadata_tool = YoutubeMetadataTool()
         metadata = metadata_tool._run(video_id)
 

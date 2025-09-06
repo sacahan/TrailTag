@@ -31,6 +31,7 @@ global.L = {
 // require compiled map.js from dist_ts (try multiple candidate locations)
 function findCompiled(...parts) {
   const candidates = [
+    path.resolve(__dirname, "..", "..", "src", ...parts),
     path.resolve(__dirname, "..", "dist_ts", ...parts),
     path.resolve(__dirname, "..", "..", "dist_ts", ...parts),
     path.resolve(__dirname, "..", ...parts),
@@ -40,7 +41,7 @@ function findCompiled(...parts) {
   }
   throw new Error("compiled file not found: " + parts.join("/"));
 }
-const srcMap = findCompiled("map.js");
+const srcMap = findCompiled("core", "map-renderer.js");
 const mod = require(srcMap);
 // expose named export to global for tests
 global.addMarkersFromMapVisualization =

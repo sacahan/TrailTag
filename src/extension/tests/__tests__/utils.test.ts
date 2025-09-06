@@ -5,6 +5,7 @@ const path = require("path");
 
 function findCompiled(...parts) {
   const candidates = [
+    path.resolve(__dirname, "..", "..", "src", ...parts),
     path.resolve(__dirname, "..", "dist_ts", ...parts),
     path.resolve(__dirname, "..", "..", "dist_ts", ...parts),
     path.resolve(__dirname, "..", ...parts),
@@ -14,7 +15,7 @@ function findCompiled(...parts) {
   }
   throw new Error("compiled file not found: " + parts.join("/"));
 }
-const srcUtils = findCompiled("utils.js");
+const srcUtils = findCompiled("utils", "helpers.js");
 const utilsMod = require(srcUtils);
 global.saveState =
   utilsMod.saveState || (utilsMod.default && utilsMod.default.saveState);

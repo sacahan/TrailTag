@@ -45,6 +45,7 @@ package-lock.json
 yarn.lock
 .pnpm-debug.log*
 dist/
+dist_ts/
 build/
 .cache/
 .next/

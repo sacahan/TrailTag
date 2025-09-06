@@ -1,38 +1,56 @@
 /**
- * map.ts - TypeScript 版本的輕量地圖工具（加入中文註解以利維護）
+ * map-renderer.ts - TypeScript 版本的 TrailTag 地圖渲染工具
+ *
+ * 此檔案負責 Leaflet 地圖的初始化、標記管理、互動事件、UI 狀態顯示等核心功能。
+ * 主要功能：
+ *   1. 地圖初始化與配置
+ *   2. 標記的建立、清除與管理
+ *   3. 地圖視覺化資料的處理
+ *   4. 使用者互動事件處理
+ *   5. 地圖 UI 狀態管理
+ *
+ * 全域 API 暴露設計：
+ *   - 所有地圖相關 API 會掛載於 window.TrailTag.Map 命名空間，並於 window 上建立對應的全域方法別名。
+ *   - 方便其他模組或外部程式直接呼叫地圖功能，例如 window.initMap, window.clearMarkers 等。
+ *
+ * 所有註解皆以正體中文撰寫，便於維護與理解。
  */
 
-/* Ambient globals */
-declare const L: any; // Leaflet 全域物件
-declare const chrome: any; // Chrome extension API（若在 extension 環境可用）
+// 宣告外部全域物件
+declare const L: any; // Leaflet 地圖 API 全域物件
+declare const chrome: any; // Chrome extension API（僅於 extension 環境可用）
+
+// 擴展 Window 介面，定義 TrailTag 相關的全域方法與屬性
 declare global {
   interface Window {
-    TrailTag?: any;
-    initMap?: any;
-    clearMarkers?: any;
-    addMarkersFromMapVisualization?: any;
-    getMarkersCount?: any;
-    getMapCurrentVideoId?: any;
-    getMarkersBounds?: any;
-    getMarkerLatLngs?: any;
-    showMapLoading?: any;
-    hideMapLoading?: any;
-    showMapError?: any;
-    hideMapError?: any;
-    updateMapPerformance?: any;
-    refreshMap?: any;
+    TrailTag?: any; // TrailTag 主命名空間，包含所有相關模組
+    initMap?: any; // 初始化地圖的全域方法
+    clearMarkers?: any; // 清除所有標記的全域方法
+    addMarkersFromMapVisualization?: any; // 從視覺化資料新增標記的全域方法
+    getMarkersCount?: any; // 取得標記數量的全域方法
+    getMapCurrentVideoId?: any; // 取得當前影片 ID 的全域方法
+    getMarkersBounds?: any; // 取得標記邊界的全域方法
+    getMarkerLatLngs?: any; // 取得所有標記座標的全域方法
+    showMapLoading?: any; // 顯示載入狀態的全域方法
+    hideMapLoading?: any; // 隱藏載入狀態的全域方法
+    showMapError?: any; // 顯示錯誤訊息的全域方法
+    hideMapError?: any; // 隱藏錯誤訊息的全域方法
+    updateMapPerformance?: any; // 更新性能資訊的全域方法
+    refreshMap?: any; // 重新整理地圖的全域方法
   }
 }
 
-// 模組等級的單例變數
-export let leafletMap: any = null; // Leaflet 地圖實例（單例）
-export let markersLayer: any = null; // 所有標記匯集的 layer（featureGroup 或 layerGroup）
-export let currentVideoId: string | null = null; // 當前對應的影片 id
-// 可選的工具集，若 window.TrailTag.Utils 存在則使用
+// 模組等級的單例變數 - 用於維護地圖狀態
+export let leafletMap: any = null; // Leaflet 地圖實例（單例模式），確保全域只有一個地圖實例
+export let markersLayer: any = null; // 所有標記匯集的 layer（featureGroup 或 layerGroup），用於統一管理標記
+export let currentVideoId: string | null = null; // 當前對應的影片 id，用於關聯地圖標記與影片內容
+
+// 可選的工具集，若 window.TrailTag.Utils 存在則使用，提供輔助功能如時間碼格式化等
 const Utils =
   (typeof window !== "undefined" && window.TrailTag && window.TrailTag.Utils) ||
   null;
-// 地圖優化工具，若 window.TrailTag.MapOptimization 存在則使用
+
+// 地圖優化工具，若 window.TrailTag.MapOptimization 存在則使用，提供性能優化功能
 const MapOptimization =
   (typeof window !== "undefined" &&
     window.TrailTag &&
@@ -40,21 +58,30 @@ const MapOptimization =
   null;
 
 /**
- * 初始化 Leaflet 地圖（單例）
- * 若已初始化則回傳現有實例。
- * - containerId: 地圖要綁定的 DOM id
+ * 初始化 Leaflet 地圖（單例模式）
+ * 如果地圖實例已存在，則直接回傳現有實例，避免重複初始化
  *
- * 被呼叫來源：popup.ts（MAP_READY）與測試
+ * @param containerId - 地圖要綁定的 DOM 元素 ID
+ * @returns 地圖實例物件
+ *
+ * 被呼叫來源：popup.ts（MAP_READY 事件）與測試程式
+ *
+ * 功能說明：
+ *   1. 檢查是否已存在地圖實例，若存在則直接回傳
+ *   2. 建立新的 Leaflet 地圖實例並設定預設視圖
+ *   3. 新增 OpenStreetMap 圖層作為底圖
+ *   4. 建立標記群組並啟用優化功能
+ *   5. 綁定地圖事件處理器
  */
 export function initMap(containerId: string) {
-  if (leafletMap) return leafletMap; // 若已建立就直接回傳
-  // 建立地圖並設定預設中心與縮放
+  if (leafletMap) return leafletMap; // 若已建立實例就直接回傳，確保單例模式
+  // 建立地圖實例並設定預設中心點（台灣中心）與縮放等級
   leafletMap = L.map(containerId).setView([25.0, 121.5], 10);
-  // 使用 OpenStreetMap 的 tiles
+  // 使用 OpenStreetMap 的圖磚服務作為底圖
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 19,
+    maxZoom: 19, // 設定最大縮放等級
   }).addTo(leafletMap);
   // 建立一個 marker 的群組（使用優化的聚類群組，如果可用）
   if (
@@ -159,8 +186,21 @@ export function initMap(containerId: string) {
  * 清除目前所有標記（如果 markersLayer 支援 clearLayers）
  */
 export function clearMarkers() {
-  if (markersLayer && typeof markersLayer.clearLayers === "function")
+  if (markersLayer && typeof markersLayer.clearLayers === "function") {
+    // 在清除前，移除所有 popup 的處理標記以防止記憶體洩漏
+    try {
+      if (typeof markersLayer.getLayers === "function") {
+        markersLayer.getLayers().forEach((marker: any) => {
+          try {
+            if (marker && marker._popup && marker._popup._container) {
+              delete marker._popup._container.__tt_popup_processed;
+            }
+          } catch (e) {}
+        });
+      }
+    } catch (e) {}
     markersLayer.clearLayers();
+  }
 }
 
 /**
@@ -232,7 +272,7 @@ export function addMarkersFromMapVisualization(
     const bgColorWithAlpha = `${color}99`;
     return L.divIcon({
       className: "tt-div-icon",
-      html: `<div style="display:flex;align-items:center;justify-content:center;width:16px;height:16px;background:${bgColorWithAlpha};color:#fff;font-size:18px;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.8);">${emoji}</div>`,
+      html: `<div style="display:flex;align-items:center;justify-content:center;width:56px;height:56px;background:${bgColorWithAlpha};color:#fff;font-size:32px;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.8);">${emoji}</div>`,
       iconSize: [56, 56],
       iconAnchor: [28, 56],
       popupAnchor: [0, -36],
@@ -349,21 +389,23 @@ export function addMarkersFromMapVisualization(
     try {
       if (marker && typeof marker.on === "function")
         marker.on("popupopen", function (e: any) {
+          if (marker.__popup_handler_active) return;
+          marker.__popup_handler_active = true;
+
           try {
             const popupEl =
               e && e.popup && typeof e.popup.getElement === "function"
                 ? e.popup.getElement()
                 : null;
             if (!popupEl) return;
-            // 支援多個連結：timecode-link 與 open-map-link
+
             const timeLink =
               popupEl.querySelector && popupEl.querySelector(".timecode-link");
             const mapLink =
               popupEl.querySelector && popupEl.querySelector(".open-map-link");
 
             function bindOpenLink(el: any, dataAttr: string) {
-              if (!el) return;
-              if (el.__tt_bound) return;
+              if (!el || el.__tt_bound) return;
               el.__tt_bound = true;
               el.addEventListener("click", function (ev: any) {
                 try {
@@ -372,8 +414,6 @@ export function addMarkersFromMapVisualization(
                   if (!url || url === "#") return;
                   if (typeof chrome !== "undefined" && chrome.tabs) {
                     try {
-                      // For timecode links prefer updating the current active tab so the user stays in the video context.
-                      // For other links (e.g. google maps) prefer creating a new tab.
                       const prefersUpdate =
                         dataAttr === "data-timecode-url" ||
                         (el.classList &&
@@ -383,7 +423,6 @@ export function addMarkersFromMapVisualization(
                         chrome.tabs.query &&
                         chrome.tabs.update
                       ) {
-                        // Try to update the current active tab first, fallback to creating a new tab or window.open
                         chrome.tabs.query(
                           { active: true, currentWindow: true },
                           function (tabs: any) {
@@ -403,10 +442,8 @@ export function addMarkersFromMapVisualization(
                           },
                         );
                       } else if (typeof chrome.tabs.create === "function") {
-                        // Default behaviour for non-timecode links: open a new tab
                         chrome.tabs.create({ url: url });
                       } else if (chrome.tabs.query && chrome.tabs.update) {
-                        // Fallback: update current tab if create is not available
                         chrome.tabs.query(
                           { active: true, currentWindow: true },
                           function (tabs: any) {
@@ -437,17 +474,31 @@ export function addMarkersFromMapVisualization(
             bindOpenLink(timeLink, "data-timecode-url");
             bindOpenLink(mapLink, "data-google-url");
           } catch (err) {}
+
+          marker.once("popupclose", function () {
+            delete marker.__popup_handler_active;
+          });
         });
     } catch (e) {}
 
     try {
-      console.debug("Added marker", {
-        location: route.location,
-        coords: [lat, lon],
-        markerType: route.marker,
-        tags: route.tags,
-      });
-    } catch (e) {}
+      // 在非生產環境中顯示調試資訊
+      // 注意：這裡使用 window.TrailTag?.debug 代替對 process.env 的引用
+      if (
+        typeof window !== "undefined" &&
+        window.TrailTag &&
+        window.TrailTag.debug
+      ) {
+        console.debug("Added marker", {
+          location: route.location,
+          coords: [lat, lon],
+          markerType: route.marker,
+          tags: route.tags,
+        });
+      }
+    } catch (e) {
+      // 忽略調試資訊輸出過程中的錯誤
+    }
   });
 
   // 確保 markersLayer 已加入地圖（某些情況下 markersLayer 尚未被 addTo）
@@ -502,8 +553,8 @@ export function addMarkersFromMapVisualization(
 
   // 更新 UI 和性能指標
   setTimeout(() => {
-    hideMapLoading();
-    updateMapPerformance();
+    hideMapLoading(); // 隱藏載入中狀態
+    updateMapPerformance(); // 更新性能指標
 
     // 更新地點計數顯示
     try {
@@ -516,7 +567,7 @@ export function addMarkersFromMapVisualization(
     }
   }, 100);
 
-  return count;
+  return count; // 回傳標記數量
 }
 
 /**
@@ -773,12 +824,15 @@ try {
       window.updateMapPerformance = window.TrailTag.Map.updateMapPerformance;
     if (!window.refreshMap) window.refreshMap = window.TrailTag.Map.refreshMap;
   }
-} catch (e) {}
+} catch (e) {
+  console.warn("Failed to expose Map API to window", e);
+}
 
 /**
  * 初始化地圖 UI 事件監聽器
+ * 綁定地圖相關 UI 元素的事件處理器
  */
-export function initMapUI() {
+export function initMapUI(): void {
   try {
     // 地圖錯誤提示關閉按鈕
     const errorCloseBtn = document.getElementById("map-error-close");
@@ -800,14 +854,21 @@ export function initMapUI() {
   }
 }
 
-// 如果在 DOM 就緒時自動初始化
-if (typeof document !== "undefined") {
+/**
+ * 工具函式：在 DOMContentLoaded 或 DOM 已載入時執行 callback
+ * @param callback 要執行的函式
+ */
+function runOnDomReady(callback: () => void): void {
+  if (typeof document === "undefined") return;
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initMapUI);
+    document.addEventListener("DOMContentLoaded", callback);
   } else {
-    // DOM 已經載入完成
-    initMapUI();
+    callback();
   }
 }
 
+// 如果在 DOM 就緒時自動初始化 UI
+runOnDomReady(initMapUI);
+
+// 用於 ESModule 語法支援，避免使用預設匯出時出現警告
 export default null;

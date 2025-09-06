@@ -14,6 +14,11 @@ from datetime import datetime
 # 添加項目根目錄到 Python 路徑
 sys.path.append(os.path.abspath("."))
 
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from src.trailtag.tools.youtube_metadata_tool import YoutubeMetadataTool
 
 

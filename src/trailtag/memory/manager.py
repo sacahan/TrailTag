@@ -275,16 +275,16 @@ class MemoryEventListener(BaseEventListener):
         @crewai_event_bus.on(MemorySaveStartedEvent)
         def on_memory_save_started(source, event: MemorySaveStartedEvent):
             if event.agent_role:
-                logger.info(
+                logger.debug(
                     f"Agent '{event.agent_role}' 開始儲存記憶: {str(event.value)[:50]}..."
                 )
             else:
-                logger.info(f"開始儲存記憶: {str(event.value)[:50]}...")
+                logger.debug(f"開始儲存記憶: {str(event.value)[:50]}...")
 
         @crewai_event_bus.on(MemorySaveCompletedEvent)
         def on_memory_save_completed(source, event: MemorySaveCompletedEvent):
             self.save_times.append(event.save_time_ms)
-            logger.info(f"記憶儲存完成，耗時: {event.save_time_ms:.2f}ms")
+            logger.debug(f"記憶儲存完成，耗時: {event.save_time_ms:.2f}ms")
 
         @crewai_event_bus.on(MemorySaveFailedEvent)
         def on_memory_save_failed(source, event: MemorySaveFailedEvent):
@@ -295,12 +295,12 @@ class MemoryEventListener(BaseEventListener):
 
         @crewai_event_bus.on(MemoryQueryStartedEvent)
         def on_memory_query_started(source, event: MemoryQueryStartedEvent):
-            logger.info(f"記憶查詢開始: '{event.query}' (限制: {event.limit})")
+            logger.debug(f"記憶查詢開始: '{event.query}' (限制: {event.limit})")
 
         @crewai_event_bus.on(MemoryQueryCompletedEvent)
         def on_memory_query_completed(source, event: MemoryQueryCompletedEvent):
             self.query_times.append(event.query_time_ms)
-            logger.info(f"記憶查詢完成，耗時: {event.query_time_ms:.2f}ms")
+            logger.debug(f"記憶查詢完成，耗時: {event.query_time_ms:.2f}ms")
 
         @crewai_event_bus.on(MemoryQueryFailedEvent)
         def on_memory_query_failed(source, event: MemoryQueryFailedEvent):
@@ -308,11 +308,11 @@ class MemoryEventListener(BaseEventListener):
 
         @crewai_event_bus.on(MemoryRetrievalStartedEvent)
         def on_memory_retrieval_started(source, event: MemoryRetrievalStartedEvent):
-            logger.info(f"開始檢索任務記憶: {event.task_id}")
+            logger.debug(f"開始檢索任務記憶: {event.task_id}")
 
         @crewai_event_bus.on(MemoryRetrievalCompletedEvent)
         def on_memory_retrieval_completed(source, event: MemoryRetrievalCompletedEvent):
-            logger.info(
+            logger.debug(
                 f"任務記憶檢索完成: {event.task_id}，耗時: {event.retrieval_time_ms:.2f}ms"
             )
 
@@ -413,7 +413,7 @@ class CrewMemoryManager:
         # 載入現有資料
         self._load_existing_data()
 
-        logger.info(f"CrewMemoryManager 初始化完成，儲存路徑: {self.storage_path}")
+        logger.debug(f"CrewMemoryManager 初始化完成，儲存路徑: {self.storage_path}")
 
     def create_crew_with_memory(self, agents: List, tasks: List, **kwargs) -> Crew:
         """

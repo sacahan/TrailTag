@@ -5,7 +5,8 @@
   "description": "Test scaffold for TrailTag Chrome Extension (Jest) - Use 'npm run scripts:help' for available commands",
   "scripts": {
     "help": "cat SCRIPTS",
-    "test": "jest --config jest.config.cjs --runInBand",
+    "build:test": "tsc -p config/tsconfig.json --listEmittedFiles",
+    "test": "npm run ts:build && jest --config config/jest.config.cjs",
     "clean": "rm -rf ../../dist && rm -rf dist_ts && mkdir -p dist_ts",
     "inject:config": "node config/inject-config.mjs",
     "ts:build": "tsc -p config/tsconfig.json --noEmitOnError",

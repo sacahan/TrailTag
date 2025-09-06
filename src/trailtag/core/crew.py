@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 from src.api.core.logger_config import get_logger
 import datetime
 from typing import List, Tuple, Any
@@ -22,6 +23,8 @@ from src.trailtag.memory.manager import get_memory_manager
 logger = get_logger(__name__)
 # 設定專案根目錄，便於後續路徑組合
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+load_dotenv(override=True)
 
 
 def validate_video_map_generation_output(result: TaskOutput) -> Tuple[bool, Any]:
@@ -114,11 +117,13 @@ class Trailtag:
     tasks: List[Task] = []
     # 指定 LLM 模型，可切換本地或雲端模型
     # llm = LLM(model="openai/gpt-4o-mini", max_tokens=12000, timeout=300)
-    llm = "gpt-4o-mini"
+    llm = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
     # 啟動時的輸入參數
     kickoff_inputs: dict = {}
     # 輸出資料目錄
     outputs_dir = os.path.join(BASE_DIR, "outputs")
+    # 外部進度回調函式
+    _progress_callback: callable = None
 
     # Token 限制與分段配置
     MAX_TOKENS_PER_TASK = 3000  # 每個任務的最大 Token 數
@@ -149,12 +154,14 @@ class Trailtag:
         # 初始化字幕分割器，處理長影片字幕的 Token 限制問題
         self.subtitle_chunker = SubtitleChunker(
             max_tokens=self.MAX_TOKENS_PER_TASK,
-            model=self.llm if isinstance(self.llm, str) else "gpt-4o-mini",
+            model=self.llm,
             overlap_ratio=self.CHUNK_OVERLAP_RATIO,
         )
         # 初始化 CrewAI 記憶管理器，提供向量搜尋與上下文記憶
         self.memory_manager = get_memory_manager()
-        logger.info("Trailtag Crew 初始化完成 - 字幕分割器與記憶管理器已就緒")
+        logger.info(
+            f"Trailtag Crew 初始化完成 - 字幕分割器與記憶管理器已就緒 ({self.llm})"
+        )
 
     @agent
     def video_fetch_agent(self) -> Agent:
@@ -288,6 +295,16 @@ class Trailtag:
             tools=[PlaceGeocodeTool()],
         )
 
+    def set_progress_callback(self, callback: callable):
+        """
+        設置外部進度回調函式，用於與 CrewExecutor 整合
+
+        Args:
+            callback: 進度回調函式，接收 (progress: float, phase: str) 參數
+        """
+        self._progress_callback = callback
+        logger.info("進度回調函式已設置")
+
     def _update_job_progress(self, phase, progress, status=None, extra=None):
         """
         於分析流程各階段即時更新 job 狀態與進度到 CrewAI Memory 快取，供 SSE 查詢。
@@ -301,6 +318,13 @@ class Trailtag:
         video_id = self.kickoff_inputs.get("video_id")
         if not job_id:
             return
+
+        # 調用外部進度回調（如果有設置）
+        if self._progress_callback:
+            try:
+                self._progress_callback(progress, phase)
+            except Exception as e:
+                logger.error(f"進度回調執行失敗: {e}")
 
         # 使用延遲匯入避免循環依賴
         from src.api.cache.cache_manager import CacheManager
@@ -324,33 +348,24 @@ class Trailtag:
             job.update(extra)
         cache.set(f"job:{job_id}", job)
 
-    def _video_metadata_callback(self, output: TaskOutput):
+    def _task_callback(self, output: TaskOutput):
         """
-        影片 metadata 任務 callback，更新進度至 20%，狀態為 running。
+        統一的任務回調函式，根據任務名稱更新進度。
         """
-        self._update_job_progress("metadata", 20, status="running")
+        task_name = output.task.config["description"]
+        if "metadata" in task_name:
+            self._update_job_progress("metadata_completed", 30, status="running")
+        elif "summary" in task_name:
+            self._update_job_progress("summary_completed", 70, status="running")
+        elif "visualization" in task_name:
+            self._update_job_progress("geocode_completed", 100, status="done")
+            self._store_map_routes_result(output)
         return output
-
-    def _video_topic_summary_callback(self, output: TaskOutput):
-        """
-        主題摘要任務 callback，更新進度至 60%，狀態為 running。
-        """
-        self._update_job_progress("summary", 60, status="running")
-        return output
-
-    def _map_visualization_callback(self, output: TaskOutput):
-        """
-        地圖可視化任務 callback，更新進度至 100%，狀態為 done，並存儲地圖路線結果。
-        """
-        self._update_job_progress("geocode", 100, status="done")
-        return self._store_map_routes_result(output)
 
     @task
     def video_metadata_extraction_task(self) -> Task:
         """
         影片 metadata 擷取任務：分析 YouTube 影片，提取 metadata 與基本資訊。
-        任務完成後會將結果存入向量資料庫。
-        執行結束時 callback 會即時更新 job 狀態。
         """
         return Task(
             config=self.tasks_config["video_metadata_extraction_task"],
@@ -358,37 +373,30 @@ class Trailtag:
             output_pydantic=VideoMetadata,
             guardrail=validate_video_map_generation_output,
             max_retries=3,
-            callback=self._video_metadata_callback,
         )
 
     @task
     def video_topic_summary_task(self) -> Task:
         """
         主題摘要任務：針對主題分析字幕內容，彙整摘要。
-        依賴 video_metadata_extraction_task 的結果作為 context。
-        執行結束時 callback 會即時更新 job 狀態。
         """
         return Task(
             config=self.tasks_config["video_topic_summary_task"],
             context=[self.video_metadata_extraction_task()],
             output_file="outputs/topic_summary.json",
             output_pydantic=VideoTopicSummary,
-            callback=self._video_topic_summary_callback,
         )
 
     @task
     def map_visualization_task(self) -> Task:
         """
         地圖可視化任務：分析地點資料產生互動式地圖欄位。
-        依賴 video_topic_summary_task 的結果作為 context。
-        執行結束時 callback 會即時更新 job 狀態。
         """
         return Task(
             config=self.tasks_config["map_visualization_task"],
             context=[self.video_topic_summary_task()],
             output_file="outputs/map_routes.json",
             output_pydantic=MapVisualization,
-            callback=self._map_visualization_callback,
         )
 
     def _store_map_routes_result(self, output: TaskOutput):
@@ -439,14 +447,9 @@ class Trailtag:
     def crew(self) -> Crew:
         """
         建立並返回 Trailtag Crew，依序執行所有任務。
-        agents 與 tasks 依照順序組成流程，並啟用規劃與快取功能。
-        整合 AgentObserver 監控功能與 CrewAI Memory 系統。
         """
-        # 獲取全域觀察者實例
+        trailtag_instance = self
         observer = get_global_observer()
-
-        # 直接使用標準 Crew 創建方式
-        from crewai import Crew
 
         crew_instance = Crew(
             agents=[
@@ -461,38 +464,46 @@ class Trailtag:
             ],
             process=Process.sequential,
             verbose=True,
-            memory=True,  # 啟用基本記憶功能
+            memory=True,
+            task_callback=self._task_callback,
         )
 
-        # 擴展 Crew 以支持觀察者功能
-        original_kickoff = crew_instance.kickoff
-        original_kickoff_async = getattr(crew_instance, "kickoff_async", None)
+        class ObserverWrappedCrew:
+            def __init__(self, crew, observer, trailtag_instance):
+                self._crew = crew
+                self._observer = observer
+                self._trailtag = trailtag_instance
 
-        @trace("crew.kickoff_with_observer")
-        def kickoff_with_observer(inputs=None):
-            observer.on_crew_start(crew_instance, inputs)
-            try:
-                result = original_kickoff(inputs)
-                observer.on_crew_complete(crew_instance, result)
-                return result
-            except Exception as e:
-                observer.on_crew_complete(crew_instance, error=str(e))
-                raise
+            def __getattr__(self, name):
+                return getattr(self._crew, name)
 
-        @trace("crew.kickoff_async_with_observer")
-        async def kickoff_async_with_observer(inputs=None):
-            observer.on_crew_start(crew_instance, inputs)
-            try:
-                result = await original_kickoff_async(inputs)
-                observer.on_crew_complete(crew_instance, result)
-                return result
-            except Exception as e:
-                observer.on_crew_complete(crew_instance, error=str(e))
-                raise
+            @trace("crew.kickoff_with_observer")
+            def kickoff(self, inputs=None):
+                self._trailtag.kickoff_inputs = inputs or {}
+                self._trailtag._update_job_progress("starting", 5, status="running")
+                self._observer.on_crew_start(self._crew, inputs)
+                try:
+                    self._trailtag._update_job_progress(
+                        "metadata_started", 10, status="running"
+                    )
+                    result = self._crew.kickoff(inputs)
+                    self._observer.on_crew_complete(self._crew, result)
+                    return result
+                except Exception as e:
+                    self._observer.on_crew_complete(self._crew, error=str(e))
+                    raise
 
-        # 替換原始方法
-        crew_instance.kickoff = kickoff_with_observer
-        if original_kickoff_async:
-            crew_instance.kickoff_async = kickoff_async_with_observer
+            @trace("crew.kickoff_async_with_observer")
+            async def kickoff_async(self, inputs=None):
+                if not hasattr(self._crew, "kickoff_async"):
+                    raise AttributeError("Crew 不支援 kickoff_async")
+                self._observer.on_crew_start(self._crew, inputs)
+                try:
+                    result = await self._crew.kickoff_async(inputs)
+                    self._observer.on_crew_complete(self._crew, result)
+                    return result
+                except Exception as e:
+                    self._observer.on_crew_complete(self._crew, error=str(e))
+                    raise
 
-        return crew_instance
+        return ObserverWrappedCrew(crew_instance, observer, trailtag_instance)

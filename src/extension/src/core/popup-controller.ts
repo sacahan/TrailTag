@@ -119,14 +119,25 @@ export function getStatusText(appState: string) {
 
 export function getPhaseText(phase: string) {
   switch (phase) {
+    case "starting":
+      return "正在啟動分析...";
     case "metadata":
+    case "metadata_started":
       return "正在抓取影片資料...";
+    case "metadata_completed":
+      return "影片資料抓取完成...";
     case "compression":
       return "正在壓縮字幕...";
     case "summary":
+    case "summary_started":
       return "正在分析主題與地點...";
+    case "summary_completed":
+      return "主題分析完成...";
     case "geocode":
+    case "geocode_started":
       return "正在解析地理座標...";
+    case "geocode_completed":
+      return "地理座標解析完成...";
     default:
       return "正在處理...";
   }
@@ -575,20 +586,49 @@ export function exportGeoJSON() {
     console.error("No map visualization or video ID available");
     return;
   }
-  const geoJSON =
-    typeof window !== "undefined" &&
-    window.TrailTag &&
-    typeof window.TrailTag.Utils !== "undefined" &&
-    typeof window.TrailTag.Utils.generateGeoJSON === "function"
-      ? window.TrailTag.Utils.generateGeoJSON(state.mapVisualization)
-      : null;
-  if (
-    geoJSON &&
-    typeof window !== "undefined" &&
-    typeof window.downloadGeoJSON === "function"
-  ) {
-    downloadGeoJSON(geoJSON, state.videoId);
-  }
+
+  // 直接實現GeoJSON匯出功能，避免依賴複雜的模組導入
+  const features = (state.mapVisualization.routes || [])
+    .filter(
+      (route: any) =>
+        Array.isArray(route.coordinates) && route.coordinates.length === 2,
+    )
+    .map((route: any) => {
+      const [lat, lon] = route.coordinates;
+      return {
+        type: "Feature",
+        geometry: { type: "Point", coordinates: [lon, lat] },
+        properties: {
+          name: route.location || "",
+          description: route.description || "",
+          timecode: route.timecode || "",
+          tags: route.tags || [],
+          marker: route.marker || "default",
+        },
+      };
+    });
+
+  const geoJSON = {
+    type: "FeatureCollection",
+    features,
+    properties: {
+      video_id: state.videoId,
+      generated_at: new Date().toISOString(),
+    },
+  };
+
+  // 觸發下載
+  const blob = new Blob([JSON.stringify(geoJSON, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `trailtag-${state.videoId}.geojson`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  console.log("GeoJSON exported successfully for video:", state.videoId);
 }
 
 /**
@@ -639,7 +679,7 @@ export async function initializeApp() {
       ) as HTMLButtonElement;
       if (analyzeBtn) {
         analyzeBtn.disabled = true;
-        analyzeBtn.textContent = "此影片無字幕，無法分析";
+        analyzeBtn.textContent = "此影片無法分析";
         analyzeBtn.style.opacity = "0.6";
       }
       return; // 停止進一步的初始化
@@ -704,47 +744,23 @@ export async function initializeApp() {
     const saved = await loadState();
     if (saved) {
       try {
-        // 先透過 videoId 嘗試取得後端目前對應的 job（避免使用已儲存的 jobId 為 stale）
-        const mapped = await (typeof window !== "undefined" &&
-        window.TrailTag &&
-        window.TrailTag.API &&
-        typeof window.TrailTag.API.getJobByVideo === "function"
-          ? window.TrailTag.API.getJobByVideo(currentVideoId)
-          : Promise.resolve(null));
-
-        // 如果後端回傳了對應的 job_id，再向後端查詢該 job 的詳細狀態；否則視為沒有可恢復的任務
         let latestStatus = null;
-        if (mapped && mapped.job_id) {
+        if (saved.jobId) {
           latestStatus = await (typeof window !== "undefined" &&
           window.TrailTag &&
           window.TrailTag.API &&
           typeof window.TrailTag.API.getJobStatus === "function"
-            ? window.TrailTag.API.getJobStatus(mapped.job_id)
+            ? window.TrailTag.API.getJobStatus(saved.jobId)
             : Promise.resolve(null));
         }
 
-        /**
-         * {
-            "job_id": "55309d4c-ce65-457e-be4f-2ed08374bc6d",
-            "video_id": "sROac3CHrI4",
-            "status": "running",
-            "phase": "metadata",
-            "progress": 5,
-            "cached": false,
-            "created_at": "2025-08-19T10:41:59.207297Z",
-            "updated_at": "2025-08-19T10:41:59.233663Z"
-            }
-         */
-
         if (latestStatus) {
-          // 根據後端回傳的最新狀態決定本地狀態（ignore saved.currentState）
           const isCompleted =
             latestStatus.status === "completed" ||
             latestStatus.status === "done";
           const isFailed =
             latestStatus.status === "failed" || latestStatus.status === "error";
           if (isCompleted) {
-            // 直接標示為 ANALYZING 的完成，之後 handleJobCompleted 會切換至 MAP_READY
             state = {
               ...state,
               jobId: saved.jobId,
@@ -755,9 +771,8 @@ export async function initializeApp() {
             };
             saveState(state);
             updateUI();
-            // 停止/啟動 polling 以取得最終結果
             try {
-              startPolling(latestStatus.job_id);
+              startPolling(saved.jobId);
             } catch (e) {
               /* ignore */
             }
@@ -765,7 +780,7 @@ export async function initializeApp() {
           } else if (isFailed) {
             state = {
               ...state,
-              jobId: latestStatus.job_id,
+              jobId: saved.jobId,
               currentState: AppState.ERROR,
               progress:
                 latestStatus.progress != null
@@ -779,10 +794,9 @@ export async function initializeApp() {
             stopPolling();
             return;
           } else {
-            // 任務仍在進行中，將 local state 設為 ANALYZING 並開始輪詢
             state = {
               ...state,
-              jobId: latestStatus.job_id,
+              jobId: saved.jobId,
               currentState: AppState.ANALYZING,
               progress:
                 latestStatus.progress != null
@@ -793,14 +807,13 @@ export async function initializeApp() {
             saveState(state);
             updateUI();
             try {
-              startPolling(latestStatus.job_id);
+              startPolling(saved.jobId);
             } catch (e) {
               /* ignore */
             }
             return;
           }
         } else {
-          // 若無法取得最新任務狀態，清除先前儲存的狀態
           console.warn(
             "Failed to fetch job status for saved job:",
             saved.jobId,
@@ -826,7 +839,6 @@ export async function initializeApp() {
           "Failed to sync job status from backend for saved job:",
           e,
         );
-        // 若同步失敗，清除先前儲存的狀態，避免後續誤判
         try {
           if (
             chrome &&
@@ -843,6 +855,7 @@ export async function initializeApp() {
           /* ignore */
         }
       }
+      return; // Add this return to prevent falling through to idle state
     }
   } catch (e) {
     console.warn("loadState error:", e);
