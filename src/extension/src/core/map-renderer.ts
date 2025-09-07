@@ -83,16 +83,13 @@ export function initMap(containerId: string) {
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19, // 設定最大縮放等級
   }).addTo(leafletMap);
-  // 建立一個 marker 的群組（使用優化的聚類群組，如果可用）
-  if (
-    MapOptimization &&
-    typeof MapOptimization.createOptimizedClusterGroup === "function"
-  ) {
-    markersLayer = MapOptimization.createOptimizedClusterGroup();
-  } else {
-    markersLayer =
-      typeof L.featureGroup === "function" ? L.featureGroup() : L.layerGroup();
-  }
+  // 暫時禁用聚類群組以避免 popup 重複開啟問題
+  // TODO: 未來可以實作動態聚類切換功能
+  console.log(
+    "🎯 Using FeatureGroup to avoid MarkerClusterGroup popup conflicts",
+  );
+  markersLayer =
+    typeof L.featureGroup === "function" ? L.featureGroup() : L.layerGroup();
   markersLayer.addTo(leafletMap);
 
   // 啟用地圖優化功能
@@ -114,8 +111,10 @@ export function initMap(containerId: string) {
           MapOptimization &&
           typeof MapOptimization.smartFitBounds === "function"
         ) {
+          console.warn("🔍 CALLING smartFitBounds from RESIZE event");
           MapOptimization.smartFitBounds(leafletMap, bounds);
         } else {
+          console.warn("🔍 CALLING leafletMap.fitBounds from RESIZE event");
           leafletMap.fitBounds(bounds, { padding: [20, 20] });
         }
       }
@@ -171,9 +170,17 @@ export function initMap(containerId: string) {
         if (bounds && bounds.isValid && bounds.isValid()) {
           // 檢查當前 zoom 是否合適，避免無限調整
           const currentZoom = leafletMap.getZoom();
-          if (currentZoom < 5 || currentZoom > 18) {
-            // 只在 zoom 超出合理範圍時才重新調整
+          console.warn("🔍 ZOOMEND HANDLER - Current zoom:", currentZoom);
+          if (currentZoom < 3) {
+            // 只在 zoom 過小時才重新調整，允許用戶縮放到最大級別 19
+            console.warn(
+              "🔍 ZOOMEND HANDLER - Executing fitBounds due to zoom too small",
+            );
             leafletMap.fitBounds(bounds, { padding: [20, 20], maxZoom: 16 });
+          } else {
+            console.warn(
+              "🔍 ZOOMEND HANDLER - Zoom acceptable, no adjustment needed",
+            );
           }
         }
       }
@@ -186,21 +193,40 @@ export function initMap(containerId: string) {
  * 清除目前所有標記（如果 markersLayer 支援 clearLayers）
  */
 export function clearMarkers() {
+  console.warn("🧹 === clearMarkers START ===");
   if (markersLayer && typeof markersLayer.clearLayers === "function") {
     // 在清除前，移除所有 popup 的處理標記以防止記憶體洩漏
     try {
       if (typeof markersLayer.getLayers === "function") {
-        markersLayer.getLayers().forEach((marker: any) => {
+        const layers = markersLayer.getLayers();
+        console.warn(`🗑️ Found ${layers.length} markers to clear`);
+
+        layers.forEach((marker: any, index: number) => {
           try {
+            console.warn(`🧹 Clearing marker ${index}:`, {
+              bound: marker.__popup_handler_bound,
+              hasOff: typeof marker.off === "function",
+            });
+
             if (marker && marker._popup && marker._popup._container) {
               delete marker._popup._container.__tt_popup_processed;
             }
-          } catch (e) {}
+            // 清理自定義屬性（按 Leaflet 官方文檔，事件清理在綁定時處理）
+            if (marker) {
+              console.warn(`🧹 Clearing marker ${index}`);
+            }
+          } catch (e) {
+            console.warn(`❌ Error clearing marker ${index}:`, e);
+          }
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn("❌ Error in clearMarkers:", e);
+    }
     markersLayer.clearLayers();
+    console.warn("✅ markersLayer.clearLayers() completed");
   }
+  console.warn("🧹 === clearMarkers END ===");
 }
 
 /**
@@ -216,6 +242,11 @@ export function addMarkersFromMapVisualization(
   mapVisualization: any,
   videoId: string | null,
 ): number {
+  console.warn("🚀 === addMarkersFromMapVisualization START ===", {
+    videoId,
+    timestamp: Date.now(),
+    stack: new Error().stack?.split("\n")[1]?.trim(),
+  });
   // 確保 markersLayer 已建立，盡可能在 leafletMap 或 DOM 已就緒時建立
   if (!markersLayer) {
     if (leafletMap) {
@@ -240,7 +271,9 @@ export function addMarkersFromMapVisualization(
   }
 
   // 清除現有標記並設定目前影片 id
+  console.warn("🧹 About to clearMarkers...");
   clearMarkers();
+  console.warn("✅ clearMarkers completed");
   currentVideoId = videoId;
 
   const routes = (mapVisualization && mapVisualization.routes) || [];
@@ -379,19 +412,19 @@ export function addMarkersFromMapVisualization(
 
     popupContent += "</div></div>";
 
-    // 綁定 popup（若 marker 支援）
+    // 綁定 popup（若 marker 支援） - 使用完整內容
     try {
-      if (marker && typeof marker.bindPopup === "function")
+      if (marker && typeof marker.bindPopup === "function") {
         marker.bindPopup(popupContent);
+        console.log("🔗 Bound popup to:", route.location);
+      }
     } catch (e) {}
 
     // 當 popup 開啟時，為 timecode 連結加入 click handler（支援 chrome extension 與一般 window.open）
+    // 使用 once 來避免重複綁定事件
     try {
-      if (marker && typeof marker.on === "function")
-        marker.on("popupopen", function (e: any) {
-          if (marker.__popup_handler_active) return;
-          marker.__popup_handler_active = true;
-
+      if (marker && typeof marker.once === "function") {
+        marker.once("popupopen", function (e: any) {
           try {
             const popupEl =
               e && e.popup && typeof e.popup.getElement === "function"
@@ -473,13 +506,14 @@ export function addMarkersFromMapVisualization(
 
             bindOpenLink(timeLink, "data-timecode-url");
             bindOpenLink(mapLink, "data-google-url");
-          } catch (err) {}
-
-          marker.once("popupclose", function () {
-            delete marker.__popup_handler_active;
-          });
+          } catch (err) {
+            console.error("Popup event handler error", err);
+          }
         });
-    } catch (e) {}
+      }
+    } catch (e) {
+      console.error("Failed to bind popup event handler", e);
+    }
 
     try {
       // 在非生產環境中顯示調試資訊
@@ -549,7 +583,10 @@ export function addMarkersFromMapVisualization(
     markersLayer && typeof markersLayer.getLayers === "function"
       ? markersLayer.getLayers().length
       : 0;
-  console.debug("Total markers on map:", count);
+  console.warn("🏁 === addMarkersFromMapVisualization END ===", {
+    totalMarkers: count,
+    timestamp: Date.now(),
+  });
 
   // 更新 UI 和性能指標
   setTimeout(() => {
@@ -758,8 +795,14 @@ export function refreshMap() {
               MapOptimization &&
               typeof MapOptimization.smartFitBounds === "function"
             ) {
+              console.warn(
+                "🔍 CALLING smartFitBounds from addMarkersFromMapVisualization",
+              );
               MapOptimization.smartFitBounds(leafletMap, bounds);
             } else {
+              console.warn(
+                "🔍 CALLING leafletMap.fitBounds from addMarkersFromMapVisualization",
+              );
               leafletMap.fitBounds(bounds, { padding: [20, 20] });
             }
           }
@@ -777,6 +820,12 @@ export function refreshMap() {
     hideMapLoading();
     showMapError("無法重新整理地圖");
   }
+}
+
+// 添加全局調試監控
+if (typeof window !== "undefined") {
+  (window as any).__DEBUG_MARKER_EVENTS = true;
+  console.warn("🐞 Marker event debugging enabled");
 }
 
 // 若在瀏覽器環境，將 API 暴露到 window.TrailTag.Map，並在 window 上建立方便存取的別名

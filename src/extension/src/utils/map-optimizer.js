@@ -49,10 +49,10 @@ var OPTIMIZATION_CONFIG = {
   // 視圖管理配置
   viewport: {
     minZoom: 3,
-    maxZoom: 18,
+    maxZoom: 19, // 與 tileLayer 的 maxZoom 保持一致
     defaultZoom: 10,
     fitBoundsPadding: [20, 20],
-    maxBoundsZoom: 16,
+    maxBoundsZoom: 18, // 適當調整以避免干擾最大縮放
   },
 };
 
@@ -185,9 +185,23 @@ function addMarkersInBatches(clusterGroup, markers, onProgress) {
  * @param {Object} options - 調整選項
  */
 var smartFitBounds = debounce(function (map, bounds, options) {
-  if (!map || !bounds || !bounds.isValid || !bounds.isValid()) return;
+  console.warn(
+    "🔍 SMART FIT BOUNDS CALLED - Current zoom:",
+    map ? map.getZoom() : "no map",
+  );
+
+  if (!map || !bounds || !bounds.isValid || !bounds.isValid()) {
+    console.warn("🔍 SMART FIT BOUNDS - Invalid params, skipping");
+    return;
+  }
 
   try {
+    // 檢查是否正在進行用戶縮放操作
+    if (performanceMetrics.zoomStartTime) {
+      console.warn("🔍 SMART FIT BOUNDS - Skipping during user zoom operation");
+      return;
+    }
+
     var currentZoom = map.getZoom();
     var defaultOptions = {
       padding: OPTIMIZATION_CONFIG.viewport.fitBoundsPadding,
@@ -195,16 +209,30 @@ var smartFitBounds = debounce(function (map, bounds, options) {
     };
     var fitOptions = Object.assign(defaultOptions, options || {});
 
+    console.warn(
+      "🔍 SMART FIT BOUNDS - Current zoom:",
+      currentZoom,
+      "Max allowed:",
+      OPTIMIZATION_CONFIG.viewport.maxZoom,
+    );
+
     // 檢查是否需要調整
     var mapBounds = map.getBounds();
-    if (mapBounds.contains(bounds)) {
-      // 如果當前視圖已經包含所有標記，且 zoom 合理，則不調整
-      if (
-        currentZoom >= OPTIMIZATION_CONFIG.viewport.minZoom &&
-        currentZoom <= OPTIMIZATION_CONFIG.viewport.maxZoom
-      ) {
-        return;
-      }
+    var containsAll = mapBounds.contains(bounds);
+    var zoomInRange =
+      currentZoom >= OPTIMIZATION_CONFIG.viewport.minZoom &&
+      currentZoom <= OPTIMIZATION_CONFIG.viewport.maxZoom;
+
+    console.warn(
+      "🔍 SMART FIT BOUNDS - Contains all markers:",
+      containsAll,
+      "Zoom in range:",
+      zoomInRange,
+    );
+
+    if (containsAll && zoomInRange) {
+      console.warn("🔍 SMART FIT BOUNDS - No adjustment needed, returning");
+      return;
     }
 
     // 先使地圖大小無效化，然後調整邊界
@@ -212,6 +240,10 @@ var smartFitBounds = debounce(function (map, bounds, options) {
       map.invalidateSize();
     }
 
+    console.warn(
+      "🔍 SMART FIT BOUNDS - EXECUTING fitBounds with options:",
+      fitOptions,
+    );
     map.fitBounds(bounds, fitOptions);
   } catch (error) {
     console.warn("Smart fit bounds failed:", error);
@@ -242,16 +274,23 @@ function optimizeTileLoading(map) {
 
   map.on("moveend", debouncedMoveEnd);
 
-  // 優化縮放操作
-  map.on("zoomstart", function () {
+  // 優化縮放操作 - 加入詳細日誌追蹤縮放問題
+  map.on("zoomstart", function (e) {
     // 縮放開始時準備優化
     performanceMetrics.zoomStartTime = performance.now();
+    var currentZoom = map.getZoom();
+    console.warn("🔍 ZOOM START - Current zoom:", currentZoom, "Event:", e);
   });
 
-  map.on("zoomend", function () {
+  map.on("zoomend", function (e) {
     // 縮放結束後的優化
+    var newZoom = map.getZoom();
+    console.warn("🔍 ZOOM END - New zoom:", newZoom, "Event:", e);
+
     if (performanceMetrics.zoomStartTime) {
       var zoomTime = performance.now() - performanceMetrics.zoomStartTime;
+      console.warn("🔍 ZOOM DURATION:", zoomTime.toFixed(2) + "ms");
+
       if (zoomTime > 1000) {
         // 如果縮放操作超過 1 秒，可能需要優化
         console.debug(
@@ -261,6 +300,39 @@ function optimizeTileLoading(map) {
       }
       delete performanceMetrics.zoomStartTime;
     }
+  });
+
+  // 加入更多事件監聽來追蹤地圖行為
+  map.on("movestart", function (e) {
+    console.debug("🔍 MAP MOVESTART - Current zoom:", map.getZoom());
+  });
+
+  map.on("moveend", function (e) {
+    console.debug("🔍 MAP MOVEEND - Current zoom:", map.getZoom());
+  });
+
+  map.on("viewreset", function (e) {
+    console.warn(
+      "🔍 MAP VIEWRESET - Current zoom:",
+      map.getZoom(),
+      "Event:",
+      e,
+    );
+    // 輸出調用堆疊以追蹤是什麼觸發了 viewreset
+    console.trace("🔍 VIEWRESET STACK TRACE");
+  });
+
+  // 監聽其他可能觸發縮放重置的事件
+  map.on("resize", function (e) {
+    console.warn("🔍 MAP RESIZE - Current zoom:", map.getZoom());
+  });
+
+  map.on("layeradd", function (e) {
+    console.debug("🔍 LAYER ADD - Current zoom:", map.getZoom());
+  });
+
+  map.on("layerremove", function (e) {
+    console.debug("🔍 LAYER REMOVE - Current zoom:", map.getZoom());
   });
 }
 
