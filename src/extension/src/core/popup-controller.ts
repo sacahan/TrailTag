@@ -118,28 +118,29 @@ export function getStatusText(appState: string) {
 }
 
 export function getPhaseText(phase: string) {
+  // 統一階段映射，對應 API 的 Phase 枚舉
   switch (phase) {
     case "starting":
       return "正在啟動分析...";
     case "metadata":
     case "metadata_started":
-      return "正在抓取影片資料...";
     case "metadata_completed":
-      return "影片資料抓取完成...";
+      return "正在抓取影片資料...";
     case "compression":
-      return "正在壓縮字幕...";
+      return "正在處理字幕內容...";
     case "summary":
     case "summary_started":
-      return "正在分析主題與地點...";
     case "summary_completed":
-      return "主題分析完成...";
+      return "正在分析主題與地點...";
     case "geocode":
     case "geocode_started":
-      return "正在解析地理座標...";
     case "geocode_completed":
-      return "地理座標解析完成...";
+      return "正在解析地理座標...";
+    case "done":
+    case "completed":
+      return "分析即將完成...";
     default:
-      return "正在處理...";
+      return "正在處理中...";
   }
 }
 
@@ -212,7 +213,10 @@ export function reportError() {
  * @calledFrom changeState, initializeApp
  */
 export function updateUI() {
-  if (!elements) return;
+  if (!elements) {
+    console.error("Elements not initialized in updateUI");
+    return;
+  }
   Object.values(elements.views).forEach((view: any) =>
     view.classList.add("hidden"),
   );
@@ -242,9 +246,14 @@ export function updateUI() {
       // 分析中：顯示 analyzing 視圖，更新進度條、進度文字與階段說明
       elements.views.analyzing.classList.remove("hidden");
       elements.statusBadge.classList.add("analyzing");
-      elements.progressBar.style.width = `${state.progress}%`;
-      elements.progressText.textContent = `${Math.round(state.progress)}%`;
-      elements.phaseText.textContent = getPhaseText(state.phase);
+
+      // 進度顯示邏輯：確保有意義的進度反饋
+      const progress = state.progress || 0;
+      const displayProgress = Math.max(progress, state.phase ? 10 : 0); // 有階段資訊時至少顯示 10%
+
+      elements.progressBar.style.width = `${displayProgress}%`;
+      elements.progressText.textContent = `${Math.round(displayProgress)}%`;
+      elements.phaseText.textContent = getPhaseText(state.phase || "starting");
       break;
     case AppState.MAP_READY:
       // 地圖已完成：顯示 map 視圖，初始化地圖並顯示地點數
@@ -302,11 +311,43 @@ export function updateUI() {
 }
 
 /**
+ * 驗證狀態轉移是否合法
+ */
+function isValidStateTransition(fromState: string, toState: string): boolean {
+  const validTransitions: { [key: string]: string[] } = {
+    [AppState.IDLE]: [AppState.CHECKING_CACHE, AppState.ERROR],
+    [AppState.CHECKING_CACHE]: [
+      AppState.ANALYZING,
+      AppState.MAP_READY,
+      AppState.ERROR,
+      AppState.IDLE,
+    ],
+    [AppState.ANALYZING]: [AppState.MAP_READY, AppState.ERROR, AppState.IDLE],
+    [AppState.MAP_READY]: [
+      AppState.IDLE,
+      AppState.ERROR,
+      AppState.CHECKING_CACHE,
+    ],
+    [AppState.ERROR]: [AppState.IDLE, AppState.CHECKING_CACHE],
+  };
+
+  return validTransitions[fromState]?.includes(toState) ?? false;
+}
+
+/**
  * 切換應用狀態並保存至 chrome.storage（若可用），之後更新 UI
  * - newState: 目標狀態
  * - data: 可選的狀態補充欄位，例如 videoId / jobId / progress
  */
 export function changeState(newState: string, data: any = {}) {
+  // 驗證狀態轉移合法性
+  if (!isValidStateTransition(state.currentState, newState)) {
+    console.warn(
+      `Invalid state transition: ${state.currentState} -> ${newState}`,
+    );
+    // 在開發環境中可以考慮拋出錯誤，生產環境中僅警告
+  }
+
   console.log(`State change: ${state.currentState} -> ${newState}`, data);
   state = {
     ...state,
@@ -358,7 +399,22 @@ export async function startAnalysis() {
       typeof window.TrailTag.API.getVideoLocations === "function"
         ? window.TrailTag.API.getVideoLocations(videoId)
         : Promise.resolve(null));
-      if (locations) {
+
+      // 檢查是否為包含詳細錯誤訊息的 404 回應
+      if (
+        locations &&
+        typeof locations === "object" &&
+        (locations as any).detail
+      ) {
+        const detail = String((locations as any).detail || "");
+        if (/找不到影片地點資料|not\s*found/i.test(detail)) {
+          // 沒有快取資料，繼續進行分析流程
+        } else if (Array.isArray((locations as any).routes)) {
+          // 有有效的地點資料則直接顯示地圖
+          changeState(AppState.MAP_READY, { mapVisualization: locations });
+          return;
+        }
+      } else if (locations && Array.isArray((locations as any).routes)) {
         // 有快取則直接顯示地圖
         changeState(AppState.MAP_READY, { mapVisualization: locations });
         return;
@@ -397,16 +453,21 @@ export async function startAnalysis() {
     }
 
     // 5. 切換至分析中狀態，並啟動事件監聽
+    // 確保立即切換到 ANALYZING 狀態，即使是 cached=true 但沒有地點資料的情況
     changeState(AppState.ANALYZING, {
       jobId: response.job_id,
-      progress: 0,
+      progress: response.progress || 0,
       phase: response.phase || null,
     });
     startEventListener(response.job_id);
   } catch (error) {
     // 任一環節失敗則顯示錯誤
     console.error("Start analysis error:", error);
-    changeState(AppState.ERROR, { error: `分析請求失敗: ${error.message}` });
+    changeState(AppState.ERROR, {
+      error: `分析請求失敗: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    });
   }
 }
 
@@ -539,7 +600,44 @@ export async function handleJobCompleted() {
     typeof window.TrailTag.API.getVideoLocations === "function"
       ? window.TrailTag.API.getVideoLocations(state.videoId)
       : Promise.resolve(null));
-    if (locations) {
+
+    // 檢查是否為包含詳細錯誤訊息的 404 回應
+    if (
+      locations &&
+      typeof locations === "object" &&
+      (locations as any).detail
+    ) {
+      const detail = String((locations as any).detail || "");
+      if (/找不到影片地點資料|not\s*found/i.test(detail)) {
+        // 這表示沒有地點資料，應該停留在閒置狀態而不是顯示地圖
+        // 同時清理任何舊的任務狀態，避免反覆進入這個流程
+        try {
+          if (
+            chrome &&
+            chrome.storage &&
+            chrome.storage.local &&
+            typeof chrome.storage.local.remove === "function"
+          ) {
+            chrome.storage.local.remove(["trailtag_state_v1"], () => {
+              /* noop */
+            });
+          }
+        } catch (e) {
+          /* ignore */
+        }
+        changeState(AppState.IDLE, {
+          videoId: state.videoId,
+          mapVisualization: null,
+          jobId: null,
+          progress: 0,
+          phase: null,
+        });
+        return;
+      }
+    }
+
+    // 若有有效的地點資料（應包含 routes 陣列）
+    if (locations && Array.isArray((locations as any).routes)) {
       // 2. 嘗試預先初始化地圖（非必要，僅提升體驗）
       try {
         if (
@@ -697,7 +795,27 @@ export async function initializeApp() {
       ? window.TrailTag.API.getVideoLocations(currentVideoId)
       : Promise.resolve(null));
 
-    if (latestLocations) {
+    // 處理 API 回覆無地點資料的情況：{"detail":"找不到影片地點資料: <id>"}
+    if (
+      latestLocations &&
+      typeof latestLocations === "object" &&
+      (latestLocations as any).detail
+    ) {
+      const detail = String((latestLocations as any).detail || "");
+      if (/找不到影片地點資料|not\s*found/i.test(detail)) {
+        changeState(AppState.IDLE, {
+          videoId: currentVideoId,
+          mapVisualization: null,
+          jobId: null,
+          progress: 0,
+          phase: null,
+        });
+        return;
+      }
+    }
+
+    // 若有有效的地點資料（應包含 routes 陣列）則直接顯示地圖
+    if (latestLocations && Array.isArray((latestLocations as any).routes)) {
       changeState(AppState.MAP_READY, {
         videoId: currentVideoId,
         mapVisualization: latestLocations,

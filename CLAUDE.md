@@ -105,6 +105,8 @@ npm run build
 
 # Production package (creates dist/extension.zip)
 npm run package
+# or
+npm run zip
 
 # Individual build steps
 npm run clean           # Clean build directories
@@ -141,6 +143,16 @@ Required for API functionality:
 - `GOOGLE_API_KEY` - Google geocoding API
 - `API_HOST` (default: 0.0.0.0)
 - `API_PORT` (default: 8010)
+
+### Memory System (CrewAI)
+
+- `CREW_MEMORY_STORAGE_PATH` - CrewAI Memory storage location (default: ./memory_storage)
+- `CREW_MEMORY_EMBEDDER_PROVIDER` - embedding provider (default: openai)
+
+### Observability & Monitoring
+
+- `LANGTRACE_API_KEY` - Langtrace API key for performance tracing
+- `ENABLE_PERFORMANCE_MONITORING` - enable/disable monitoring (default: true)
 
 CrewAI Memory system is used exclusively for caching - no external cache configuration needed.
 
@@ -230,6 +242,119 @@ The extension uses a multi-step build process:
 - POST `/api/webhooks` - Webhook endpoint for external notifications
 - GET `/api/execution/{task_id}` - Detailed task execution information
 
-## CrewAI
+## Extension State Management System
+
+### Complete State Transition Analysis
+
+The TrailTag Chrome extension implements a comprehensive state management system to handle video analysis workflows. The system coordinates between local extension states, API job states, and user interface views.
+
+#### State Definitions
+
+| Extension State  | Description                              | UI View          | Storage Persistence |
+| ---------------- | ---------------------------------------- | ---------------- | ------------------- |
+| `IDLE`           | No active job, ready for new analysis    | `home-view`      | No                  |
+| `CHECKING_CACHE` | Checking if video already analyzed       | `loading-view`   | No                  |
+| `ANALYZING`      | Analysis in progress, polling job status | `analyzing-view` | Yes (jobId)         |
+| `MAP_READY`      | Analysis complete, displaying results    | `map-view`       | Yes (results)       |
+| `ERROR`          | Error occurred during analysis           | `error-view`     | No                  |
+
+#### API Job Status Integration
+
+| API Job Status | API Phase             | Extension Action                  | Next State            |
+| -------------- | --------------------- | --------------------------------- | --------------------- |
+| `pending`      | `null` or `analyzing` | Start polling, show progress      | `ANALYZING`           |
+| `running`      | Various phases        | Continue polling, update progress | `ANALYZING`           |
+| `completed`    | `completed`           | Fetch location data               | `MAP_READY` or `IDLE` |
+| `failed`       | `failed`              | Show error message                | `ERROR`               |
+
+#### Critical State Transition Logic
+
+```typescript
+// Key fix in handleJobCompleted() - popup-controller.ts:549-582
+if (locations && typeof locations === "object" && (locations as any).detail) {
+  const detail = String((locations as any).detail || "");
+  if (/找不到影片地點資料|not\s*found/i.test(detail)) {
+    // 404 response indicates no location data - return to IDLE
+    changeState(AppState.IDLE, {
+      videoId: state.videoId,
+      mapVisualization: null,
+      jobId: null,
+      progress: 0,
+      phase: null,
+    });
+    return;
+  }
+}
+```
+
+#### State Transition Validation Rules
+
+| From State       | To State         | Valid Triggers               | Validation             |
+| ---------------- | ---------------- | ---------------------------- | ---------------------- |
+| `IDLE`           | `CHECKING_CACHE` | User clicks "Analyze" button | Video ID present       |
+| `CHECKING_CACHE` | `IDLE`           | Cache miss, no existing data | Clear storage          |
+| `CHECKING_CACHE` | `MAP_READY`      | Cache hit, locations found   | Valid location data    |
+| `CHECKING_CACHE` | `ANALYZING`      | New analysis job created     | Valid job ID           |
+| `ANALYZING`      | `MAP_READY`      | Job completed with data      | Valid GeoJSON data     |
+| `ANALYZING`      | `IDLE`           | Job completed, no data       | 404 response handling  |
+| `ANALYZING`      | `ERROR`          | Job failed or API error      | Error message present  |
+| `MAP_READY`      | `IDLE`           | User starts new analysis     | Clear previous results |
+| `ERROR`          | `IDLE`           | User retries or starts new   | Reset error state      |
+
+#### Phase Text Mapping
+
+The extension maps API phases to user-friendly Chinese text:
+
+```typescript
+function getPhaseText(phase: string | null): string {
+  const phaseMap: { [key: string]: string } = {
+    analyzing: "分析影片內容",
+    extracting_places: "提取地點資訊",
+    geocoding: "地理編碼處理",
+    generating_routes: "生成路線資料",
+    completed: "分析完成",
+    failed: "分析失敗",
+  };
+  return phaseMap[phase || "analyzing"] || "處理中...";
+}
+```
+
+#### Common State Management Issues & Solutions
+
+1. **Problem**: Extension jumping to map-view instead of analyzing-view
+
+   - **Root Cause**: 404 API responses treated as valid location data
+   - **Solution**: Explicit error response detection and state cleanup
+
+2. **Problem**: Stale job states persisting across sessions
+
+   - **Root Cause**: Chrome storage not cleared on job completion without data
+   - **Solution**: Comprehensive state cleanup in error scenarios
+
+3. **Problem**: Phase text misalignment with API responses
+   - **Root Cause**: Extension expected more granular phases than API provided
+   - **Solution**: Simplified phase mapping to match actual API phases
+
+#### Debugging State Transitions
+
+Enable debug logging to trace state changes:
+
+```javascript
+// In popup-controller.ts
+console.log("State transition:", currentState, "->", newState, data);
+```
+
+Monitor these key events:
+
+- `changeState()` calls with transition details
+- `handleJobCompleted()` API response handling
+- Chrome storage read/write operations
+- Job polling lifecycle events
+
+## Important Notes
 
 - 有關crewai相關的程式碼，應該優先使用context7檢索crewai相關內容
+- Python version requirement: >=3.10, <3.14 (see pyproject.toml)
+- Follow TypeScript conventions: camelCase for functions/methods, PascalCase for types, prefer arrow functions
+- Use spaces for indentation, not tabs
+- Use `uv` for Python package management and execution when possible

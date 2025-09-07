@@ -201,6 +201,117 @@ npm run package
 - 產線：以容器化（Docker）部署，多執行個體搭配共享 Redis 與負載平衡
 - 注意：geocoding API 可能有用量限制，建議加入快取並使用合適的 API keys
 
+## 擴充套件狀態管理系統
+
+### Chrome 擴充套件狀態系統
+
+TrailTag Chrome 擴充套件實現了健全的狀態管理系統來處理影片分析工作流程。該系統協調擴充套件狀態、API 回應與 UI 視圖，提供無縫的使用者體驗。
+
+#### 核心狀態定義
+
+| 擴充套件狀態     | UI 視圖          | 說明                   | 持久化      |
+| ---------------- | ---------------- | ---------------------- | ----------- |
+| `IDLE`           | `home-view`      | 準備進行新影片分析     | 無          |
+| `CHECKING_CACHE` | `loading-view`   | 檢查現有分析結果       | 無          |
+| `ANALYZING`      | `analyzing-view` | 分析進行中，顯示進度   | 儲存任務 ID |
+| `MAP_READY`      | `map-view`       | 在地圖上顯示分析結果   | 儲存結果    |
+| `ERROR`          | `error-view`     | 錯誤狀態，顯示友善訊息 | 無          |
+
+#### API 整合流程
+
+| API 狀態    | API 階段    | 擴充套件回應       | 狀態轉換                |
+| ----------- | ----------- | ------------------ | ----------------------- |
+| `pending`   | `analyzing` | 顯示進度，開始輪詢 | → `ANALYZING`           |
+| `running`   | 各種階段    | 更新進度指示器     | 保持 `ANALYZING`        |
+| `completed` | `completed` | 取得位置資料       | → `MAP_READY` 或 `IDLE` |
+| `failed`    | `failed`    | 顯示錯誤訊息       | → `ERROR`               |
+
+#### 關鍵錯誤修復
+
+**問題**：擴充套件會直接跳到地圖檢視，而非顯示分析檢視給新影片。
+
+**根本原因**：`handleJobCompleted()` 函式將 404 API 錯誤回應視為有效位置資料。
+
+**解決方案**：在 `popup-controller.ts` 中加入明確的 404 回應錯誤檢測：
+
+```typescript
+// popup-controller.ts 第 549-582 行
+if (locations && typeof locations === "object" && (locations as any).detail) {
+  const detail = String((locations as any).detail || "");
+  if (/找不到影片地點資料|not\s*found/i.test(detail)) {
+    // 404 回應 - 清理狀態並返回 IDLE
+    changeState(AppState.IDLE, {
+      videoId: state.videoId,
+      mapVisualization: null,
+      jobId: null,
+      progress: 0,
+      phase: null,
+    });
+    return;
+  }
+}
+```
+
+#### 狀態轉換驗證
+
+| 從狀態                         | 到狀態         | 觸發              | 驗證 |
+| ------------------------------ | -------------- | ----------------- | ---- |
+| `IDLE` → `CHECKING_CACHE`      | 使用者點擊分析 | 影片 ID 存在      | ✓    |
+| `CHECKING_CACHE` → `MAP_READY` | 找到快取資料   | 有效位置資料      | ✓    |
+| `CHECKING_CACHE` → `ANALYZING` | 需要新分析     | 回傳有效任務 ID   | ✓    |
+| `ANALYZING` → `MAP_READY`      | 任務完成       | 有效 GeoJSON 資料 | ✓    |
+| `ANALYZING` → `IDLE`           | 無位置資料     | 404 錯誤處理      | ✓    |
+| `ANALYZING` → `ERROR`          | 任務失敗       | 錯誤回應          | ✓    |
+
+#### 階段文字對應
+
+擴充套件將 API 階段對應到使用者友善的中文文字：
+
+```typescript
+function getPhaseText(phase: string | null): string {
+  const phaseMap: { [key: string]: string } = {
+    analyzing: "分析影片內容",
+    extracting_places: "提取地點資訊",
+    geocoding: "地理編碼處理",
+    generating_routes: "生成路線資料",
+    completed: "分析完成",
+    failed: "分析失敗",
+  };
+  return phaseMap[phase || "analyzing"] || "處理中...";
+}
+```
+
+#### 常見狀態管理問題與解決方案
+
+1. **問題**：擴充套件跳過分析檢視直接顯示地圖檢視
+
+   - **根本原因**：404 API 回應被視為有效位置資料
+   - **解決方案**：明確的錯誤回應檢測與狀態清理
+
+2. **問題**：過期的任務狀態在會話間持續存在
+
+   - **根本原因**：完成任務但無資料時未清理 Chrome storage
+   - **解決方案**：在錯誤情況下進行全面狀態清理
+
+3. **問題**：階段文字與 API 回應不一致
+   - **根本原因**：擴充套件預期的階段比 API 提供的更詳細
+   - **解決方案**：簡化階段對應以符合實際 API 階段
+
+#### 開發與除錯
+
+啟用狀態轉換除錯：
+
+```javascript
+console.log("狀態轉換:", oldState, "->", newState, stateData);
+```
+
+監控關鍵事件：
+
+- `changeState()` 呼叫中的狀態變更
+- `handleJobCompleted()` 中的 API 回應
+- Chrome storage 操作
+- 任務輪詢生命週期
+
 ## 開發者筆記與程式碼位置（重構後架構）
 
 ### 後端組件

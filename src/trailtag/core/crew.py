@@ -352,14 +352,60 @@ class Trailtag:
         """
         統一的任務回調函式，根據任務名稱更新進度。
         """
-        task_name = output.task.config["description"]
-        if "metadata" in task_name:
+        # 根據 CrewAI 新版本 TaskOutput 結構進行適配
+        task_name = ""
+
+        # 嘗試獲取任務名稱/描述，支持多種 TaskOutput 結構
+        if hasattr(output, "task") and hasattr(output.task, "config"):
+            task_name = output.task.config.get("description", "")
+        elif hasattr(output, "task_description"):
+            task_name = output.task_description
+        elif hasattr(output, "description"):
+            task_name = output.description
+        elif hasattr(output, "agent"):
+            # 透過代理名稱推斷任務類型
+            if hasattr(output.agent, "role"):
+                agent_role = output.agent.role
+                if "metadata" in agent_role.lower():
+                    task_name = "metadata"
+                elif "topic" in agent_role.lower() or "summary" in agent_role.lower():
+                    task_name = "summary"
+                elif (
+                    "map" in agent_role.lower() or "visualization" in agent_role.lower()
+                ):
+                    task_name = "visualization"
+
+        # 如果還是無法識別，使用輸出內容推斷
+        if not task_name and hasattr(output, "raw"):
+            output_str = str(output.raw).lower()
+            if any(
+                keyword in output_str for keyword in ["video_id", "title", "duration"]
+            ):
+                task_name = "metadata"
+            elif any(
+                keyword in output_str
+                for keyword in ["routes", "coordinates", "locations"]
+            ):
+                task_name = "visualization"
+            else:
+                task_name = "summary"
+
+        logger.debug(
+            f"TaskOutput 推斷任務名稱: {task_name}, TaskOutput 屬性: {dir(output)}"
+        )
+
+        if "metadata" in task_name.lower():
             self._update_job_progress("metadata_completed", 30, status="running")
-        elif "summary" in task_name:
+        elif "summary" in task_name.lower():
             self._update_job_progress("summary_completed", 70, status="running")
-        elif "visualization" in task_name:
+        elif "visualization" in task_name.lower():
             self._update_job_progress("geocode_completed", 100, status="done")
             self._store_map_routes_result(output)
+        else:
+            # 默認處理：根據執行順序更新進度
+            logger.warning(f"無法識別任務類型，使用默認進度更新: {task_name}")
+            self._update_job_progress("processing", 50, status="running")
+
         return output
 
     @task

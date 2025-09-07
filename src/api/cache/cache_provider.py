@@ -75,7 +75,8 @@ class CrewAICacheProvider:
             query_str = str(query)
 
             # CrewMemoryStorage的搜索对冒号有问题，需要使用不同的搜索策略
-            # 1. 直接遍历所有内存记录进行精确匹配（最可靠）
+            # 1. 直接遍历所有内存记录进行精确匹配，按时间戳排序取最新的
+            matching_entries = []
             for memory_id, memory_entry in self.memory.memory_storage.memories.items():
                 metadata = memory_entry.metadata
 
@@ -88,14 +89,26 @@ class CrewAICacheProvider:
 
                     # 精确匹配
                     if original_query == query_str or result_key == cache_key:
-                        cached_content = memory_entry.content
-                        if cached_content:
-                            # 尝试解析 JSON
-                            try:
-                                return json.loads(cached_content)
-                            except json.JSONDecodeError:
-                                # 若不是 JSON，直接返回字串
-                                return cached_content
+                        matching_entries.append(
+                            {
+                                "memory_id": memory_id,
+                                "metadata": metadata,
+                                "content": memory_entry.content,
+                                "stored_at": metadata.get("stored_at", 0),
+                            }
+                        )
+
+            # 按 stored_at 降序排序，取最新的
+            if matching_entries:
+                latest_entry = max(matching_entries, key=lambda x: x["stored_at"])
+                cached_content = latest_entry["content"]
+                if cached_content:
+                    # 尝试解析 JSON
+                    try:
+                        return json.loads(cached_content)
+                    except json.JSONDecodeError:
+                        # 若不是 JSON，直接返回字串
+                        return cached_content
 
             # 2. 如果精确匹配失败，尝试搜索（避免冒号问题）
             # 提取job ID进行搜索
@@ -147,6 +160,36 @@ class CrewAICacheProvider:
         """
         try:
             cache_key = self._generate_key(query, params)
+            query_str = str(query)
+
+            # 先軟刪除現有的相同鍵值記錄，避免重複
+            # 創建一個列表來避免在迭代時修改字典
+            memories_to_delete = []
+            for memory_id, memory_entry in self.memory.memory_storage.memories.items():
+                metadata = memory_entry.metadata
+                if metadata.get("type") == "cache" and not metadata.get(
+                    "deleted", False
+                ):
+                    original_query = metadata.get("original_query", "")
+                    result_key = metadata.get("key", "")
+
+                    # 如果找到相同的鍵值，記錄下來待刪除
+                    if original_query == query_str or result_key == cache_key:
+                        memories_to_delete.append((memory_id, memory_entry))
+
+            # 批量標記為已刪除
+            for memory_id, memory_entry in memories_to_delete:
+                self.memory.memory_storage.save(
+                    value="DELETED",
+                    metadata={
+                        "type": "cache",
+                        "key": cache_key,
+                        "original_query": query_str,
+                        "deleted": True,
+                        "deleted_at": time.time(),
+                        "replaced_by": "new_entry",
+                    },
+                )
 
             # 序列化結果（處理 datetime 對象）
             if isinstance(result, (dict, list)):

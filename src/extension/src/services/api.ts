@@ -266,16 +266,30 @@ export async function getJobByVideo(videoId: string): Promise<any | null> {
  */
 export async function getVideoLocations(videoId: string): Promise<any | null> {
   try {
-    const response = await fetchWithRetry(
+    // 對於 404 我們希望回傳 null/詳細訊息，而非丟出例外，因此這裡使用原生 fetch
+    const response = await fetch(
       `${API_BASE_URL}/api/videos/${videoId}/locations`,
-      { method: "GET" },
-      2,
-      500,
+      {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      },
     );
-    // 若 API 回傳 404，代表尚無地點資料
-    if (response.status === 404) return null;
-    if (!response.ok)
+
+    if (response.status === 404) {
+      // 嘗試解析錯誤訊息（若為 { detail: "找不到影片地點資料: <id>" }）
+      try {
+        const body = await response.json();
+        if (body && body.detail) return body; // 讓上層能依據 detail 切換 UI
+      } catch (_) {
+        /* ignore body parse error */
+      }
+      return null; // 無可解析的錯誤內容，回傳 null 表示沒有資料
+    }
+
+    if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
+    }
+
     return await response.json();
   } catch (error) {
     // eslint-disable-next-line no-console

@@ -158,27 +158,59 @@ def run_trailtag_job(job_id, video_id):
             寫入/更新 job 狀態到快取，供進度查詢與 SSE 推播。
             支援可選的 ttl（秒）參數以便設定短暫生命週期的完成狀態。
             """
-            now = datetime.now(timezone.utc)
-            job = cache.get(f"job:{job_id}") or {}
-            job.update(
-                {
-                    "job_id": job_id,
-                    "video_id": video_id,
-                    "status": status,
-                    "phase": phase,
-                    "progress": progress,
-                    "cached": False,
-                    "created_at": job.get("created_at", now),
-                    "updated_at": now,
-                }
+            logger.info(
+                f"🔄 更新任務狀態 - job_id: {job_id}, status: {status}, phase: {phase}, progress: {progress}"
             )
-            if extra:
-                job.update(extra)
-            # 若提供 ttl，則將其傳遞給 cache.set（支援短生命週期的完成狀態）
-            cache.set(f"job:{job_id}", job, ttl=ttl)
 
-        # 1. metadata 階段（可擴充更多細緻進度）
-        update_job("metadata", 0.0)
+            try:
+                now = datetime.now(timezone.utc).isoformat()  # 直接轉為 ISO 字串
+                # 先檢查現有的 job 狀態
+                existing_job = cache.get(f"job:{job_id}")
+                logger.info(f"📋 現有任務狀態: {existing_job}")
+
+                job = existing_job or {}
+                job.update(
+                    {
+                        "job_id": job_id,
+                        "video_id": video_id,
+                        "status": (
+                            status.value if hasattr(status, "value") else status
+                        ),  # 確保枚舉轉為字串
+                        "phase": phase,
+                        "progress": progress,
+                        "cached": False,
+                        "created_at": job.get("created_at", now),
+                        "updated_at": now,
+                    }
+                )
+                if extra:
+                    job.update(extra)
+
+                # 執行快取更新
+                logger.info(f"💾 準備寫入快取 - key: job:{job_id}, ttl: {ttl}")
+                success = cache.set(f"job:{job_id}", job, ttl=ttl)
+                logger.info(f"📝 快取寫入結果: {success}")
+
+                # 短暫延遲後驗證寫入是否成功
+                import time
+
+                time.sleep(0.1)
+                updated_job = cache.get(f"job:{job_id}")
+                logger.info(f"✅ 快取更新後驗證: {updated_job}")
+
+                # 檢查狀態是否正確更新
+                if updated_job and updated_job.get("status") == job.get("status"):
+                    logger.info(f"🎉 狀態更新確認成功: {updated_job.get('status')}")
+                else:
+                    logger.error(
+                        f"❌ 狀態更新失敗 - 期望: {job.get('status')}, 實際: {updated_job.get('status') if updated_job else 'None'}"
+                    )
+
+            except Exception as e:
+                logger.error(f"❌ 更新任務狀態失敗: {e}", exc_info=True)
+
+        # 1. 更新任務狀態為 RUNNING
+        update_job("metadata", 0.0, status=JobStatus.RUNNING)
         try:
             # 準備 crewai kickoff 輸入，補充 job_id, video_id 以利 callback 進度更新
             inputs = {
@@ -186,24 +218,80 @@ def run_trailtag_job(job_id, video_id):
                 "video_id": video_id,
                 "search_subject": "找出景點、餐廳、交通方式與住宿的地理位置",
             }
-            # 進度: metadata
-            update_job("metadata", 5)
+            # 進度: metadata 階段
+            update_job("metadata", 25, status=JobStatus.RUNNING)
+
             # 執行 crewai 主流程（同步呼叫，實際可依需求細分進度）
             Trailtag = get_trailtag()
+            logger.info(
+                f"開始執行 CrewAI 任務 - job_id: {job_id}, video_id: {video_id}"
+            )
+
+            # 進度: 開始執行
+            update_job("processing", 50, status=JobStatus.RUNNING)
             output = Trailtag().crew().kickoff(inputs=inputs)
+
+            logger.info(
+                f"CrewAI 任務完成 - job_id: {job_id}, output type: {type(output)}"
+            )
+
             # 進度: geocode 完成 — 將完成的 job TTL 設為 60 秒
             update_job("geocode", 100, status=JobStatus.DONE, ttl=60)
 
             # 結果寫入 analysis 快取，供地圖查詢
-            if hasattr(output, "pydantic") and output.pydantic:
+            # 根據 CrewAI 文檔，crew().kickoff() 返回 CrewOutput 物件
+            if output and hasattr(output, "pydantic") and output.pydantic:
+                logger.info("使用 output.pydantic 儲存結果")
                 cache.set(
                     f"analysis:{video_id}",
                     (
                         output.pydantic.model_dump()
                         if hasattr(output.pydantic, "model_dump")
-                        else output.pydantic
+                        else (
+                            output.pydantic.dict()
+                            if hasattr(output.pydantic, "dict")
+                            else output.pydantic
+                        )
                     ),
                 )
+            elif output and hasattr(output, "json_dict") and output.json_dict:
+                logger.info("使用 output.json_dict 儲存結果")
+                cache.set(f"analysis:{video_id}", output.json_dict)
+            elif output and hasattr(output, "raw"):
+                logger.info("使用 output.raw 儲存結果")
+                # 嘗試解析 raw 輸出為 JSON
+                try:
+                    import json
+
+                    raw_data = (
+                        json.loads(output.raw)
+                        if isinstance(output.raw, str)
+                        else output.raw
+                    )
+                    cache.set(f"analysis:{video_id}", raw_data)
+                except (json.JSONDecodeError, TypeError):
+                    logger.warning(f"無法解析 raw 輸出為 JSON: {output.raw}")
+                    # 使用原始字串作為備用
+                    cache.set(
+                        f"analysis:{video_id}",
+                        {"raw_output": str(output.raw), "video_id": video_id},
+                    )
+            else:
+                logger.warning(
+                    f"CrewAI 輸出格式不符預期: {type(output)}, 屬性: {dir(output) if hasattr(output, '__dict__') else 'N/A'}"
+                )
+                # 嘗試將整個輸出物件轉換為字典
+                try:
+                    if hasattr(output, "__dict__"):
+                        cache.set(f"analysis:{video_id}", output.__dict__)
+                    else:
+                        cache.set(
+                            f"analysis:{video_id}",
+                            {"raw_output": str(output), "video_id": video_id},
+                        )
+                except Exception as e:
+                    logger.error(f"儲存輸出失敗: {e}")
+
             # 任務完成，移除 video->job 映射以避免 stale state
             try:
                 cache.delete(f"video_job:{video_id}")

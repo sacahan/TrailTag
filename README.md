@@ -279,6 +279,83 @@ Run tests
 - Production: containerize (Docker), run multiple instances behind a load balancer with persistent storage
 - Geocoding providers often have rate limits — use CrewAI Memory caching and provider API keys appropriately
 
+## Extension State Management
+
+### Chrome Extension State System
+
+The TrailTag Chrome extension implements a robust state management system for handling video analysis workflows. The system coordinates between extension states, API responses, and UI views to provide a seamless user experience.
+
+#### Core State Definitions
+
+| Extension State  | UI View          | Description                             | Persistence    |
+| ---------------- | ---------------- | --------------------------------------- | -------------- |
+| `IDLE`           | `home-view`      | Ready for new video analysis            | None           |
+| `CHECKING_CACHE` | `loading-view`   | Checking for existing analysis results  | None           |
+| `ANALYZING`      | `analyzing-view` | Analysis in progress, showing progress  | Job ID stored  |
+| `MAP_READY`      | `map-view`       | Displaying analysis results on map      | Results stored |
+| `ERROR`          | `error-view`     | Error state with user-friendly messages | None           |
+
+#### API Integration Flow
+
+| API Status  | API Phase      | Extension Response           | State Transition        |
+| ----------- | -------------- | ---------------------------- | ----------------------- |
+| `pending`   | `analyzing`    | Show progress, start polling | → `ANALYZING`           |
+| `running`   | Various phases | Update progress indicators   | Stay in `ANALYZING`     |
+| `completed` | `completed`    | Fetch location data          | → `MAP_READY` or `IDLE` |
+| `failed`    | `failed`       | Display error message        | → `ERROR`               |
+
+#### Critical Bug Fixes
+
+**Problem**: Extension was jumping directly to map-view instead of showing analyzing-view for new videos.
+
+**Root Cause**: The `handleJobCompleted()` function treated 404 API error responses as valid location data.
+
+**Solution**: Added explicit error detection for 404 responses in `popup-controller.ts`:
+
+```typescript
+// Lines 549-582 in popup-controller.ts
+if (locations && typeof locations === "object" && (locations as any).detail) {
+  const detail = String((locations as any).detail || "");
+  if (/找不到影片地點資料|not\s*found/i.test(detail)) {
+    // 404 response - clean state and return to IDLE
+    changeState(AppState.IDLE, {
+      videoId: state.videoId,
+      mapVisualization: null,
+      jobId: null,
+      progress: 0,
+      phase: null,
+    });
+    return;
+  }
+}
+```
+
+#### State Transition Validation
+
+| From State                     | To State            | Trigger               | Validation |
+| ------------------------------ | ------------------- | --------------------- | ---------- |
+| `IDLE` → `CHECKING_CACHE`      | User clicks analyze | Video ID exists       |
+| `CHECKING_CACHE` → `MAP_READY` | Cached data found   | Valid location data   |
+| `CHECKING_CACHE` → `ANALYZING` | New analysis needed | Valid job ID returned |
+| `ANALYZING` → `MAP_READY`      | Job completed       | Valid GeoJSON data    |
+| `ANALYZING` → `IDLE`           | No location data    | 404 error handling    |
+| `ANALYZING` → `ERROR`          | Job failed          | Error response        |
+
+#### Development & Debugging
+
+Enable state transition debugging:
+
+```javascript
+console.log("State transition:", oldState, "->", newState, stateData);
+```
+
+Monitor key events:
+
+- State changes in `changeState()` calls
+- API responses in `handleJobCompleted()`
+- Chrome storage operations
+- Job polling lifecycle
+
 ## Code locations (Updated Architecture)
 
 ### Backend Components

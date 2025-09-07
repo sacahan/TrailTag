@@ -302,12 +302,11 @@ export function addMarkersFromMapVisualization(
     // 使用透明背景（不顯示圓形背景色），保留尺寸與對齊
     // 將 icon 放大為 56x56，加入半透明圓形背景以提高可見性，保留置中底部 anchor
     // 使用 8 位 hex alpha（modern browsers 支援），alpha 0x99 約為 60% 不透明度
-    const bgColorWithAlpha = `${color}99`;
     return L.divIcon({
       className: "tt-div-icon",
-      html: `<div style="display:flex;align-items:center;justify-content:center;width:56px;height:56px;background:${bgColorWithAlpha};color:#fff;font-size:32px;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.8);">${emoji}</div>`,
-      iconSize: [56, 56],
-      iconAnchor: [28, 56],
+      html: `<div style="display:flex;align-items:center;justify-content:center;width:24px;height:24px;color:#fff;font-size:24px;border-radius:50%;">${emoji}</div>`,
+      iconSize: [36, 36],
+      iconAnchor: [28, 36],
       popupAnchor: [0, -36],
     });
   }
