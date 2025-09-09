@@ -34,10 +34,18 @@ class JobStatus(str, Enum):
 class JobPhase(str, Enum):
     """任務執行階段"""
 
+    INITIALIZING = "initializing"  # 初始化階段
+    STARTING = "starting"  # 開始執行階段
     METADATA = "metadata"  # 影片 metadata 提取
+    METADATA_STARTED = "metadata_started"  # metadata 開始階段
+    METADATA_COMPLETED = "metadata_completed"  # metadata 完成階段
+    COMPRESSION = "compression"  # 資料壓縮處理
     SUMMARY = "summary"  # 主題摘要分析
+    SUMMARY_COMPLETED = "summary_completed"  # 主題摘要完成階段
     GEOCODE = "geocode"  # 地理編碼與地圖生成
+    GEOCODE_COMPLETED = "geocode_completed"  # 地理編碼完成階段
     PROCESSING = "processing"  # 通用處理階段
+    COMPLETED = "completed"  # 完成階段
 
 
 class MemoryEntry(BaseModel):

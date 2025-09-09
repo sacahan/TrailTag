@@ -11,11 +11,14 @@ from enum import Enum
 class JobStatus(str, Enum):
     """任務狀態列舉"""
 
+    PENDING = "pending"
     QUEUED = "queued"
     RUNNING = "running"
-    DONE = "done"
+    COMPLETED = "completed"
+    DONE = "done"  # 保留向後相容性
     FAILED = "failed"
     CANCELED = "canceled"
+    CANCELLED = "cancelled"  # 英式拼寫相容性
 
 
 class SubtitleStatus(BaseModel):
@@ -37,10 +40,18 @@ class SubtitleStatus(BaseModel):
 class Phase(str, Enum):
     """處理階段列舉"""
 
+    INITIALIZING = "initializing"
+    STARTING = "starting"
     METADATA = "metadata"
+    METADATA_STARTED = "metadata_started"
+    METADATA_COMPLETED = "metadata_completed"
     COMPRESSION = "compression"
     SUMMARY = "summary"
+    SUMMARY_COMPLETED = "summary_completed"
     GEOCODE = "geocode"
+    GEOCODE_COMPLETED = "geocode_completed"
+    PROCESSING = "processing"
+    COMPLETED = "completed"
 
 
 class RouteItem(BaseModel):

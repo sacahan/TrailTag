@@ -31,7 +31,7 @@ from fastapi.testclient import TestClient
 
 # TrailTag imports
 from src.api.main import app
-from src.api.models import (
+from src.api.core.models import (
     JobStatus,
 )
 from src.trailtag.crew import Trailtag

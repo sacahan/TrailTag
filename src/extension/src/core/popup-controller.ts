@@ -786,7 +786,89 @@ export async function initializeApp() {
     console.warn("字幕檢查失敗，繼續初始化流程:", error);
   }
 
-  // 1) 先嘗試取得地點資料，若有則直接顯示地圖並嘗試移除先前儲存的任務狀態
+  // 1) 優先嘗試恢復本地狀態並驗證 job 有效性（在檢查地點資料之前）
+  try {
+    const saved = await loadState();
+    if (saved?.jobId && saved.videoId === currentVideoId) {
+      console.log(
+        "Found saved job state, verifying with backend:",
+        saved.jobId,
+      );
+
+      // 驗證 job 是否仍然有效
+      const latestStatus = await (typeof window !== "undefined" &&
+      window.TrailTag &&
+      window.TrailTag.API &&
+      typeof window.TrailTag.API.getJobStatus === "function"
+        ? window.TrailTag.API.getJobStatus(saved.jobId)
+        : Promise.resolve(null));
+
+      if (latestStatus) {
+        console.log("Job status verified:", latestStatus.status);
+
+        switch (latestStatus.status) {
+          case "running":
+          case "pending":
+            // ✅ 恢復到分析中狀態
+            changeState(AppState.ANALYZING, {
+              videoId: currentVideoId,
+              jobId: saved.jobId,
+              progress: latestStatus.progress || saved.progress || 0,
+              phase: latestStatus.phase || saved.phase || "processing",
+            });
+            startPolling(saved.jobId);
+            console.log("Restored to ANALYZING state with polling");
+            return;
+
+          case "completed":
+          case "done":
+            // job 完成，繼續後續邏輯檢查地點資料
+            console.log("Job completed, checking for location data");
+            break;
+
+          case "failed":
+          case "error":
+            // job 失敗，顯示錯誤狀態
+            changeState(AppState.ERROR, {
+              videoId: currentVideoId,
+              error: latestStatus.message || latestStatus.error || "Job failed",
+              jobId: saved.jobId,
+            });
+            // 清除失敗的 job 狀態
+            try {
+              if (chrome?.storage?.local?.remove) {
+                chrome.storage.local.remove(["trailtag_state_v1"]);
+              }
+            } catch (e) {
+              /* ignore */
+            }
+            return;
+        }
+      } else {
+        console.warn("Saved job not found or invalid, clearing state");
+        // job 不存在或無效，清除本地狀態
+        try {
+          if (chrome?.storage?.local?.remove) {
+            chrome.storage.local.remove(["trailtag_state_v1"]);
+          }
+        } catch (e) {
+          /* ignore */
+        }
+      }
+    }
+  } catch (error) {
+    console.warn("Failed to restore and verify job state:", error);
+    // 清除可能損壞的狀態
+    try {
+      if (chrome?.storage?.local?.remove) {
+        chrome.storage.local.remove(["trailtag_state_v1"]);
+      }
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  // 2) 檢查是否有完成的地點資料（現有邏輯）
   try {
     const latestLocations = await (typeof window !== "undefined" &&
     window.TrailTag &&
@@ -823,17 +905,10 @@ export async function initializeApp() {
         progress: 100,
         phase: null,
       });
-      // 若有舊的 persisted 任務狀態，移除它，避免 popup 之後誤判
+      // 清除任何舊的任務狀態
       try {
-        if (
-          chrome &&
-          chrome.storage &&
-          chrome.storage.local &&
-          typeof chrome.storage.local.remove === "function"
-        ) {
-          chrome.storage.local.remove(["trailtag_state_v1"], () => {
-            /* noop */
-          });
+        if (chrome?.storage?.local?.remove) {
+          chrome.storage.local.remove(["trailtag_state_v1"]);
         }
       } catch (e) {
         /* ignore */
@@ -844,142 +919,8 @@ export async function initializeApp() {
     console.warn("Failed to fetch locations on init:", e);
   }
 
-  // 2) 無快取地點資料 -> 重設本地 state 並進入 CHECKING_CACHE
-  state = {
-    ...state,
-    videoId: currentVideoId,
-    jobId: null,
-    mapVisualization: null,
-    currentState: AppState.CHECKING_CACHE,
-    progress: 0,
-    phase: null,
-  };
-  updateUI();
-
-  // 3) 嘗試恢復先前儲存的分析任務；若 chrome.storage.local 有保存任務則忽略儲存的狀態值
-  //    直接呼叫後端 API 取得最新 job 狀態並以該狀態更新與保存 local state
-  try {
-    const saved = await loadState();
-    if (saved) {
-      try {
-        let latestStatus = null;
-        if (saved.jobId) {
-          latestStatus = await (typeof window !== "undefined" &&
-          window.TrailTag &&
-          window.TrailTag.API &&
-          typeof window.TrailTag.API.getJobStatus === "function"
-            ? window.TrailTag.API.getJobStatus(saved.jobId)
-            : Promise.resolve(null));
-        }
-
-        if (latestStatus) {
-          const isCompleted =
-            latestStatus.status === "completed" ||
-            latestStatus.status === "done";
-          const isFailed =
-            latestStatus.status === "failed" || latestStatus.status === "error";
-          if (isCompleted) {
-            state = {
-              ...state,
-              jobId: saved.jobId,
-              currentState: AppState.ANALYZING,
-              progress:
-                latestStatus.progress != null ? latestStatus.progress : 100,
-              phase: latestStatus.phase || null,
-            };
-            saveState(state);
-            updateUI();
-            try {
-              startPolling(saved.jobId);
-            } catch (e) {
-              /* ignore */
-            }
-            return;
-          } else if (isFailed) {
-            state = {
-              ...state,
-              jobId: saved.jobId,
-              currentState: AppState.ERROR,
-              progress:
-                latestStatus.progress != null
-                  ? latestStatus.progress
-                  : state.progress,
-              phase: latestStatus.phase || state.phase,
-              error: latestStatus.message || "Job failed",
-            };
-            saveState(state);
-            updateUI();
-            stopPolling();
-            return;
-          } else {
-            state = {
-              ...state,
-              jobId: saved.jobId,
-              currentState: AppState.ANALYZING,
-              progress:
-                latestStatus.progress != null
-                  ? latestStatus.progress
-                  : saved.progress || 0,
-              phase: latestStatus.phase || saved.phase || null,
-            };
-            saveState(state);
-            updateUI();
-            try {
-              startPolling(saved.jobId);
-            } catch (e) {
-              /* ignore */
-            }
-            return;
-          }
-        } else {
-          console.warn(
-            "Failed to fetch job status for saved job:",
-            saved.jobId,
-          );
-          try {
-            if (
-              chrome &&
-              chrome.storage &&
-              chrome.storage.local &&
-              typeof chrome.storage.local.remove === "function"
-            ) {
-              chrome.storage.local.remove(["trailtag_state_v1"], () => {
-                /* noop */
-              });
-            }
-            stopPolling();
-          } catch (e) {
-            /* ignore */
-          }
-        }
-      } catch (e) {
-        console.warn(
-          "Failed to sync job status from backend for saved job:",
-          e,
-        );
-        try {
-          if (
-            chrome &&
-            chrome.storage &&
-            chrome.storage.local &&
-            typeof chrome.storage.local.remove === "function"
-          ) {
-            chrome.storage.local.remove(["trailtag_state_v1"], () => {
-              /* noop */
-            });
-          }
-          stopPolling();
-        } catch (e) {
-          /* ignore */
-        }
-      }
-      return; // Add this return to prevent falling through to idle state
-    }
-  } catch (e) {
-    console.warn("loadState error:", e);
-  }
-
-  // 4) 若無可恢復的任務或同步失敗，進入閒置狀態
+  // 3) 若無可恢復的任務或地點資料，進入閒置狀態
+  console.log("No saved job or location data found, entering IDLE state");
   changeState(AppState.IDLE, { videoId: currentVideoId });
   stopPolling();
 }
@@ -1057,6 +998,45 @@ export function registerApp() {
   // 初始化應用狀態與 UI
   initializeApp();
 
+  // ✅ popup 打開後立即進行一次狀態同步（延遲執行以避免與 initializeApp 衝突）
+  setTimeout(async () => {
+    if (state.jobId && state.currentState === AppState.ANALYZING) {
+      console.log(
+        "Performing immediate sync check for active job:",
+        state.jobId,
+      );
+      try {
+        const latestStatus = await (typeof window !== "undefined" &&
+        window.TrailTag &&
+        window.TrailTag.API &&
+        typeof window.TrailTag.API.getJobStatus === "function"
+          ? window.TrailTag.API.getJobStatus(state.jobId)
+          : Promise.resolve(null));
+
+        if (
+          latestStatus &&
+          (latestStatus.status === "completed" ||
+            latestStatus.status === "done")
+        ) {
+          console.log(
+            "Job completed during popup initialization, handling completion",
+          );
+          stopPolling();
+          handleJobCompleted();
+        } else if (!latestStatus) {
+          console.log("Job not found during immediate sync, clearing state");
+          changeState(AppState.IDLE, {
+            jobId: null,
+            progress: 0,
+            phase: null,
+          });
+        }
+      } catch (error) {
+        console.warn("Failed immediate sync check:", error);
+      }
+    }
+  }, 1000); // 延遲 1 秒執行
+
   // (已移除) 先前此處會定期向 background/service worker 發送 keepAlive。
 
   // 當 popup 被關閉或切換（visibilitychange / beforeunload）時，確保當前 state 被儲存到 storage
@@ -1069,9 +1049,83 @@ export function registerApp() {
     }
   };
 
+  // ✅ 增強的狀態同步：當 popup 變為可見時主動同步狀態
+  const syncStateOnVisible = async () => {
+    if (document.visibilityState === "visible" && state.jobId) {
+      console.log("Popup became visible, syncing job status:", state.jobId);
+      try {
+        const latestStatus = await (typeof window !== "undefined" &&
+        window.TrailTag &&
+        window.TrailTag.API &&
+        typeof window.TrailTag.API.getJobStatus === "function"
+          ? window.TrailTag.API.getJobStatus(state.jobId)
+          : Promise.resolve(null));
+
+        if (latestStatus) {
+          console.log("Synced job status:", latestStatus.status);
+
+          // 根據最新狀態更新 UI
+          switch (latestStatus.status) {
+            case "running":
+            case "pending":
+              if (state.currentState !== AppState.ANALYZING) {
+                changeState(AppState.ANALYZING, {
+                  progress: latestStatus.progress || state.progress,
+                  phase: latestStatus.phase || state.phase,
+                });
+                // 確保輪詢正在運行
+                if (!pollingIntervalId) {
+                  startPolling(state.jobId);
+                }
+              } else {
+                // 更新進度但不改變狀態
+                state.progress = latestStatus.progress || state.progress;
+                state.phase = latestStatus.phase || state.phase;
+                updateUI();
+              }
+              break;
+
+            case "completed":
+            case "done":
+              if (state.currentState === AppState.ANALYZING) {
+                stopPolling();
+                handleJobCompleted();
+              }
+              break;
+
+            case "failed":
+            case "error":
+              stopPolling();
+              changeState(AppState.ERROR, {
+                error:
+                  latestStatus.message || latestStatus.error || "Job failed",
+              });
+              break;
+          }
+        } else {
+          console.warn("Job not found during sync, may have expired");
+          // job 不存在，可能已過期或被清理
+          if (state.currentState === AppState.ANALYZING) {
+            stopPolling();
+            changeState(AppState.IDLE, {
+              jobId: null,
+              progress: 0,
+              phase: null,
+            });
+          }
+        }
+      } catch (error) {
+        console.warn("Failed to sync job status on visibility change:", error);
+      }
+    }
+  };
+
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
       saveNow();
+    } else if (document.visibilityState === "visible") {
+      // 當 popup 重新變為可見時，主動同步狀態
+      syncStateOnVisible();
     }
   });
 
