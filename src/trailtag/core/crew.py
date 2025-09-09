@@ -11,7 +11,6 @@ from src.trailtag.tools.geocoding.place_geocoder import PlaceGeocodeTool
 from src.trailtag.tools.processing.subtitle_chunker import SubtitleChunker
 from src.trailtag.tools.data_extraction.description_analyzer import DescriptionAnalyzer
 from src.trailtag.tools.data_extraction.chapter_extractor import ChapterExtractor
-from src.trailtag.tools.data_extraction.comment_miner import CommentMiner
 
 # CacheManager 將在需要時動態匯入以避免循環依賴
 from src.trailtag.core.models import VideoMetadata, VideoTopicSummary, MapVisualization
@@ -194,10 +193,10 @@ class Trailtag:
         return Agent(
             llm=self.llm,
             config=self.agents_config["video_fetch_agent"],
-            # 推理與重試配置
-            max_reasoning_attempts=3,
-            max_retry_limit=2,  # 增加重試次數以處理 Token 限制
-            max_iter=15,  # 限制最大迭代次數避免無限循環
+            # 推理與重試配置 - 資料抓取任務優化（降低推理開銷）
+            max_reasoning_attempts=1,  # 資料抓取主要依賴工具，無需複雜推理
+            max_retry_limit=2,  # 保持重試次數處理 API 限制
+            max_iter=5,  # 減少迭代次數，加快執行速度
             # 記憶與上下文管理
             memory=True,  # 啟用 Agent 記憶功能
             respect_context_window=True,  # 遵守上下文視窗限制
@@ -206,7 +205,7 @@ class Trailtag:
                 YoutubeMetadataTool(),
                 DescriptionAnalyzer(),
                 ChapterExtractor(),
-                CommentMiner(),
+                # CommentMiner(),
             ],
         )
 
@@ -241,10 +240,10 @@ class Trailtag:
         return Agent(
             llm=self.llm,
             config=self.agents_config["content_extraction_agent"],
-            # 推理與重試配置 - 針對內容分析任務優化
-            max_reasoning_attempts=5,  # 內容分析需要更多推理步驟
+            # 推理與重試配置 - 針對內容分析任務優化（平衡準確性與效率）
+            max_reasoning_attempts=2,  # 適度推理，避免過度思考
             max_retry_limit=3,
-            max_iter=20,  # 處理長內容可能需要更多迭代
+            max_iter=8,  # 減少迭代次數，提升響應速度
             # 記憶與上下文管理
             memory=True,
             respect_context_window=True,
@@ -284,10 +283,10 @@ class Trailtag:
         return Agent(
             llm=self.llm,
             config=self.agents_config["map_visualization_agent"],
-            # 推理與重試配置 - 地圖生成任務優化
-            max_reasoning_attempts=4,  # 地理資料處理需要適度推理
-            max_retry_limit=3,
-            max_iter=15,
+            # 推理與重試配置 - 地圖生成任務優化（專注工具使用效率）
+            max_reasoning_attempts=1,  # 地理編碼主要依賴工具，無需複雜推理
+            max_retry_limit=3,  # 保持重試處理 API 限制
+            max_iter=5,  # 快速執行地理編碼任務
             # 記憶與上下文管理
             memory=True,
             respect_context_window=True,

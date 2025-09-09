@@ -44,6 +44,7 @@ declare global {
 export let leafletMap: any = null; // Leaflet 地圖實例（單例模式），確保全域只有一個地圖實例
 export let markersLayer: any = null; // 所有標記匯集的 layer（featureGroup 或 layerGroup），用於統一管理標記
 export let currentVideoId: string | null = null; // 當前對應的影片 id，用於關聯地圖標記與影片內容
+let isFirstMarkerLoad: boolean = true; // 追蹤是否為第一次載入標記，用於控制自動縮放行為
 
 // 可選的工具集，若 window.TrailTag.Utils 存在則使用，提供輔助功能如時間碼格式化等
 const Utils =
@@ -75,8 +76,11 @@ const MapOptimization =
  */
 export function initMap(containerId: string) {
   if (leafletMap) return leafletMap; // 若已建立實例就直接回傳，確保單例模式
-  // 建立地圖實例並設定預設中心點（台灣中心）與縮放等級
-  leafletMap = L.map(containerId).setView([25.0, 121.5], 10);
+  // 建立地圖實例並設定預設中心點（台灣中心）與縮放等級，隱藏縮放控制器
+  leafletMap = L.map(containerId, { zoomControl: false }).setView(
+    [25.0, 121.5],
+    10,
+  );
   // 使用 OpenStreetMap 的圖磚服務作為底圖
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution:
@@ -149,42 +153,17 @@ export function initMap(containerId: string) {
     }
   });
 
-  // 添加 zoomend 事件處理器，在縮放結束後進行最終調整
+  // 添加 zoomend 事件處理器，僅進行視圖更新，不干擾使用者縮放
   leafletMap.on("zoomend", function () {
-    // 縮放結束後，確保地圖視圖正確更新
+    // 縮放結束後，僅確保地圖視圖正確更新，不重置使用者的縮放級別
     setTimeout(() => {
       if (leafletMap && typeof leafletMap.invalidateSize === "function") {
         leafletMap.invalidateSize();
       }
-
-      // 如果有標記且需要重新調整視圖範圍
-      if (
-        markersLayer &&
-        typeof markersLayer.getLayers === "function" &&
-        markersLayer.getLayers().length > 0
-      ) {
-        const bounds =
-          typeof markersLayer.getBounds === "function"
-            ? markersLayer.getBounds()
-            : null;
-        if (bounds && bounds.isValid && bounds.isValid()) {
-          // 檢查當前 zoom 是否合適，避免無限調整
-          const currentZoom = leafletMap.getZoom();
-          console.warn("🔍 ZOOMEND HANDLER - Current zoom:", currentZoom);
-          if (currentZoom < 3) {
-            // 只在 zoom 過小時才重新調整，允許用戶縮放到最大級別 19
-            console.warn(
-              "🔍 ZOOMEND HANDLER - Executing fitBounds due to zoom too small",
-            );
-            leafletMap.fitBounds(bounds, { padding: [20, 20], maxZoom: 16 });
-          } else {
-            console.warn(
-              "🔍 ZOOMEND HANDLER - Zoom acceptable, no adjustment needed",
-            );
-          }
-        }
-      }
-    }, 100);
+      console.log(
+        "🔍 ZOOMEND HANDLER - Map size invalidated, preserving user zoom level",
+      );
+    }, 50); // 減少延遲以提升響應速度
   });
   return leafletMap;
 }
@@ -275,6 +254,11 @@ export function addMarkersFromMapVisualization(
   clearMarkers();
   console.warn("✅ clearMarkers completed");
   currentVideoId = videoId;
+  // 重置第一次載入標記，讓新的標記載入能夠自動縮放
+  if (videoId !== currentVideoId || markersLayer?.getLayers()?.length === 0) {
+    isFirstMarkerLoad = true;
+    console.log("🔍 Reset isFirstMarkerLoad for new video or cleared markers");
+  }
 
   const routes = (mapVisualization && mapVisualization.routes) || [];
 
@@ -394,11 +378,29 @@ export function addMarkersFromMapVisualization(
     if (route.timecode) {
       const vid = videoId || null;
       let timecodeUrl = "#";
-      // 若有 Utils.createTimecodeUrl，使用它產生連結
+
+      // 嘗試生成 timecode URL，加入錯誤處理和 fallback 機制
       if (vid) {
-        if (Utils && typeof Utils.createTimecodeUrl === "function")
-          timecodeUrl = Utils.createTimecodeUrl(vid, route.timecode);
+        try {
+          if (Utils && typeof Utils.createTimecodeUrl === "function") {
+            timecodeUrl = Utils.createTimecodeUrl(vid, route.timecode);
+            console.log("Generated timecode URL:", timecodeUrl);
+          } else {
+            // Fallback: 直接生成基本的 YouTube URL
+            const fallbackUrl = `https://www.youtube.com/watch?v=${vid}&t=${route.timecode}`;
+            timecodeUrl = fallbackUrl;
+            console.warn(
+              "Utils.createTimecodeUrl not available, using fallback:",
+              fallbackUrl,
+            );
+          }
+        } catch (error) {
+          console.error("Error generating timecode URL:", error);
+          // 最終 fallback: 直接連到影片頁面
+          timecodeUrl = `https://www.youtube.com/watch?v=${vid}`;
+        }
       }
+
       const formattedTime =
         Utils && typeof Utils.formatTimecode === "function"
           ? Utils.formatTimecode(route.timecode)
@@ -437,64 +439,152 @@ export function addMarkersFromMapVisualization(
               popupEl.querySelector && popupEl.querySelector(".open-map-link");
 
             function bindOpenLink(el: any, dataAttr: string) {
-              if (!el || el.__tt_bound) return;
+              if (!el) {
+                console.warn("bindOpenLink: element is null for", dataAttr);
+                return;
+              }
+              if (el.__tt_bound) {
+                console.log(
+                  "bindOpenLink: element already bound for",
+                  dataAttr,
+                );
+                return;
+              }
               el.__tt_bound = true;
+              console.log(
+                "bindOpenLink: binding event for",
+                dataAttr,
+                "URL:",
+                el.getAttribute(dataAttr),
+              );
+
               el.addEventListener("click", function (ev: any) {
                 try {
                   ev.preventDefault();
                   const url = el.getAttribute(dataAttr);
-                  if (!url || url === "#") return;
+                  console.log(
+                    "bindOpenLink: click event triggered for",
+                    dataAttr,
+                    "URL:",
+                    url,
+                  );
+
+                  if (!url || url === "#") {
+                    console.warn(
+                      "bindOpenLink: invalid or empty URL for",
+                      dataAttr,
+                      "URL:",
+                      url,
+                    );
+                    return;
+                  }
+                  console.log("bindOpenLink: attempting to open URL:", url);
+
+                  // 檢查 Chrome extension 環境和權限
                   if (typeof chrome !== "undefined" && chrome.tabs) {
                     try {
                       const prefersUpdate =
                         dataAttr === "data-timecode-url" ||
                         (el.classList &&
                           el.classList.contains("timecode-link"));
+
+                      console.log(
+                        "bindOpenLink: using Chrome tabs API, prefersUpdate:",
+                        prefersUpdate,
+                      );
+
                       if (
                         prefersUpdate &&
                         chrome.tabs.query &&
                         chrome.tabs.update
                       ) {
+                        console.log(
+                          "bindOpenLink: attempting to update current tab",
+                        );
                         chrome.tabs.query(
                           { active: true, currentWindow: true },
                           function (tabs: any) {
                             try {
                               if (tabs && tabs[0] && tabs[0].id) {
+                                console.log(
+                                  "bindOpenLink: updating tab",
+                                  tabs[0].id,
+                                  "with URL:",
+                                  url,
+                                );
                                 chrome.tabs.update(tabs[0].id, { url: url });
                               } else if (
                                 typeof chrome.tabs.create === "function"
                               ) {
+                                console.log(
+                                  "bindOpenLink: no active tab found, creating new tab",
+                                );
                                 chrome.tabs.create({ url: url });
                               } else {
+                                console.log(
+                                  "bindOpenLink: Chrome tabs API unavailable, falling back to window.open",
+                                );
                                 window.open(url, "_blank");
                               }
                             } catch (err) {
+                              console.error(
+                                "bindOpenLink: Chrome tabs.query callback error:",
+                                err,
+                              );
                               window.open(url, "_blank");
                             }
                           },
                         );
                       } else if (typeof chrome.tabs.create === "function") {
+                        console.log("bindOpenLink: creating new tab");
                         chrome.tabs.create({ url: url });
                       } else if (chrome.tabs.query && chrome.tabs.update) {
+                        console.log(
+                          "bindOpenLink: fallback to query and update",
+                        );
                         chrome.tabs.query(
                           { active: true, currentWindow: true },
                           function (tabs: any) {
                             try {
-                              if (tabs && tabs[0] && tabs[0].id)
+                              if (tabs && tabs[0] && tabs[0].id) {
+                                console.log(
+                                  "bindOpenLink: fallback updating tab",
+                                  tabs[0].id,
+                                );
                                 chrome.tabs.update(tabs[0].id, { url: url });
-                              else window.open(url, "_blank");
+                              } else {
+                                console.log(
+                                  "bindOpenLink: fallback failed, using window.open",
+                                );
+                                window.open(url, "_blank");
+                              }
                             } catch (err) {
+                              console.error(
+                                "bindOpenLink: fallback Chrome tabs error:",
+                                err,
+                              );
                               window.open(url, "_blank");
                             }
                           },
                         );
                       } else {
+                        console.log(
+                          "bindOpenLink: Chrome tabs API not fully available, using window.open",
+                        );
                         window.open(url, "_blank");
                       }
                     } catch (err) {
+                      console.error(
+                        "bindOpenLink: Chrome extension API error:",
+                        err,
+                      );
+                      console.log("bindOpenLink: falling back to window.open");
                       window.open(url, "_blank");
                     }
                   } else {
+                    console.log(
+                      "bindOpenLink: Chrome not available, using window.open",
+                    );
                     window.open(url, "_blank");
                   }
                 } catch (err) {
@@ -547,12 +637,13 @@ export function addMarkersFromMapVisualization(
     }
   } catch (e) {}
 
-  // 如果有標記，嘗試調整地圖範圍以包含所有標記，並以重試機制處理 layout timing 問題
+  // 只在第一次載入標記時自動縮放到合適視圖，後續保留使用者的縮放設定
   if (
     markersLayer &&
     leafletMap &&
     typeof markersLayer.getLayers === "function" &&
-    markersLayer.getLayers().length > 0
+    markersLayer.getLayers().length > 0 &&
+    isFirstMarkerLoad // 只在第一次載入時自動縮放
   ) {
     const bounds =
       typeof markersLayer.getBounds === "function"
@@ -565,6 +656,7 @@ export function addMarkersFromMapVisualization(
             leafletMap.invalidateSize();
           } catch (e) {}
           leafletMap.fitBounds(bounds, { padding: [20, 20] });
+          console.log("🔍 Auto-fitted bounds on first marker load");
         } catch (err) {
           if (attemptsLeft > 0)
             setTimeout(
@@ -575,7 +667,13 @@ export function addMarkersFromMapVisualization(
         }
       };
       tryFit();
+      isFirstMarkerLoad = false; // 標記為已完成第一次載入
+      console.log(
+        "🔍 First marker load completed, future loads will preserve user zoom",
+      );
     }
+  } else if (markersLayer && markersLayer.getLayers().length > 0) {
+    console.log("🔍 Subsequent marker load, preserving user zoom level");
   }
 
   const count =
@@ -779,33 +877,8 @@ export function refreshMap() {
           leafletMap.invalidateSize();
         }
 
-        // 如果有標記，重新調整視圖
-        if (
-          markersLayer &&
-          typeof markersLayer.getLayers === "function" &&
-          markersLayer.getLayers().length > 0
-        ) {
-          const bounds =
-            typeof markersLayer.getBounds === "function"
-              ? markersLayer.getBounds()
-              : null;
-          if (bounds) {
-            if (
-              MapOptimization &&
-              typeof MapOptimization.smartFitBounds === "function"
-            ) {
-              console.warn(
-                "🔍 CALLING smartFitBounds from addMarkersFromMapVisualization",
-              );
-              MapOptimization.smartFitBounds(leafletMap, bounds);
-            } else {
-              console.warn(
-                "🔍 CALLING leafletMap.fitBounds from addMarkersFromMapVisualization",
-              );
-              leafletMap.fitBounds(bounds, { padding: [20, 20] });
-            }
-          }
-        }
+        // 重新整理時不自動調整視圖，保留使用者的縮放設定
+        console.log("🔍 Map refreshed, preserving user zoom and view settings");
 
         hideMapLoading();
         updateMapPerformance();

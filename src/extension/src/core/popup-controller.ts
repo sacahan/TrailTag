@@ -765,25 +765,54 @@ export async function initializeApp() {
     state.subtitleChecker = new SubtitleChecker("subtitle-status");
   }
 
+  // 在字幕檢查期間隱藏分析按鈕，避免用戶重複點擊
+  const analyzeBtn = document.getElementById(
+    "analyze-btn",
+  ) as HTMLButtonElement;
+  if (analyzeBtn) {
+    analyzeBtn.style.display = "none"; // 隱藏按鈕
+    console.log("🔍 隱藏分析按鈕，開始字幕檢查");
+  }
+
   // 檢查當前影片的字幕可用性
   try {
     const canAnalyze =
       await state.subtitleChecker.checkCurrentVideo(currentVideoId);
-    // 如果沒有字幕，暫停初始化流程，讓用戶看到提示
-    if (!canAnalyze) {
-      // 更新按鈕狀態為不可用
-      const analyzeBtn = document.getElementById(
-        "analyze-btn",
-      ) as HTMLButtonElement;
-      if (analyzeBtn) {
+
+    // 檢查完成後恢復按鈕顯示並根據結果更新狀態
+    if (analyzeBtn) {
+      analyzeBtn.style.display = "block"; // 恢復顯示
+
+      if (!canAnalyze) {
+        // 如果沒有字幕，設為不可用狀態
         analyzeBtn.disabled = true;
         analyzeBtn.textContent = "此影片無法分析";
         analyzeBtn.style.opacity = "0.6";
+        console.log("🚫 字幕檢查失敗，按鈕設為不可用");
+      } else {
+        // 如果有字幕，確保按鈕可用
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = "分析此影片";
+        analyzeBtn.style.opacity = "1.0";
+        console.log("✅ 字幕檢查通過，按鈕可用");
       }
+    }
+
+    // 如果沒有字幕，暫停初始化流程，讓用戶看到提示
+    if (!canAnalyze) {
       return; // 停止進一步的初始化
     }
   } catch (error) {
     console.warn("字幕檢查失敗，繼續初始化流程:", error);
+
+    // 檢查失敗時也要恢復按鈕顯示，但顯示為檢查失敗狀態
+    if (analyzeBtn) {
+      analyzeBtn.style.display = "block";
+      analyzeBtn.disabled = false; // 允許用戶重試
+      analyzeBtn.textContent = "分析此影片";
+      analyzeBtn.style.opacity = "1.0";
+      console.log("⚠️ 字幕檢查失敗，恢復按鈕為可用狀態");
+    }
   }
 
   // 1) 優先嘗試恢復本地狀態並驗證 job 有效性（在檢查地點資料之前）

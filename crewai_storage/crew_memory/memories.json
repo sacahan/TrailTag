@@ -1,242 +1,4967 @@
 [
   {
-    "id": "1648277d-a5c8-4bc8-bf4c-d296c04e8b48",
+    "id": "eaa53d78-5c15-4a9e-a05e-47625683541d",
     "memory_type": "short_term",
-    "content": "{\"job_id\": \"94e9ae64-381e-4de4-9a9b-45603bc5a64d\", \"video_id\": \"kp2Prt6jbkc\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-08T07:43:52.215167+00:00\", \"updated_at\": \"2025-09-08T07:43:52.215167+00:00\"}",
+    "content": "{\"job_id\": \"7f3f9636-c60d-4e61-adda-74ee6fc262fa\", \"video_id\": \"FQwT5D4AH4w\", \"status\": \"queued\", \"phase\": null, \"progress\": 0.0, \"cached\": false, \"created_at\": \"2025-09-09T01:38:09.074930+00:00\", \"updated_at\": \"2025-09-09T01:38:09.074930+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
       "ttl": null,
-      "stored_at": 1757317432.217406
+      "stored_at": 1757381889.0750248
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:43:52.217640+00:00",
-    "updated_at": "2025-09-08T07:43:52.217642+00:00",
+    "created_at": "2025-09-09T01:38:09.075052+00:00",
+    "updated_at": "2025-09-09T01:38:09.075053+00:00",
     "expires_at": null
   },
   {
-    "id": "3d89775e-ef94-430c-8f9f-de093dd978ea",
+    "id": "91c2ac17-0002-46b1-a026-d69ba0536e0a",
     "memory_type": "short_term",
-    "content": "DELETED",
+    "content": "7f3f9636-c60d-4e61-adda-74ee6fc262fa",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
-      "deleted": true,
-      "deleted_at": 1757317457.788307,
-      "replaced_by": "new_entry"
-    },
-    "agent_role": null,
-    "task_id": null,
-    "video_id": null,
-    "created_at": "2025-09-08T07:44:17.788333+00:00",
-    "updated_at": "2025-09-08T07:44:17.788334+00:00",
-    "expires_at": null
-  },
-  {
-    "id": "05f989b9-6026-443a-a9ec-c79728654133",
-    "memory_type": "short_term",
-    "content": "{\"job_id\": \"94e9ae64-381e-4de4-9a9b-45603bc5a64d\", \"video_id\": \"kp2Prt6jbkc\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-08T07:43:52.215167+00:00\", \"updated_at\": \"2025-09-08T07:44:17.788196+00:00\"}",
-    "metadata": {
-      "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
+      "key": "trailtag:5ccade5e49d12239012f8b3340712151",
+      "original_query": "video_job:FQwT5D4AH4w",
       "ttl": null,
-      "stored_at": 1757317457.788895
+      "stored_at": 1757381889.076137
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:44:17.788907+00:00",
-    "updated_at": "2025-09-08T07:44:17.788909+00:00",
+    "created_at": "2025-09-09T01:38:09.076154+00:00",
+    "updated_at": "2025-09-09T01:38:09.076156+00:00",
     "expires_at": null
   },
   {
-    "id": "1f51124c-843f-4118-a8b6-b7ed0109b654",
+    "id": "eeca5add-5d7c-4752-865b-14fbeac67eea",
     "memory_type": "short_term",
     "content": "DELETED",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
       "deleted": true,
-      "deleted_at": 1757317479.402637,
+      "deleted_at": 1757381889.090295,
       "replaced_by": "new_entry"
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:44:39.402670+00:00",
-    "updated_at": "2025-09-08T07:44:39.402671+00:00",
+    "created_at": "2025-09-09T01:38:09.090375+00:00",
+    "updated_at": "2025-09-09T01:38:09.090376+00:00",
     "expires_at": null
   },
   {
-    "id": "45e56fb6-fb95-46b2-95ba-3dc7562853e9",
+    "id": "d8874b93-0644-4387-b73a-24d780cbedae",
     "memory_type": "short_term",
-    "content": "DELETED",
+    "content": "{\"job_id\": \"7f3f9636-c60d-4e61-adda-74ee6fc262fa\", \"video_id\": \"FQwT5D4AH4w\", \"status\": \"running\", \"phase\": \"metadata\", \"progress\": 0.0, \"cached\": false, \"created_at\": \"2025-09-09T01:38:09.074930+00:00\", \"updated_at\": \"2025-09-09T01:38:09.089924+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
-      "deleted": true,
-      "deleted_at": 1757317479.4032729,
-      "replaced_by": "new_entry"
-    },
-    "agent_role": null,
-    "task_id": null,
-    "video_id": null,
-    "created_at": "2025-09-08T07:44:39.403287+00:00",
-    "updated_at": "2025-09-08T07:44:39.403288+00:00",
-    "expires_at": null
-  },
-  {
-    "id": "ab78e5fb-fc87-4a5a-aa42-da2e680d9dcc",
-    "memory_type": "short_term",
-    "content": "{\"job_id\": \"94e9ae64-381e-4de4-9a9b-45603bc5a64d\", \"video_id\": \"kp2Prt6jbkc\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-08T07:43:52.215167+00:00\", \"updated_at\": \"2025-09-08T07:44:39.402514+00:00\"}",
-    "metadata": {
-      "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
       "ttl": null,
-      "stored_at": 1757317479.403546
+      "stored_at": 1757381889.090868
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:44:39.403553+00:00",
-    "updated_at": "2025-09-08T07:44:39.403554+00:00",
+    "created_at": "2025-09-09T01:38:09.090879+00:00",
+    "updated_at": "2025-09-09T01:38:09.090880+00:00",
     "expires_at": null
   },
   {
-    "id": "777f619e-04d8-4f8a-9549-92cebd28fd65",
+    "id": "9bc6dcf2-5068-499a-90b4-86db8fd7e475",
     "memory_type": "short_term",
     "content": "DELETED",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
       "deleted": true,
-      "deleted_at": 1757317479.4331641,
+      "deleted_at": 1757381889.19741,
       "replaced_by": "new_entry"
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:44:39.433189+00:00",
-    "updated_at": "2025-09-08T07:44:39.433191+00:00",
+    "created_at": "2025-09-09T01:38:09.197439+00:00",
+    "updated_at": "2025-09-09T01:38:09.197441+00:00",
     "expires_at": null
   },
   {
-    "id": "99af0eff-016f-4c58-9475-e86d67dcd241",
+    "id": "9e22b225-e61d-4d70-9fe5-1cc5208a0e8e",
     "memory_type": "short_term",
     "content": "DELETED",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
       "deleted": true,
-      "deleted_at": 1757317479.436982,
+      "deleted_at": 1757381889.198396,
       "replaced_by": "new_entry"
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:44:39.437160+00:00",
-    "updated_at": "2025-09-08T07:44:39.437168+00:00",
+    "created_at": "2025-09-09T01:38:09.198417+00:00",
+    "updated_at": "2025-09-09T01:38:09.198420+00:00",
     "expires_at": null
   },
   {
-    "id": "e7df81f2-9ce6-46d3-9f5a-453e8f2e8b4c",
+    "id": "dafc9c34-5fa4-4a1e-8008-83ed97747566",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"7f3f9636-c60d-4e61-adda-74ee6fc262fa\", \"video_id\": \"FQwT5D4AH4w\", \"status\": \"running\", \"phase\": \"metadata\", \"progress\": 25, \"cached\": false, \"created_at\": \"2025-09-09T01:38:09.074930+00:00\", \"updated_at\": \"2025-09-09T01:38:09.196943+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "ttl": null,
+      "stored_at": 1757381889.199146
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:09.199161+00:00",
+    "updated_at": "2025-09-09T01:38:09.199163+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "adf3a2ff-aabd-4520-a636-acbe41b896df",
     "memory_type": "short_term",
     "content": "DELETED",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
       "deleted": true,
-      "deleted_at": 1757317479.439233,
+      "deleted_at": 1757381889.362224,
       "replaced_by": "new_entry"
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:44:39.439255+00:00",
-    "updated_at": "2025-09-08T07:44:39.439259+00:00",
+    "created_at": "2025-09-09T01:38:09.362249+00:00",
+    "updated_at": "2025-09-09T01:38:09.362250+00:00",
     "expires_at": null
   },
   {
-    "id": "b6ec80ee-3814-4c88-b6a4-6e0e8df4adf6",
+    "id": "91e8e2e5-4f38-451e-87c1-14bbda67a484",
     "memory_type": "short_term",
     "content": "DELETED",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
       "deleted": true,
-      "deleted_at": 1757317479.441211,
+      "deleted_at": 1757381889.363816,
       "replaced_by": "new_entry"
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:44:39.441333+00:00",
-    "updated_at": "2025-09-08T07:44:39.441341+00:00",
+    "created_at": "2025-09-09T01:38:09.363832+00:00",
+    "updated_at": "2025-09-09T01:38:09.363835+00:00",
     "expires_at": null
   },
   {
-    "id": "e4902324-be2b-4686-add5-8505d586510f",
+    "id": "fcbc51e6-b8e8-427d-9cae-f8a1ec8f68eb",
     "memory_type": "short_term",
-    "content": "{\"job_id\": \"94e9ae64-381e-4de4-9a9b-45603bc5a64d\", \"video_id\": \"kp2Prt6jbkc\", \"status\": \"done\", \"phase\": \"geocode\", \"progress\": 100, \"cached\": false, \"created_at\": \"2025-09-08T07:39:53.281787+00:00\", \"updated_at\": \"2025-09-08T07:44:39.431306+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [], \"auto_captions\": [\"ar\", \"zh-Hant\", \"nl\", \"fr\", \"de\", \"hi\", \"id\", \"it\", \"ja\", \"ko\", \"pt\", \"ru\", \"es\", \"th\", \"uk\", \"vi\"], \"selected_lang\": null, \"confidence_score\": 0.75}}",
+    "content": "DELETED",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:d8ac128cb52991b1f12ee8368f063e6a",
-      "original_query": "job:94e9ae64-381e-4de4-9a9b-45603bc5a64d",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757381889.36424,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:09.364247+00:00",
+    "updated_at": "2025-09-09T01:38:09.364248+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a8cd1a80-5bb7-4cfd-98b4-279fbc4a42fc",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"7f3f9636-c60d-4e61-adda-74ee6fc262fa\", \"video_id\": \"FQwT5D4AH4w\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-09T01:38:09.074930+00:00\", \"updated_at\": \"2025-09-09T01:38:09.361831+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "ttl": null,
+      "stored_at": 1757381889.365222
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:09.365233+00:00",
+    "updated_at": "2025-09-09T01:38:09.365234+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8e3446eb-c777-43fb-9d07-909416329a53",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757381890.3588932,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.358916+00:00",
+    "updated_at": "2025-09-09T01:38:10.358917+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ca16f52b-30d8-4bec-87f3-628f9a5337a1",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757381890.359458,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.359469+00:00",
+    "updated_at": "2025-09-09T01:38:10.359470+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "d18f3929-6076-4253-9638-986e3c956394",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757381890.359814,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.359821+00:00",
+    "updated_at": "2025-09-09T01:38:10.359821+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "351cabe9-229d-420e-962d-f0a984ac9497",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757381890.360142,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.360150+00:00",
+    "updated_at": "2025-09-09T01:38:10.360151+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "62a276fd-92e7-4479-bcd0-c3506e4ce074",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"7f3f9636-c60d-4e61-adda-74ee6fc262fa\", \"video_id\": \"FQwT5D4AH4w\", \"status\": \"running\", \"phase\": \"starting\", \"progress\": 5, \"cached\": false, \"created_at\": \"2025-09-09T01:38:09.074930+00:00\", \"updated_at\": \"2025-09-09T01:38:10.358839+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "ttl": null,
+      "stored_at": 1757381890.360501
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.360506+00:00",
+    "updated_at": "2025-09-09T01:38:10.360506+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "eb403e66-cee9-44e4-aea8-a8a9002f94db",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757381890.3619359,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.362004+00:00",
+    "updated_at": "2025-09-09T01:38:10.362005+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "37360f98-e053-4103-ac56-67a80e655a24",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757381890.3631701,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.363186+00:00",
+    "updated_at": "2025-09-09T01:38:10.363188+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "88b61c81-c24c-4e1c-9c75-7febbc552329",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757381890.3638048,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.363813+00:00",
+    "updated_at": "2025-09-09T01:38:10.363814+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e9985fdb-670b-4be7-a569-58c3b312b3c2",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757381890.364255,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.364262+00:00",
+    "updated_at": "2025-09-09T01:38:10.364263+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e645b5fe-8eb2-4de2-b265-a2c1c83c1f8d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757381890.364921,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.364932+00:00",
+    "updated_at": "2025-09-09T01:38:10.364933+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "00653d31-a50e-4d86-a664-fc7e75da8376",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"7f3f9636-c60d-4e61-adda-74ee6fc262fa\", \"video_id\": \"FQwT5D4AH4w\", \"status\": \"running\", \"phase\": \"metadata_started\", \"progress\": 10, \"cached\": false, \"created_at\": \"2025-09-09T01:38:09.074930+00:00\", \"updated_at\": \"2025-09-09T01:38:10.361883+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "ttl": null,
+      "stored_at": 1757381890.365501
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:38:10.365510+00:00",
+    "updated_at": "2025-09-09T01:38:10.365511+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "4bfcc07b-995c-4c85-bfeb-32db4fd192b8",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382166.153474,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:42:46.153544+00:00",
+    "updated_at": "2025-09-09T01:42:46.153545+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "552b6d63-83b3-4e66-aa74-87f827a337ee",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382166.154371,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:42:46.154382+00:00",
+    "updated_at": "2025-09-09T01:42:46.154384+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "d081a1c1-490b-4dcc-a6a7-f762ffa0c72d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382166.154957,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:42:46.154965+00:00",
+    "updated_at": "2025-09-09T01:42:46.154966+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "51de4fa9-d3e9-42da-b84d-78f058e8cb9f",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382166.155861,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:42:46.155874+00:00",
+    "updated_at": "2025-09-09T01:42:46.155878+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "b59a1371-415a-4f17-963c-ec39f2fb12d7",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382166.156651,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:42:46.156663+00:00",
+    "updated_at": "2025-09-09T01:42:46.156664+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "dd5505ff-9c42-4112-99ec-5b8f2f28d98c",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382166.157501,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:42:46.157514+00:00",
+    "updated_at": "2025-09-09T01:42:46.157515+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "248fb290-9907-4a71-b5e9-faee0a91703e",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"7f3f9636-c60d-4e61-adda-74ee6fc262fa\", \"video_id\": \"FQwT5D4AH4w\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-09T01:38:09.074930+00:00\", \"updated_at\": \"2025-09-09T01:42:46.153374+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "ttl": null,
+      "stored_at": 1757382166.15818
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:42:46.158188+00:00",
+    "updated_at": "2025-09-09T01:42:46.158189+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2e655ed4-f1ec-44df-b432-84151b885d48",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382204.434616,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:43:24.434673+00:00",
+    "updated_at": "2025-09-09T01:43:24.434675+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c01f8543-822c-4098-b78c-60409d6f7327",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382204.436675,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:43:24.436697+00:00",
+    "updated_at": "2025-09-09T01:43:24.436700+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "39b7fcdc-fdf8-4919-824d-769d9e182bbe",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382204.438164,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:43:24.438183+00:00",
+    "updated_at": "2025-09-09T01:43:24.438185+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "7332d01e-cdf8-4152-bd6f-af3e0d78a1a1",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382204.439605,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:43:24.439618+00:00",
+    "updated_at": "2025-09-09T01:43:24.439620+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c4644aa5-11c5-4be4-879a-34fb0cae3017",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382204.440989,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:43:24.441004+00:00",
+    "updated_at": "2025-09-09T01:43:24.441006+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "32788270-0da6-488d-8ff1-4bccd8d0a6ff",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382204.44225,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:43:24.442260+00:00",
+    "updated_at": "2025-09-09T01:43:24.442261+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "43017d9f-8835-4b66-ab18-e4d2299ba04d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382204.443435,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:43:24.443444+00:00",
+    "updated_at": "2025-09-09T01:43:24.443445+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "0778fca8-1832-4a0c-8576-977c34ec5ed2",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"7f3f9636-c60d-4e61-adda-74ee6fc262fa\", \"video_id\": \"FQwT5D4AH4w\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-09T01:38:09.074930+00:00\", \"updated_at\": \"2025-09-09T01:43:24.434431+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "ttl": null,
+      "stored_at": 1757382204.444947
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:43:24.444961+00:00",
+    "updated_at": "2025-09-09T01:43:24.444962+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a65163db-303e-4078-9804-75712ae06138",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.59911,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.599188+00:00",
+    "updated_at": "2025-09-09T01:44:01.599190+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "abb3da4c-d800-4605-bf41-d5b301ad7ab0",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.601652,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.601676+00:00",
+    "updated_at": "2025-09-09T01:44:01.601678+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e597a716-5c6e-4f4c-a98e-5be2188602cd",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.603067,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.603081+00:00",
+    "updated_at": "2025-09-09T01:44:01.603082+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "4bf6ade3-f54b-4ee3-b051-9eed8f55c80a",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.6044989,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.604518+00:00",
+    "updated_at": "2025-09-09T01:44:01.604520+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f88e9b3d-cd89-4fd8-b6cf-f0f2c239b882",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.6060002,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.606015+00:00",
+    "updated_at": "2025-09-09T01:44:01.606016+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "bff05ed9-6cf2-463f-adeb-0eea0000e5a4",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.6074529,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.607466+00:00",
+    "updated_at": "2025-09-09T01:44:01.607467+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f1448fd5-e8de-4eac-9e20-01b4b50e5775",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.608873,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.608883+00:00",
+    "updated_at": "2025-09-09T01:44:01.608884+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "20ce0e47-769d-4fb3-ba2b-c750e19c5869",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.6102579,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.610280+00:00",
+    "updated_at": "2025-09-09T01:44:01.610282+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8e4582a2-4cf2-4fa2-ad1f-496a7490697b",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"7f3f9636-c60d-4e61-adda-74ee6fc262fa\", \"video_id\": \"FQwT5D4AH4w\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-09T01:38:09.074930+00:00\", \"updated_at\": \"2025-09-09T01:44:01.598950+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "ttl": null,
+      "stored_at": 1757382241.611797
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.611812+00:00",
+    "updated_at": "2025-09-09T01:44:01.611814+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8bdc1a0a-3b07-4ae3-9f63-08bd1a1b7244",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.673836,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.673872+00:00",
+    "updated_at": "2025-09-09T01:44:01.673874+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "14ef6aca-9a44-47ab-8bf0-612301848892",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.675184,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.675204+00:00",
+    "updated_at": "2025-09-09T01:44:01.675207+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "b5cd60e2-c537-49e8-bb13-a56a1ff0c66d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.676152,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.676167+00:00",
+    "updated_at": "2025-09-09T01:44:01.676169+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8f7bc0ba-1a79-4134-9a6a-5dba7875de91",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
+      "deleted": true,
+      "deleted_at": 1757382241.679241,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:44:01.679265+00:00",
+    "updated_at": "2025-09-09T01:44:01.679269+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "07b850d6-933e-468e-8741-1f1ed5b97453",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"7f3f9636-c60d-4e61-adda-74ee6fc262fa\", \"video_id\": \"FQwT5D4AH4w\", \"status\": \"done\", \"phase\": \"geocode\", \"progress\": 100, \"cached\": false, \"created_at\": \"2025-09-09T01:38:09.074930+00:00\", \"updated_at\": \"2025-09-09T01:44:01.673610+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5341f049f5c7dba3e89e116dfd1afe25",
+      "original_query": "job:7f3f9636-c60d-4e61-adda-74ee6fc262fa",
       "ttl": 60,
-      "stored_at": 1757317479.443439
+      "stored_at": 1757382241.680372
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:44:39.443465+00:00",
-    "updated_at": "2025-09-08T07:44:39.443470+00:00",
+    "created_at": "2025-09-09T01:44:01.680410+00:00",
+    "updated_at": "2025-09-09T01:44:01.680415+00:00",
     "expires_at": null
   },
   {
-    "id": "13eb30d9-de90-4d43-afe2-e54c3d4456fb",
+    "id": "688a7767-8eab-47f1-8cb5-49bfbff85859",
     "memory_type": "short_term",
-    "content": "{\"video_id\": \"kp2Prt6jbkc\", \"routes\": [{\"location\": \"住宿選擇\", \"coordinates\": [35.7119162, 139.682573], \"description\": \"來東京推薦住這一站\", \"timecode\": \"00:00:00,000\", \"tags\": [\"住宿\"], \"marker\": \"hotel\"}, {\"location\": \"熱門景點\", \"coordinates\": [35.6764225, 139.650027], \"description\": \"交通超方便，熱門景點都可直達\", \"timecode\": \"00:10:17,000\", \"tags\": [\"觀光景點\"], \"marker\": \"place\"}, {\"location\": \"美食選擇\", \"coordinates\": [35.7090259, 139.7319925], \"description\": \"美食選擇多，而且不用排隊\", \"timecode\": \"00:18:50,000\", \"tags\": [\"餐廳\"], \"marker\": \"restaurant\"}, {\"location\": \"娛樂活動\", \"coordinates\": [35.6764225, 139.650027], \"description\": \"娛樂活動不能少，開到凌晨12點的夾娃娃機店\", \"timecode\": \"00:27:49,000\", \"tags\": [\"娛樂\"], \"marker\": \"fun\"}]}",
+    "content": "{\"video_id\": \"FQwT5D4AH4w\", \"routes\": [{\"location\": \"鴨川\", \"coordinates\": [135.7568430578226, 34.98149722143858], \"description\": \"沿餘的鴨川流域是夏季涼爽的好去處，適合遊玩與散步。\", \"timecode\": \"00:00:11,000\", \"tags\": [\"河流\", \"夏天的納涼床\", \"泡水和跳烏龜\"], \"marker\": \"river\"}, {\"location\": \"出町柳站\", \"coordinates\": [135.7732283, 35.0304996], \"description\": \"出町柳站是通往鴨川的主要交通站之一。\", \"timecode\": \"00:00:56,625\", \"tags\": [\"捷運站\", \"交通\", \"通行\"], \"marker\": \"station\"}, {\"location\": \"跳烏龜\", \"coordinates\": [135.7681489, 35.011564], \"description\": \"這是一個在鴨川上進行的有趣活動，遊客可以參與過河。\", \"timecode\": \"00:01:01,666\", \"tags\": [\"傳統活動\", \"夏季活動\", \"遊客參与\"], \"marker\": \"activity\"}, {\"location\": \"河合神社\", \"coordinates\": [135.7719587, 35.0346734], \"description\": \"河合神社是著名的神社，許多遊客來祈求美麗及安胎。\", \"timecode\": \"00:02:19,541\", \"tags\": [\"神社\", \"信仰\", \"觀光\"], \"marker\": \"shrine\"}, {\"location\": \"錦市場\", \"coordinates\": [135.764723, 35.0050258], \"description\": \"錦市場是美食的聚集地，許多當地美食和手工藝品可供選擇。\", \"timecode\": \"00:05:33,000\", \"tags\": [\"市場\", \"美食\", \"購物\"], \"marker\": \"market\"}, {\"location\": \"天橋立\", \"coordinates\": [135.1918204, 35.5698022], \"description\": \"天橋立是一個以其獨特的自然景觀而聞名的海岸線。\", \"timecode\": \"00:11:37,000\", \"tags\": [\"自然景觀\", \"旅遊\", \"美麗\"], \"marker\": \"scenery\"}, {\"location\": \"伊根灣\", \"coordinates\": [135.2902181, 35.6697017], \"description\": \"伊根灣以其優美的自然風光和傳統的舟屋聞名，適合拍攝和遊覽。\", \"timecode\": \"00:17:08,000\", \"tags\": [\"自然風景\", \"傳統\", \"遊覽\"], \"marker\": \"bay\"}]}",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:82063056706d2d98fac6445fcf2f5167",
-      "original_query": "analysis:kp2Prt6jbkc",
+      "key": "trailtag:59a66da39de138037dc5b62a344128d1",
+      "original_query": "analysis:FQwT5D4AH4w",
       "ttl": null,
-      "stored_at": 1757317479.5479722
+      "stored_at": 1757382241.791064
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:44:39.548116+00:00",
-    "updated_at": "2025-09-08T07:44:39.548121+00:00",
+    "created_at": "2025-09-09T01:44:01.791087+00:00",
+    "updated_at": "2025-09-09T01:44:01.791090+00:00",
     "expires_at": null
   },
   {
-    "id": "bf5e1f15-6552-414c-991e-08959948ceca",
+    "id": "eb125f2a-8ce2-432a-84c6-bf148fadfa54",
     "memory_type": "short_term",
     "content": "DELETED",
     "metadata": {
       "type": "cache",
-      "key": "trailtag:003df7448e5e1d3435634e2bae6d1ca7",
+      "key": "trailtag:5ccade5e49d12239012f8b3340712151",
       "deleted": true,
-      "deleted_at": 1757317479.549023
+      "deleted_at": 1757382241.79291
     },
     "agent_role": null,
     "task_id": null,
     "video_id": null,
-    "created_at": "2025-09-08T07:44:39.549034+00:00",
-    "updated_at": "2025-09-08T07:44:39.549035+00:00",
+    "created_at": "2025-09-09T01:44:01.792926+00:00",
+    "updated_at": "2025-09-09T01:44:01.792928+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "92e75a09-2014-4d67-a8ea-75273cebaa43",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"6a04859b-6030-424e-8476-37a383595876\", \"video_id\": \"Nl78wLbcsN8\", \"status\": \"queued\", \"phase\": null, \"progress\": 0.0, \"cached\": false, \"created_at\": \"2025-09-09T01:59:41.789881+00:00\", \"updated_at\": \"2025-09-09T01:59:41.789881+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hans\", \"zh-Hant\", \"zh-TW\", \"en\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "ttl": null,
+      "stored_at": 1757383181.7899678
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:41.789980+00:00",
+    "updated_at": "2025-09-09T01:59:41.789981+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "fc6daf50-b5f0-4d87-a0f9-e8f5349902ee",
+    "memory_type": "short_term",
+    "content": "6a04859b-6030-424e-8476-37a383595876",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:015d3c01edc8608d70f8e52cce436097",
+      "original_query": "video_job:Nl78wLbcsN8",
+      "ttl": null,
+      "stored_at": 1757383181.791703
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:41.791717+00:00",
+    "updated_at": "2025-09-09T01:59:41.791720+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6db6a8c5-81b0-42a2-8dc5-166fec10e87d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383181.8036559,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:41.803680+00:00",
+    "updated_at": "2025-09-09T01:59:41.803682+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "0cda1911-23be-498e-bf19-339444e75ac0",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"6a04859b-6030-424e-8476-37a383595876\", \"video_id\": \"Nl78wLbcsN8\", \"status\": \"running\", \"phase\": \"metadata\", \"progress\": 0.0, \"cached\": false, \"created_at\": \"2025-09-09T01:59:41.789881+00:00\", \"updated_at\": \"2025-09-09T01:59:41.803346+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hans\", \"zh-Hant\", \"zh-TW\", \"en\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "ttl": null,
+      "stored_at": 1757383181.805556
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:41.805575+00:00",
+    "updated_at": "2025-09-09T01:59:41.805577+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "5b8377db-4946-4521-99b4-35b304e41f0d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383181.914067,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:41.914131+00:00",
+    "updated_at": "2025-09-09T01:59:41.914133+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "565d8f2b-316b-4981-8f9b-06cdbcb9acaa",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383181.916676,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:41.916702+00:00",
+    "updated_at": "2025-09-09T01:59:41.916705+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ad8e0182-c3fa-47f0-9fc4-4b98d099277b",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"6a04859b-6030-424e-8476-37a383595876\", \"video_id\": \"Nl78wLbcsN8\", \"status\": \"running\", \"phase\": \"metadata\", \"progress\": 25, \"cached\": false, \"created_at\": \"2025-09-09T01:59:41.789881+00:00\", \"updated_at\": \"2025-09-09T01:59:41.913746+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hans\", \"zh-Hant\", \"zh-TW\", \"en\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "ttl": null,
+      "stored_at": 1757383181.918365
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:41.918378+00:00",
+    "updated_at": "2025-09-09T01:59:41.918379+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ee9bb6f7-d9a3-4945-9627-34c91f8bc9b5",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.034254,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.034285+00:00",
+    "updated_at": "2025-09-09T01:59:42.034286+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "1129af9e-3ac0-41b7-8925-4fad17dc7aac",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.036281,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.036296+00:00",
+    "updated_at": "2025-09-09T01:59:42.036298+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2d0e3dce-1f5b-4d6d-a91b-86c6c29a314f",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.03835,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.038360+00:00",
+    "updated_at": "2025-09-09T01:59:42.038361+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6e638568-e129-4569-a251-910c2ffecced",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"6a04859b-6030-424e-8476-37a383595876\", \"video_id\": \"Nl78wLbcsN8\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-09T01:59:41.789881+00:00\", \"updated_at\": \"2025-09-09T01:59:42.033855+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hans\", \"zh-Hant\", \"zh-TW\", \"en\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "ttl": null,
+      "stored_at": 1757383182.0399559
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.039964+00:00",
+    "updated_at": "2025-09-09T01:59:42.039964+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e4f7b746-0491-4462-88a5-cd8e749ce4db",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.857761,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.857778+00:00",
+    "updated_at": "2025-09-09T01:59:42.857779+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "44419193-06bc-4ecc-8b51-d2d974bc2fe8",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.859307,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.859317+00:00",
+    "updated_at": "2025-09-09T01:59:42.859318+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2593c6fc-2a95-4a03-ade3-89926f902872",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.8604538,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.860461+00:00",
+    "updated_at": "2025-09-09T01:59:42.860461+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "50c66cde-86c8-4bc4-bd6c-1096185b4339",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.861575,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.861580+00:00",
+    "updated_at": "2025-09-09T01:59:42.861581+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8e1e8a3a-e0c7-480f-8566-6bd8f461d091",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"6a04859b-6030-424e-8476-37a383595876\", \"video_id\": \"Nl78wLbcsN8\", \"status\": \"running\", \"phase\": \"starting\", \"progress\": 5, \"cached\": false, \"created_at\": \"2025-09-09T01:59:41.789881+00:00\", \"updated_at\": \"2025-09-09T01:59:42.857719+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hans\", \"zh-Hant\", \"zh-TW\", \"en\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "ttl": null,
+      "stored_at": 1757383182.862836
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.862844+00:00",
+    "updated_at": "2025-09-09T01:59:42.862845+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "4499c87e-d63f-4dce-80be-45877fcd3361",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.865324,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.865337+00:00",
+    "updated_at": "2025-09-09T01:59:42.865337+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "0cc09d3a-50c5-4239-9078-d7499e124ed8",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.866709,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.866723+00:00",
+    "updated_at": "2025-09-09T01:59:42.866724+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "577954c9-465b-413f-9209-03d5b4c0bc73",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.868036,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.868049+00:00",
+    "updated_at": "2025-09-09T01:59:42.868050+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "117f213e-b9e1-47a3-897c-e034fa6e579b",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.8692951,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.869300+00:00",
+    "updated_at": "2025-09-09T01:59:42.869301+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "37fcd795-034e-4118-8c88-73eb9d844176",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383182.870584,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.870590+00:00",
+    "updated_at": "2025-09-09T01:59:42.870590+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6e7c29a3-a830-4ac2-ba24-d44b1ecbb376",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"6a04859b-6030-424e-8476-37a383595876\", \"video_id\": \"Nl78wLbcsN8\", \"status\": \"running\", \"phase\": \"metadata_started\", \"progress\": 10, \"cached\": false, \"created_at\": \"2025-09-09T01:59:41.789881+00:00\", \"updated_at\": \"2025-09-09T01:59:42.865288+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hans\", \"zh-Hant\", \"zh-TW\", \"en\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "ttl": null,
+      "stored_at": 1757383182.871928
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T01:59:42.871935+00:00",
+    "updated_at": "2025-09-09T01:59:42.871935+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2c2c87cb-66b9-4100-bf10-4682c0cd64f2",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383402.232959,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:22.233151+00:00",
+    "updated_at": "2025-09-09T02:03:22.233152+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "97c5cf1f-43d7-492a-9c07-a31e2aa1161d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383402.235038,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:22.235048+00:00",
+    "updated_at": "2025-09-09T02:03:22.235049+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "bc09e03a-6093-4bc5-971d-b4339a61f735",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383402.236487,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:22.236498+00:00",
+    "updated_at": "2025-09-09T02:03:22.236500+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a716ba26-4e9f-4b1e-a5b3-85baa10c1b53",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383402.238258,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:22.238268+00:00",
+    "updated_at": "2025-09-09T02:03:22.238269+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "fbd4754b-5e36-44ab-8989-8a5dbc5523b8",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383402.2396631,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:22.239673+00:00",
+    "updated_at": "2025-09-09T02:03:22.239674+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f196a88a-84ed-4674-adf2-006e2b1a95ca",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383402.241908,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:22.241940+00:00",
+    "updated_at": "2025-09-09T02:03:22.241947+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c50b73ee-f2e6-45ad-8706-1d6aca78dd9f",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"6a04859b-6030-424e-8476-37a383595876\", \"video_id\": \"Nl78wLbcsN8\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-09T01:59:41.789881+00:00\", \"updated_at\": \"2025-09-09T02:03:22.232363+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hans\", \"zh-Hant\", \"zh-TW\", \"en\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "ttl": null,
+      "stored_at": 1757383402.243841
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:22.243851+00:00",
+    "updated_at": "2025-09-09T02:03:22.243852+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "b7fba380-7e1f-4e3e-bc97-211cd28d45ae",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383430.194582,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:50.194635+00:00",
+    "updated_at": "2025-09-09T02:03:50.194636+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "7342cdaf-c9ef-4da4-a50b-3d6cc6559fd9",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383430.1981592,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:50.198178+00:00",
+    "updated_at": "2025-09-09T02:03:50.198179+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "04e57585-38ae-4ff0-bb9a-cc2719175b86",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383430.2022002,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:50.202246+00:00",
+    "updated_at": "2025-09-09T02:03:50.202252+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "754a378a-03db-40cb-8d28-cd6bad4a77f3",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383430.205398,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:50.205421+00:00",
+    "updated_at": "2025-09-09T02:03:50.205423+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "4155b52b-2819-40b8-9597-096c6d44dbae",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383430.208235,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:50.208248+00:00",
+    "updated_at": "2025-09-09T02:03:50.208249+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "bf0968d3-8248-415a-96c4-3f4819f3af9c",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383430.210906,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:50.210917+00:00",
+    "updated_at": "2025-09-09T02:03:50.210918+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "12524062-2f1f-430a-b0e5-2d8a3334f2f0",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383430.2136,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:50.213610+00:00",
+    "updated_at": "2025-09-09T02:03:50.213611+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "7148581a-9907-43ef-9e85-f894f7d4b97c",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"6a04859b-6030-424e-8476-37a383595876\", \"video_id\": \"Nl78wLbcsN8\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-09T01:59:41.789881+00:00\", \"updated_at\": \"2025-09-09T02:03:50.194444+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hans\", \"zh-Hant\", \"zh-TW\", \"en\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "ttl": null,
+      "stored_at": 1757383430.21618
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:03:50.216191+00:00",
+    "updated_at": "2025-09-09T02:03:50.216192+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "cb714de9-bc06-4fed-be0d-fdd30a1d2b58",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.585973,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.586055+00:00",
+    "updated_at": "2025-09-09T02:04:14.586060+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e9d41fe8-54db-492a-ae1b-b5478b971cf3",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.5926888,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.592760+00:00",
+    "updated_at": "2025-09-09T02:04:14.592775+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "5d9fb0c0-53d6-466f-8b24-142023551bb1",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.606101,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.606128+00:00",
+    "updated_at": "2025-09-09T02:04:14.606133+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "d7e9aa81-d3cf-4f45-8273-8568c9e4f817",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.610471,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.610497+00:00",
+    "updated_at": "2025-09-09T02:04:14.610501+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "81bb28f0-a5f5-4d57-abc9-335f22f3ae6b",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.61611,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.616140+00:00",
+    "updated_at": "2025-09-09T02:04:14.616145+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c5f9cd83-c0fe-4872-8178-786c57034e38",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.620697,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.620727+00:00",
+    "updated_at": "2025-09-09T02:04:14.620733+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "800e3ed1-ef3c-41a1-ac42-48a2a46f65be",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.622802,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.622819+00:00",
+    "updated_at": "2025-09-09T02:04:14.622821+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "9c49856e-f0d6-417e-9491-72ec0eff670a",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.624686,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.624705+00:00",
+    "updated_at": "2025-09-09T02:04:14.624707+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "b260212e-0c84-4131-9a75-d9a2f1c58106",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"6a04859b-6030-424e-8476-37a383595876\", \"video_id\": \"Nl78wLbcsN8\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-09T01:59:41.789881+00:00\", \"updated_at\": \"2025-09-09T02:04:14.585639+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hans\", \"zh-Hant\", \"zh-TW\", \"en\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "ttl": null,
+      "stored_at": 1757383454.626554
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.626567+00:00",
+    "updated_at": "2025-09-09T02:04:14.626571+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "5b3416f3-70a6-48f9-9c86-64804c32ac91",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.6500611,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.650140+00:00",
+    "updated_at": "2025-09-09T02:04:14.650140+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8adc17b0-aef6-464f-bd3d-f93f2443880f",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.653151,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.653180+00:00",
+    "updated_at": "2025-09-09T02:04:14.653186+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "7574a1af-3a9c-4811-994a-49faa99b1812",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.6556318,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.655656+00:00",
+    "updated_at": "2025-09-09T02:04:14.655661+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "cd871c6b-bcac-4bab-bf83-790ef8d02ed5",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "deleted": true,
+      "deleted_at": 1757383454.6576772,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.657696+00:00",
+    "updated_at": "2025-09-09T02:04:14.657699+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "5339d702-e86e-4964-b88d-4cbec4afac67",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"6a04859b-6030-424e-8476-37a383595876\", \"video_id\": \"Nl78wLbcsN8\", \"status\": \"done\", \"phase\": \"geocode\", \"progress\": 100, \"cached\": false, \"created_at\": \"2025-09-09T01:59:41.789881+00:00\", \"updated_at\": \"2025-09-09T02:04:14.649750+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hans\", \"zh-Hant\", \"zh-TW\", \"en\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:9cf64377d626cbf0f327ff58e9cffa2a",
+      "original_query": "job:6a04859b-6030-424e-8476-37a383595876",
+      "ttl": 60,
+      "stored_at": 1757383454.65988
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.659904+00:00",
+    "updated_at": "2025-09-09T02:04:14.659911+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e8162ce7-01ee-41e0-bafd-a4c945a6dd86",
+    "memory_type": "short_term",
+    "content": "{\"video_id\": \"Nl78wLbcsN8\", \"routes\": [{\"location\": \"那霸機場\", \"coordinates\": [26.2041, 127.6459], \"description\": \"抵達出關後，無論是要搭乘單軌電車，還是租車取車，出來「往右」一直走就對了。\", \"timecode\": \"00:01:29,723\", \"tags\": [\"交通\", \"機場\"], \"marker\": \"airport\"}, {\"location\": \"The Orion Naha Hotel\", \"coordinates\": [26.2105, 127.6882], \"description\": \"這次只打算在市區待一晚，訂了一家新開幕沒多久、位置很棒的The Orion Hotel。\", \"timecode\": \"00:04:25,165\", \"tags\": [\"酒店\", \"住宿\"], \"marker\": \"hotel\"}, {\"location\": \"牧志站\", \"coordinates\": [26.2145, 127.6881], \"description\": \"牧志站就在國際通旁，步行2分鐘就可以到酒店。\", \"timecode\": \"00:04:40,347\", \"tags\": [\"交通\", \"單軌電車\"], \"marker\": \"train\"}, {\"location\": \"ぶち 久茂地店\", \"coordinates\": [26.2138, 127.6842], \"description\": \"找了一家在地人推薦的和牛燒肉，靠近縣廳前久茂地區。\", \"timecode\": \"00:15:17,784\", \"tags\": [\"餐廳\", \"燒肉\"], \"marker\": \"restaurant\"}, {\"location\": \"Pork Tamago Onigiri\", \"coordinates\": [26.2143, 127.6948], \"description\": \"影片後面也會介紹出境航廈重點，及如何吃到不用排隊的Pork Tamago Onigiri飯糰。\", \"timecode\": \"00:03:01,414\", \"tags\": [\"餐點\", \"當地小吃\"], \"marker\": \"food\"}]}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:bc0d7764463dd1bb21a10ac89da037d8",
+      "original_query": "analysis:Nl78wLbcsN8",
+      "ttl": null,
+      "stored_at": 1757383454.769737
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.769760+00:00",
+    "updated_at": "2025-09-09T02:04:14.769763+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "06af88fe-9e49-4216-84f8-82e2d74e8041",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:015d3c01edc8608d70f8e52cce436097",
+      "deleted": true,
+      "deleted_at": 1757383454.77297
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:04:14.772985+00:00",
+    "updated_at": "2025-09-09T02:04:14.772987+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e616fba3-590b-4bfb-8862-10ba605289f7",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"3745997a-bf4a-4639-8da4-468b04fc867f\", \"video_id\": \"z08HrrFDsP0\", \"status\": \"queued\", \"phase\": null, \"progress\": 0.0, \"cached\": false, \"created_at\": \"2025-09-09T02:06:39.334138+00:00\", \"updated_at\": \"2025-09-09T02:06:39.334138+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "ttl": null,
+      "stored_at": 1757383599.3342772
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.334299+00:00",
+    "updated_at": "2025-09-09T02:06:39.334300+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "9cf992a4-2e16-44e2-bc39-4ce655abc47d",
+    "memory_type": "short_term",
+    "content": "3745997a-bf4a-4639-8da4-468b04fc867f",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5dbf8a0436e347002756da0f5be00bbb",
+      "original_query": "video_job:z08HrrFDsP0",
+      "ttl": null,
+      "stored_at": 1757383599.338125
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.338146+00:00",
+    "updated_at": "2025-09-09T02:06:39.338148+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "85365e29-b2a6-4e85-8053-744c6e0dfcc0",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383599.355357,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.355382+00:00",
+    "updated_at": "2025-09-09T02:06:39.355382+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "794c342b-4193-4cb5-826f-769120076bfa",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"3745997a-bf4a-4639-8da4-468b04fc867f\", \"video_id\": \"z08HrrFDsP0\", \"status\": \"running\", \"phase\": \"metadata\", \"progress\": 0.0, \"cached\": false, \"created_at\": \"2025-09-09T02:06:39.334138+00:00\", \"updated_at\": \"2025-09-09T02:06:39.354965+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "ttl": null,
+      "stored_at": 1757383599.359273
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.359297+00:00",
+    "updated_at": "2025-09-09T02:06:39.359301+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2a98665b-6559-4341-b130-3ae1d0e113b2",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383599.466932,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.466971+00:00",
+    "updated_at": "2025-09-09T02:06:39.466973+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2d4a8fca-f041-42b8-8224-a3abaeed0c5d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383599.471002,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.471023+00:00",
+    "updated_at": "2025-09-09T02:06:39.471025+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f31bd9ec-feb4-48fc-91f5-fb2ba8a090ce",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"3745997a-bf4a-4639-8da4-468b04fc867f\", \"video_id\": \"z08HrrFDsP0\", \"status\": \"running\", \"phase\": \"metadata\", \"progress\": 25, \"cached\": false, \"created_at\": \"2025-09-09T02:06:39.334138+00:00\", \"updated_at\": \"2025-09-09T02:06:39.466452+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "ttl": null,
+      "stored_at": 1757383599.474833
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.474857+00:00",
+    "updated_at": "2025-09-09T02:06:39.474860+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "dc3acf4a-24b6-44c7-85c9-d49b8db7cecf",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383599.596135,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.596163+00:00",
+    "updated_at": "2025-09-09T02:06:39.596165+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ada69fd0-84f6-4a73-9175-6d0725429eb4",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383599.599394,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.599423+00:00",
+    "updated_at": "2025-09-09T02:06:39.599427+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f7b2129d-fcff-421e-bdc9-92dd14a27d5c",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383599.6020749,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.602086+00:00",
+    "updated_at": "2025-09-09T02:06:39.602087+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8c4230a5-0c06-4c38-a17d-860a1241bcf8",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"3745997a-bf4a-4639-8da4-468b04fc867f\", \"video_id\": \"z08HrrFDsP0\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-09T02:06:39.334138+00:00\", \"updated_at\": \"2025-09-09T02:06:39.595747+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "ttl": null,
+      "stored_at": 1757383599.604733
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:39.604746+00:00",
+    "updated_at": "2025-09-09T02:06:39.604747+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6c6b2ae4-1bb3-4956-9861-acdcc0c79bc7",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383600.4496078,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.449651+00:00",
+    "updated_at": "2025-09-09T02:06:40.449652+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a5c8460a-e3d7-4c22-9692-925008d1dd25",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383600.451841,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.451855+00:00",
+    "updated_at": "2025-09-09T02:06:40.451856+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a7955ba0-bfcc-4155-a520-f459758a796b",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383600.4538188,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.453826+00:00",
+    "updated_at": "2025-09-09T02:06:40.453829+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "68fa727e-157b-4aeb-bf99-d2389d956c39",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383600.455907,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.455916+00:00",
+    "updated_at": "2025-09-09T02:06:40.455917+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6ead9205-622b-4a6c-8b90-863d21d0a8be",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"3745997a-bf4a-4639-8da4-468b04fc867f\", \"video_id\": \"z08HrrFDsP0\", \"status\": \"running\", \"phase\": \"starting\", \"progress\": 5, \"cached\": false, \"created_at\": \"2025-09-09T02:06:39.334138+00:00\", \"updated_at\": \"2025-09-09T02:06:40.449555+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "ttl": null,
+      "stored_at": 1757383600.4580202
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.458027+00:00",
+    "updated_at": "2025-09-09T02:06:40.458028+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "91ab5b8a-809e-478b-9be5-4899c1c1bbfd",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383600.46174,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.461752+00:00",
+    "updated_at": "2025-09-09T02:06:40.461753+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "9d111cdf-679c-4406-b9bf-dbcce911144d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383600.4640481,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.464062+00:00",
+    "updated_at": "2025-09-09T02:06:40.464064+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8876b4a1-ee6d-43d5-b2ed-ee8a6ef5ca10",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383600.466107,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.466114+00:00",
+    "updated_at": "2025-09-09T02:06:40.466115+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "58e6b7ed-70df-47bd-b96f-9952aede7869",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383600.468173,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.468179+00:00",
+    "updated_at": "2025-09-09T02:06:40.468179+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "38b67b80-cf89-4481-a74c-3ecda481e692",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383600.4701812,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.470186+00:00",
+    "updated_at": "2025-09-09T02:06:40.470186+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "83dd1fc3-495c-42d6-a25a-4fe1f3a9a243",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"3745997a-bf4a-4639-8da4-468b04fc867f\", \"video_id\": \"z08HrrFDsP0\", \"status\": \"running\", \"phase\": \"metadata_started\", \"progress\": 10, \"cached\": false, \"created_at\": \"2025-09-09T02:06:39.334138+00:00\", \"updated_at\": \"2025-09-09T02:06:40.461670+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "ttl": null,
+      "stored_at": 1757383600.472288
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:06:40.472295+00:00",
+    "updated_at": "2025-09-09T02:06:40.472296+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "56c20fb9-b2a5-4c49-9cfd-dff8eb199fe5",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383631.63025,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:11.630308+00:00",
+    "updated_at": "2025-09-09T02:07:11.630310+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "633f4b4b-5904-4644-84dc-916f228703cd",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383631.634824,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:11.634858+00:00",
+    "updated_at": "2025-09-09T02:07:11.634865+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "051e1f53-0e40-4e13-bc4c-4aff894e8c56",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383631.6398988,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:11.639940+00:00",
+    "updated_at": "2025-09-09T02:07:11.639946+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "65c6dccc-9e76-4001-9385-2301454620b4",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383631.644531,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:11.644559+00:00",
+    "updated_at": "2025-09-09T02:07:11.644563+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "5ea7f08c-42d1-4d98-8a4e-f2d84bb23cc1",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383631.648333,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:11.648347+00:00",
+    "updated_at": "2025-09-09T02:07:11.648349+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ba3a5479-2721-4603-a911-c9686b8da3ad",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383631.6518579,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:11.651881+00:00",
+    "updated_at": "2025-09-09T02:07:11.651886+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "dcd9094b-7187-4f41-8e7c-3bdb3a957450",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"3745997a-bf4a-4639-8da4-468b04fc867f\", \"video_id\": \"z08HrrFDsP0\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-09T02:06:39.334138+00:00\", \"updated_at\": \"2025-09-09T02:07:11.630069+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "ttl": null,
+      "stored_at": 1757383631.655073
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:11.655083+00:00",
+    "updated_at": "2025-09-09T02:07:11.655084+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "851aa07b-377e-4f75-b7f4-84ab5d6e23b1",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383653.426719,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:33.426824+00:00",
+    "updated_at": "2025-09-09T02:07:33.426829+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "bcd91f94-54c8-4f57-b2b6-4f994d9bef83",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383653.4339368,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:33.433980+00:00",
+    "updated_at": "2025-09-09T02:07:33.433984+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "27d3c959-01e9-4e94-9e83-19a0499cc441",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383653.4391859,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:33.439202+00:00",
+    "updated_at": "2025-09-09T02:07:33.439204+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c974cd4c-5920-427c-9a5d-f2ff4205140e",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383653.444031,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:33.444051+00:00",
+    "updated_at": "2025-09-09T02:07:33.444054+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ead24b0c-d668-42eb-a1ea-4f344ae93f19",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383653.448417,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:33.448428+00:00",
+    "updated_at": "2025-09-09T02:07:33.448430+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f456b06b-b3e1-4277-9ddd-0ce95392a0be",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383653.4525309,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:33.452543+00:00",
+    "updated_at": "2025-09-09T02:07:33.452545+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "596f310f-2c31-4150-ab95-9c3f7494c05c",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383653.456415,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:33.456423+00:00",
+    "updated_at": "2025-09-09T02:07:33.456424+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "22c635f0-7bea-4bf7-a4d9-c32a2343bdab",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"3745997a-bf4a-4639-8da4-468b04fc867f\", \"video_id\": \"z08HrrFDsP0\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-09T02:06:39.334138+00:00\", \"updated_at\": \"2025-09-09T02:07:33.426224+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "ttl": null,
+      "stored_at": 1757383653.460062
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:07:33.460072+00:00",
+    "updated_at": "2025-09-09T02:07:33.460073+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "1d3c18ac-1a3d-4252-8198-29bbeea60fb0",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.323404,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.323460+00:00",
+    "updated_at": "2025-09-09T02:08:24.323462+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "b84abe68-e7d2-4e83-b00a-9df4e6a228da",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.330266,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.330296+00:00",
+    "updated_at": "2025-09-09T02:08:24.330299+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "0d910a2e-61e4-4602-9b84-c0ca25a46a09",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.336112,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.336145+00:00",
+    "updated_at": "2025-09-09T02:08:24.336149+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6d3acc07-e92f-4571-a26b-f650a0038ae9",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.340747,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.340760+00:00",
+    "updated_at": "2025-09-09T02:08:24.340761+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f1520d45-0dee-4c70-84dd-caa1b49f370a",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.345089,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.345100+00:00",
+    "updated_at": "2025-09-09T02:08:24.345101+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "bef06490-5a93-4177-80e6-206353ab9200",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.349199,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.349216+00:00",
+    "updated_at": "2025-09-09T02:08:24.349218+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "d06e9ea8-f488-4e4f-9862-baedcfbfef90",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.353346,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.353358+00:00",
+    "updated_at": "2025-09-09T02:08:24.353359+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "88664ae8-f675-4814-a1bb-dbe5c0529d41",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.357328,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.357337+00:00",
+    "updated_at": "2025-09-09T02:08:24.357338+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "64572a7e-016a-4af2-98db-f0be1a99a454",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"3745997a-bf4a-4639-8da4-468b04fc867f\", \"video_id\": \"z08HrrFDsP0\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-09T02:06:39.334138+00:00\", \"updated_at\": \"2025-09-09T02:08:24.323196+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "ttl": null,
+      "stored_at": 1757383704.360971
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.360980+00:00",
+    "updated_at": "2025-09-09T02:08:24.360980+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a7c785d5-5d2a-4ccc-a03e-e031bae96f86",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.3823931,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.382415+00:00",
+    "updated_at": "2025-09-09T02:08:24.382416+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "9816f50b-bfae-4090-884e-eb26dd14fc80",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.385566,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.385577+00:00",
+    "updated_at": "2025-09-09T02:08:24.385579+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f3669ec1-48d8-461e-902a-035d82e97918",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.388551,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.388567+00:00",
+    "updated_at": "2025-09-09T02:08:24.388569+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "efc0e6a6-58c0-4b60-9e6c-4c0649031558",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "deleted": true,
+      "deleted_at": 1757383704.391387,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.391394+00:00",
+    "updated_at": "2025-09-09T02:08:24.391395+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6e80845a-a708-47a6-94f1-d80dea605290",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"3745997a-bf4a-4639-8da4-468b04fc867f\", \"video_id\": \"z08HrrFDsP0\", \"status\": \"done\", \"phase\": \"geocode\", \"progress\": 100, \"cached\": false, \"created_at\": \"2025-09-09T02:06:39.334138+00:00\", \"updated_at\": \"2025-09-09T02:08:24.381999+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:cb04a9e5dc3897293d17e01c544aa1d6",
+      "original_query": "job:3745997a-bf4a-4639-8da4-468b04fc867f",
+      "ttl": 60,
+      "stored_at": 1757383704.3940191
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.394027+00:00",
+    "updated_at": "2025-09-09T02:08:24.394027+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e8094365-8d00-4420-ba13-35721cb5f03f",
+    "memory_type": "short_term",
+    "content": "{\"video_id\": \"z08HrrFDsP0\", \"routes\": [{\"location\": \"京都車站\", \"coordinates\": [135.7587667, 34.985849], \"description\": \"你去京都車站還是只會去拉麵小路吃飯嗎\", \"timecode\": \"00:00:01,267\", \"tags\": [\"交通樞紐\", \"熱門景點\"], \"marker\": \"train\"}, {\"location\": \"拉麵小路\", \"coordinates\": [135.7580322, 34.9856577], \"description\": \"還是只會去拉麵小路吃飯嗎\", \"timecode\": \"00:00:01,267\", \"tags\": [\"餐廳\", \"美食聚集地\"], \"marker\": \"food\"}, {\"location\": \"燒肉店\", \"coordinates\": [135.7590232, 34.9891116], \"description\": \"燒肉店義大利麵、特色啤酒吧\", \"timecode\": \"00:00:07,240\", \"tags\": [\"餐廳\", \"燒肉\"], \"marker\": \"restaurant\"}, {\"location\": \"啤酒吧\", \"coordinates\": [135.7681489, 35.011564], \"description\": \"特色啤酒吧\", \"timecode\": \"00:00:09,075\", \"tags\": [\"酒吧\", \"飲品\"], \"marker\": \"bar\"}, {\"location\": \"高檔景觀餐廳\", \"coordinates\": [135.7681489, 35.011564], \"description\": \"甚至還有隱藏版的高檔景觀餐廳\", \"timecode\": \"00:00:11,077\", \"tags\": [\"餐廳\", \"高檔\"], \"marker\": \"fine_dining\"}]}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:b5dc61a0ef6a9d98f12f83201e9ead36",
+      "original_query": "analysis:z08HrrFDsP0",
+      "ttl": null,
+      "stored_at": 1757383704.5019321
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.501955+00:00",
+    "updated_at": "2025-09-09T02:08:24.501957+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "50d78d60-26a2-496e-a8c4-0de4fd28feee",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5dbf8a0436e347002756da0f5be00bbb",
+      "deleted": true,
+      "deleted_at": 1757383704.505942
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:08:24.505955+00:00",
+    "updated_at": "2025-09-09T02:08:24.505956+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "7b3ab906-616d-4c43-87e5-b56ca85b7012",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"dce2e162-5adc-4fff-b066-047d42394593\", \"video_id\": \"loGRrClougY\", \"status\": \"queued\", \"phase\": null, \"progress\": 0.0, \"cached\": false, \"created_at\": \"2025-09-09T02:14:21.281640+00:00\", \"updated_at\": \"2025-09-09T02:14:21.281640+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "ttl": null,
+      "stored_at": 1757384061.2817438
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.281770+00:00",
+    "updated_at": "2025-09-09T02:14:21.281771+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "af31887e-095e-439a-a1d6-df85983ef0c9",
+    "memory_type": "short_term",
+    "content": "dce2e162-5adc-4fff-b066-047d42394593",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d63a5bc8833fd033af1c19a78085a1c3",
+      "original_query": "video_job:loGRrClougY",
+      "ttl": null,
+      "stored_at": 1757384061.286533
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.286551+00:00",
+    "updated_at": "2025-09-09T02:14:21.286554+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "95862be3-8e43-422e-b40a-29256db91fad",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384061.2997298,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.299752+00:00",
+    "updated_at": "2025-09-09T02:14:21.299753+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6d791fe4-d0f9-401a-b89b-a5e22e6e2d87",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"dce2e162-5adc-4fff-b066-047d42394593\", \"video_id\": \"loGRrClougY\", \"status\": \"running\", \"phase\": \"metadata\", \"progress\": 0.0, \"cached\": false, \"created_at\": \"2025-09-09T02:14:21.281640+00:00\", \"updated_at\": \"2025-09-09T02:14:21.299356+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "ttl": null,
+      "stored_at": 1757384061.304427
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.304453+00:00",
+    "updated_at": "2025-09-09T02:14:21.304457+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "d5d88f32-d51a-4df2-946f-04f6c630499d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384061.414777,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.414842+00:00",
+    "updated_at": "2025-09-09T02:14:21.414843+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "94659be9-d8e0-4c17-9837-620648c4b336",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384061.420941,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.420975+00:00",
+    "updated_at": "2025-09-09T02:14:21.420980+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f4d2a331-d8da-4c33-995e-e1bc3e4d84cc",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"dce2e162-5adc-4fff-b066-047d42394593\", \"video_id\": \"loGRrClougY\", \"status\": \"running\", \"phase\": \"metadata\", \"progress\": 25, \"cached\": false, \"created_at\": \"2025-09-09T02:14:21.281640+00:00\", \"updated_at\": \"2025-09-09T02:14:21.414320+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "ttl": null,
+      "stored_at": 1757384061.4268842
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.426913+00:00",
+    "updated_at": "2025-09-09T02:14:21.426917+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2892d267-7ca8-497c-a384-fab81971b045",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384061.542481,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.542555+00:00",
+    "updated_at": "2025-09-09T02:14:21.542557+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "26991076-ba54-4b13-ba9d-acd72a8b5c64",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384061.548425,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.548453+00:00",
+    "updated_at": "2025-09-09T02:14:21.548457+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "398eb3b9-d158-4311-a3ff-f1e03f5e7001",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384061.552572,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.552587+00:00",
+    "updated_at": "2025-09-09T02:14:21.552590+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "70d47dec-e29e-41db-9652-ec93a3d3365f",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"dce2e162-5adc-4fff-b066-047d42394593\", \"video_id\": \"loGRrClougY\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-09T02:14:21.281640+00:00\", \"updated_at\": \"2025-09-09T02:14:21.541917+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "ttl": null,
+      "stored_at": 1757384061.5562382
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:21.556253+00:00",
+    "updated_at": "2025-09-09T02:14:21.556254+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f41c613d-026e-4a09-aa27-5934c611676c",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384062.3471859,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.347227+00:00",
+    "updated_at": "2025-09-09T02:14:22.347227+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c63950ac-a9b7-43c6-8684-44798f30f987",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384062.3508742,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.350901+00:00",
+    "updated_at": "2025-09-09T02:14:22.350903+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "99e88d18-1adc-4ac8-94a8-95ad1c63e0b7",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384062.35389,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.353901+00:00",
+    "updated_at": "2025-09-09T02:14:22.353903+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a8c585f0-dec1-43f3-8c1f-bf13d53425bf",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384062.35668,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.356687+00:00",
+    "updated_at": "2025-09-09T02:14:22.356687+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e65d3c2a-d326-47ff-8c0e-e952e62573cf",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"dce2e162-5adc-4fff-b066-047d42394593\", \"video_id\": \"loGRrClougY\", \"status\": \"running\", \"phase\": \"starting\", \"progress\": 5, \"cached\": false, \"created_at\": \"2025-09-09T02:14:21.281640+00:00\", \"updated_at\": \"2025-09-09T02:14:22.347125+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "ttl": null,
+      "stored_at": 1757384062.3598342
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.359842+00:00",
+    "updated_at": "2025-09-09T02:14:22.359843+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "36a93e8d-de3e-454a-82cb-0c0c75f5b5c9",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384062.364924,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.364939+00:00",
+    "updated_at": "2025-09-09T02:14:22.364939+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "b7176bd8-449c-427c-84e7-46f3937a12fe",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384062.368588,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.368607+00:00",
+    "updated_at": "2025-09-09T02:14:22.368610+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2abbd61a-bd77-4370-922b-d657cca25b25",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384062.371655,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.371667+00:00",
+    "updated_at": "2025-09-09T02:14:22.371670+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e779c48c-8b46-4345-b6f9-893c53927632",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384062.374627,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.374637+00:00",
+    "updated_at": "2025-09-09T02:14:22.374640+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "fe912b00-38a3-40fd-abd0-b1d9056ef7ad",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384062.377685,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.377694+00:00",
+    "updated_at": "2025-09-09T02:14:22.377696+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a5634607-e458-4e38-9b93-57175b86aa87",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"dce2e162-5adc-4fff-b066-047d42394593\", \"video_id\": \"loGRrClougY\", \"status\": \"running\", \"phase\": \"metadata_started\", \"progress\": 10, \"cached\": false, \"created_at\": \"2025-09-09T02:14:21.281640+00:00\", \"updated_at\": \"2025-09-09T02:14:22.364858+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "ttl": null,
+      "stored_at": 1757384062.380512
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:14:22.380517+00:00",
+    "updated_at": "2025-09-09T02:14:22.380518+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "eb7946f9-c4d2-47cc-8ea9-a67e0eaab924",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384250.874552,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:30.874706+00:00",
+    "updated_at": "2025-09-09T02:17:30.874707+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a6558cc2-1d94-4895-aa20-ece6d31bd904",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384250.883702,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:30.883727+00:00",
+    "updated_at": "2025-09-09T02:17:30.883732+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "fd441b3b-2e55-4258-b8d7-6b589826c6ed",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384250.888472,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:30.888506+00:00",
+    "updated_at": "2025-09-09T02:17:30.888512+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "b31fa36a-d01c-4e42-ab5a-268e75cdf03c",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384250.8967638,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:30.896779+00:00",
+    "updated_at": "2025-09-09T02:17:30.896781+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "5fd8d69b-34db-4437-8acd-3fadcb109862",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384250.9007082,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:30.900729+00:00",
+    "updated_at": "2025-09-09T02:17:30.900732+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "efc85175-07a8-4047-b2c5-f839212a9cee",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384250.904796,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:30.904805+00:00",
+    "updated_at": "2025-09-09T02:17:30.904806+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "74b59712-e0af-4da8-9f99-f076a195251d",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"dce2e162-5adc-4fff-b066-047d42394593\", \"video_id\": \"loGRrClougY\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-09T02:14:21.281640+00:00\", \"updated_at\": \"2025-09-09T02:17:30.874447+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "ttl": null,
+      "stored_at": 1757384250.90818
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:30.908190+00:00",
+    "updated_at": "2025-09-09T02:17:30.908191+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "d67b2079-f665-4214-afb9-fea4f4a0e5dd",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384274.2944021,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:54.294532+00:00",
+    "updated_at": "2025-09-09T02:17:54.294535+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c5eb546f-91f7-44e6-a0b0-8cad5476c897",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384274.3024158,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:54.302448+00:00",
+    "updated_at": "2025-09-09T02:17:54.302452+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ef5b87dc-aadd-40ae-a296-e962635c5a5b",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384274.309275,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:54.309293+00:00",
+    "updated_at": "2025-09-09T02:17:54.309295+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "aaa4ce30-1a00-4fdd-bc80-d1c06ddc6bbc",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384274.3148952,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:54.314913+00:00",
+    "updated_at": "2025-09-09T02:17:54.314915+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "26d987c9-d67f-4a0d-aa20-64b207c12bd8",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384274.3209379,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:54.320960+00:00",
+    "updated_at": "2025-09-09T02:17:54.320963+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "fdf03ed8-7d56-4216-ad57-7498752d4e9c",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384274.3258991,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:54.325910+00:00",
+    "updated_at": "2025-09-09T02:17:54.325912+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e218f944-1a10-4148-92a2-e902a562444e",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384274.330485,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:54.330494+00:00",
+    "updated_at": "2025-09-09T02:17:54.330495+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "0ec69c2e-4b32-4126-afdf-c6dc906ca568",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"dce2e162-5adc-4fff-b066-047d42394593\", \"video_id\": \"loGRrClougY\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-09T02:14:21.281640+00:00\", \"updated_at\": \"2025-09-09T02:17:54.294210+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "ttl": null,
+      "stored_at": 1757384274.335144
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:17:54.335157+00:00",
+    "updated_at": "2025-09-09T02:17:54.335158+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c252cef7-d82b-4bc4-8f50-3d28f1531073",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.452121,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.452178+00:00",
+    "updated_at": "2025-09-09T02:18:23.452179+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "f4b98218-91b0-4438-9d7d-b5870fac281d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.455981,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.455995+00:00",
+    "updated_at": "2025-09-09T02:18:23.455997+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c6d7a7ae-3971-4ae4-a511-a4f139538622",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.459589,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.459600+00:00",
+    "updated_at": "2025-09-09T02:18:23.459601+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a583a4e0-811d-4a60-8479-83e145dffd88",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.463543,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.463552+00:00",
+    "updated_at": "2025-09-09T02:18:23.463553+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "eb79b6a5-24b6-4942-8650-38dfbaa71e5d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.467901,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.467910+00:00",
+    "updated_at": "2025-09-09T02:18:23.467911+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "0ea340d1-82bb-41e5-8900-012abf32f323",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.4718919,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.471899+00:00",
+    "updated_at": "2025-09-09T02:18:23.471900+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "aab568b9-c368-407a-a2a6-6b25481a6137",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.476209,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.476216+00:00",
+    "updated_at": "2025-09-09T02:18:23.476217+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "5fb383f3-6c82-4d81-97bf-499625ecc9a3",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.480364,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.480371+00:00",
+    "updated_at": "2025-09-09T02:18:23.480371+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "806acadb-222e-423f-8153-afa54a44c751",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"dce2e162-5adc-4fff-b066-047d42394593\", \"video_id\": \"loGRrClougY\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-09T02:14:21.281640+00:00\", \"updated_at\": \"2025-09-09T02:18:23.451982+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "ttl": null,
+      "stored_at": 1757384303.484756
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.484769+00:00",
+    "updated_at": "2025-09-09T02:18:23.484770+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "bd628fc8-531a-4b24-8584-fa2ddb38f4ff",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.512844,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.512865+00:00",
+    "updated_at": "2025-09-09T02:18:23.512866+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "3f3cb065-73f4-4263-9b94-26323e6417ea",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.517717,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.517734+00:00",
+    "updated_at": "2025-09-09T02:18:23.517736+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "08c6145c-fa61-487e-b467-2658002ccaa5",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.5219269,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.521937+00:00",
+    "updated_at": "2025-09-09T02:18:23.521937+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "4e003789-24ac-4d4c-a48b-2c88ebedcc8d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "deleted": true,
+      "deleted_at": 1757384303.525665,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.525673+00:00",
+    "updated_at": "2025-09-09T02:18:23.525673+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6c5d99dc-1c0a-44f1-ba64-8a27b6866960",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"dce2e162-5adc-4fff-b066-047d42394593\", \"video_id\": \"loGRrClougY\", \"status\": \"done\", \"phase\": \"geocode\", \"progress\": 100, \"cached\": false, \"created_at\": \"2025-09-09T02:14:21.281640+00:00\", \"updated_at\": \"2025-09-09T02:18:23.512364+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-TW\"], \"auto_captions\": [], \"selected_lang\": \"zh-TW\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d3e278703d34567f372ccffa438507d4",
+      "original_query": "job:dce2e162-5adc-4fff-b066-047d42394593",
+      "ttl": 60,
+      "stored_at": 1757384303.5293891
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.529396+00:00",
+    "updated_at": "2025-09-09T02:18:23.529396+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "882d097d-01fb-4123-97c4-ebdc52dbe059",
+    "memory_type": "short_term",
+    "content": "{\"video_id\": \"loGRrClougY\", \"routes\": [{\"location\": \"五條大橋\", \"coordinates\": [135.7679161, 34.995651], \"description\": \"那個是五條大橋，所以我們現在是要往那個方向\", \"timecode\": \"00:00:35,235\", \"tags\": [\"熱門觀光地\", \"橋\"], \"marker\": \"bridge\"}, {\"location\": \"清水五條\", \"coordinates\": [135.7685681, 34.9959035], \"description\": \"這邊就是那個我們講到的京阪電車的清水五條\", \"timecode\": \"00:02:18,998\", \"tags\": [\"電車\", \"車站\"], \"marker\": \"train_station\"}, {\"location\": \"先斗町\", \"coordinates\": [135.7710907, 35.006067], \"description\": \"待會要去跟朋友約在先斗町的酒吧，小酌一下這樣\", \"timecode\": \"00:07:00,787\", \"tags\": [\"酒吧\", \"夜生活區\"], \"marker\": \"nightlife\"}, {\"location\": \"木屋通町\", \"coordinates\": [135.769274, 35.0008496], \"description\": \"現在要走到這一條，從這邊走進木屋町通\", \"timecode\": \"00:07:40,393\", \"tags\": [\"街道\", \"遊客喜愛\"], \"marker\": \"street\"}, {\"location\": \"鶴清\", \"coordinates\": [135.7678434, 34.9967572], \"description\": \"這一棟就是那個鶴清\", \"timecode\": \"00:02:30,083\", \"tags\": [\"餐廳\", \"日本料理\"], \"marker\": \"restaurant\"}]}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:5cc4442ecab6e51858cd04a807452d2d",
+      "original_query": "analysis:loGRrClougY",
+      "ttl": null,
+      "stored_at": 1757384303.638746
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.638768+00:00",
+    "updated_at": "2025-09-09T02:18:23.638771+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6268bb6a-bb42-45bd-9123-19536fe4c9a6",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:d63a5bc8833fd033af1c19a78085a1c3",
+      "deleted": true,
+      "deleted_at": 1757384303.643337
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:18:23.643349+00:00",
+    "updated_at": "2025-09-09T02:18:23.643350+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a04ac708-e222-4a53-bcd2-3f95e994d164",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"58cf576a-0dc0-4f5a-b81f-d574aa957b26\", \"video_id\": \"W6DpAQPTI5A\", \"status\": \"queued\", \"phase\": null, \"progress\": 0.0, \"cached\": false, \"created_at\": \"2025-09-09T02:22:34.602786+00:00\", \"updated_at\": \"2025-09-09T02:22:34.602786+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hant\", \"en-US\"], \"auto_captions\": [], \"selected_lang\": \"zh-Hant\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "ttl": null,
+      "stored_at": 1757384554.602863
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.602873+00:00",
+    "updated_at": "2025-09-09T02:22:34.602874+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "5d5078bb-6906-4b78-b839-0f3c1aed78bb",
+    "memory_type": "short_term",
+    "content": "58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:182de2f3442a84c76ff66c7d971da52a",
+      "original_query": "video_job:W6DpAQPTI5A",
+      "ttl": null,
+      "stored_at": 1757384554.6083572
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.608374+00:00",
+    "updated_at": "2025-09-09T02:22:34.608376+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "4c041b9e-b4e3-4199-a3bc-0e49823a42d5",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384554.6231198,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.623142+00:00",
+    "updated_at": "2025-09-09T02:22:34.623144+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "23bd2ce9-f9e6-4606-a79a-3e586001293b",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"58cf576a-0dc0-4f5a-b81f-d574aa957b26\", \"video_id\": \"W6DpAQPTI5A\", \"status\": \"running\", \"phase\": \"metadata\", \"progress\": 0.0, \"cached\": false, \"created_at\": \"2025-09-09T02:22:34.602786+00:00\", \"updated_at\": \"2025-09-09T02:22:34.622711+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hant\", \"en-US\"], \"auto_captions\": [], \"selected_lang\": \"zh-Hant\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "ttl": null,
+      "stored_at": 1757384554.628064
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.628078+00:00",
+    "updated_at": "2025-09-09T02:22:34.628079+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "4daa68cc-bbf7-47b6-af11-34fb4a5b276c",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384554.736458,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.736489+00:00",
+    "updated_at": "2025-09-09T02:22:34.736490+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "dbae311c-cce1-429e-a4ea-9b1548df3ad7",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384554.743298,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.743325+00:00",
+    "updated_at": "2025-09-09T02:22:34.743329+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "bded1e08-96af-4d0e-b6bb-42e841b657d5",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"58cf576a-0dc0-4f5a-b81f-d574aa957b26\", \"video_id\": \"W6DpAQPTI5A\", \"status\": \"running\", \"phase\": \"metadata\", \"progress\": 25, \"cached\": false, \"created_at\": \"2025-09-09T02:22:34.602786+00:00\", \"updated_at\": \"2025-09-09T02:22:34.735790+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hant\", \"en-US\"], \"auto_captions\": [], \"selected_lang\": \"zh-Hant\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "ttl": null,
+      "stored_at": 1757384554.7490509
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.749076+00:00",
+    "updated_at": "2025-09-09T02:22:34.749079+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e6a8a7eb-4e37-4ad7-b177-2beb613e7b8f",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384554.865834,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.865864+00:00",
+    "updated_at": "2025-09-09T02:22:34.865865+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "b778c4c8-1e9e-4ce8-8a4a-7942fe660c57",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384554.870901,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.870923+00:00",
+    "updated_at": "2025-09-09T02:22:34.870927+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "9f48075a-0ae7-4cab-aca4-fba6198476d2",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384554.875307,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.875318+00:00",
+    "updated_at": "2025-09-09T02:22:34.875319+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "bba36d82-58fb-49a4-a4cd-09c38d62e00e",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"58cf576a-0dc0-4f5a-b81f-d574aa957b26\", \"video_id\": \"W6DpAQPTI5A\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-09T02:22:34.602786+00:00\", \"updated_at\": \"2025-09-09T02:22:34.865481+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hant\", \"en-US\"], \"auto_captions\": [], \"selected_lang\": \"zh-Hant\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "ttl": null,
+      "stored_at": 1757384554.879446
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:34.879453+00:00",
+    "updated_at": "2025-09-09T02:22:34.879454+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "133a6a40-3a39-4c1c-8ae2-1562519d40f8",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384555.722594,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.722609+00:00",
+    "updated_at": "2025-09-09T02:22:35.722610+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "800a1c76-54eb-487c-9ca8-79a50d4e35cb",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384555.7264068,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.726422+00:00",
+    "updated_at": "2025-09-09T02:22:35.726423+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "7f6636c6-6d7b-45e0-a407-7c45fbe1a398",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384555.730069,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.730083+00:00",
+    "updated_at": "2025-09-09T02:22:35.730084+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a22546c7-f7a2-40a7-8e3e-b14702e30163",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384555.733621,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.733627+00:00",
+    "updated_at": "2025-09-09T02:22:35.733628+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "9f3b6de7-6d6a-4a61-bb27-089b9aafd5d0",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"58cf576a-0dc0-4f5a-b81f-d574aa957b26\", \"video_id\": \"W6DpAQPTI5A\", \"status\": \"running\", \"phase\": \"starting\", \"progress\": 5, \"cached\": false, \"created_at\": \"2025-09-09T02:22:34.602786+00:00\", \"updated_at\": \"2025-09-09T02:22:35.722522+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hant\", \"en-US\"], \"auto_captions\": [], \"selected_lang\": \"zh-Hant\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "ttl": null,
+      "stored_at": 1757384555.737546
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.737552+00:00",
+    "updated_at": "2025-09-09T02:22:35.737553+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "399d2959-2d45-437a-b675-50a3b7720e16",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384555.743453,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.743471+00:00",
+    "updated_at": "2025-09-09T02:22:35.743472+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "79191ac3-848d-4687-87ba-eb6de3878f82",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384555.7473211,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.747331+00:00",
+    "updated_at": "2025-09-09T02:22:35.747333+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ecab8743-08b9-4caf-93ea-9b21b163f22a",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384555.7509792,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.750986+00:00",
+    "updated_at": "2025-09-09T02:22:35.750986+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ff4c516f-01d7-48c1-a1ba-140cf2964d2b",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384555.754594,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.754600+00:00",
+    "updated_at": "2025-09-09T02:22:35.754600+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e327628b-dc14-41fd-b843-beb306dcc8e7",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384555.758188,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.758196+00:00",
+    "updated_at": "2025-09-09T02:22:35.758200+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "6783ce9c-1453-4f9e-aa25-f56760230a2c",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"58cf576a-0dc0-4f5a-b81f-d574aa957b26\", \"video_id\": \"W6DpAQPTI5A\", \"status\": \"running\", \"phase\": \"metadata_started\", \"progress\": 10, \"cached\": false, \"created_at\": \"2025-09-09T02:22:34.602786+00:00\", \"updated_at\": \"2025-09-09T02:22:35.743376+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hant\", \"en-US\"], \"auto_captions\": [], \"selected_lang\": \"zh-Hant\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "ttl": null,
+      "stored_at": 1757384555.761821
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:22:35.761827+00:00",
+    "updated_at": "2025-09-09T02:22:35.761828+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "0b3e966b-bbb7-4f10-8f16-6399064643c6",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384652.055573,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:12.055755+00:00",
+    "updated_at": "2025-09-09T02:24:12.055757+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "675a781a-a42b-44de-b0ae-d3318b746f72",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384652.0807822,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:12.081414+00:00",
+    "updated_at": "2025-09-09T02:24:12.081420+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "1dfaf740-e401-48ae-a2d6-319232643126",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384652.1128929,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:12.112930+00:00",
+    "updated_at": "2025-09-09T02:24:12.112939+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2050d6f4-abee-4aee-a8b9-5bd7679bc18b",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384652.126554,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:12.126580+00:00",
+    "updated_at": "2025-09-09T02:24:12.126584+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8761fa10-ac8e-440b-a745-23cee89e4230",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384652.13102,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:12.131045+00:00",
+    "updated_at": "2025-09-09T02:24:12.131049+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ac9b6d9c-dfdf-4201-b17f-68669a339fef",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384652.1423512,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:12.142381+00:00",
+    "updated_at": "2025-09-09T02:24:12.142386+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ad935266-7d1b-470e-87da-9736df48e425",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"58cf576a-0dc0-4f5a-b81f-d574aa957b26\", \"video_id\": \"W6DpAQPTI5A\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-09T02:22:34.602786+00:00\", \"updated_at\": \"2025-09-09T02:24:12.055321+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hant\", \"en-US\"], \"auto_captions\": [], \"selected_lang\": \"zh-Hant\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "ttl": null,
+      "stored_at": 1757384652.1470778
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:12.147137+00:00",
+    "updated_at": "2025-09-09T02:24:12.147141+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2bbc18e7-abde-4d59-a348-9fffc813c8fe",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384669.45039,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:29.450433+00:00",
+    "updated_at": "2025-09-09T02:24:29.450434+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "65c82ab8-5ee8-45f5-a733-50ec2c6d9ed2",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384669.459506,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:29.459535+00:00",
+    "updated_at": "2025-09-09T02:24:29.459540+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e2807b92-2d69-4663-8a0e-3a6d934b947a",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384669.467099,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:29.467126+00:00",
+    "updated_at": "2025-09-09T02:24:29.467132+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e99f886d-a8a6-4cb2-8194-68684ca3745f",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384669.474111,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:29.474131+00:00",
+    "updated_at": "2025-09-09T02:24:29.474133+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "d8280b38-9f55-41a8-82b7-909f65c98da2",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384669.480275,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:29.480293+00:00",
+    "updated_at": "2025-09-09T02:24:29.480296+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8c0a135b-511d-4497-8906-c45cfbb99c2d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384669.486304,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:29.486315+00:00",
+    "updated_at": "2025-09-09T02:24:29.486316+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "af85b1e5-87b4-42ee-a660-a35c254aa87d",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384669.491437,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:29.491447+00:00",
+    "updated_at": "2025-09-09T02:24:29.491448+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "2eb07901-8c31-431f-bf53-6b66d35e94ee",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"58cf576a-0dc0-4f5a-b81f-d574aa957b26\", \"video_id\": \"W6DpAQPTI5A\", \"status\": \"running\", \"phase\": \"metadata_completed\", \"progress\": 30, \"cached\": false, \"created_at\": \"2025-09-09T02:22:34.602786+00:00\", \"updated_at\": \"2025-09-09T02:24:29.450159+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hant\", \"en-US\"], \"auto_captions\": [], \"selected_lang\": \"zh-Hant\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "ttl": null,
+      "stored_at": 1757384669.496563
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:29.496573+00:00",
+    "updated_at": "2025-09-09T02:24:29.496574+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "fe95b854-b661-4eb8-80a4-c7b65240194b",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.882302,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.882360+00:00",
+    "updated_at": "2025-09-09T02:24:47.882363+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "93a3ed47-0b51-4964-bd1e-5746b5685a1c",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.8917089,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.891735+00:00",
+    "updated_at": "2025-09-09T02:24:47.891738+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c6dfcda8-5d58-466e-8395-707469d10734",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.901591,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.901619+00:00",
+    "updated_at": "2025-09-09T02:24:47.901623+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "09874b2e-6b14-4cc2-8c10-76780fce337b",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.908515,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.908528+00:00",
+    "updated_at": "2025-09-09T02:24:47.908532+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8bd65b27-1e27-47d2-baf3-bcd644f953f0",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.914916,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.914934+00:00",
+    "updated_at": "2025-09-09T02:24:47.914936+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "8322aec2-644c-4530-9e7b-9868e6807273",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.920764,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.920774+00:00",
+    "updated_at": "2025-09-09T02:24:47.920775+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "5e680899-b5f9-4db6-bf2b-c295ff2813f0",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.9262688,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.926278+00:00",
+    "updated_at": "2025-09-09T02:24:47.926279+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "a2ca019c-561c-416f-86d6-c77fc0fd04ac",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.9314141,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.931424+00:00",
+    "updated_at": "2025-09-09T02:24:47.931425+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "3288cd84-7eae-4570-886c-e137601787d4",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"58cf576a-0dc0-4f5a-b81f-d574aa957b26\", \"video_id\": \"W6DpAQPTI5A\", \"status\": \"running\", \"phase\": \"processing\", \"progress\": 50, \"cached\": false, \"created_at\": \"2025-09-09T02:22:34.602786+00:00\", \"updated_at\": \"2025-09-09T02:24:47.881965+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hant\", \"en-US\"], \"auto_captions\": [], \"selected_lang\": \"zh-Hant\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "ttl": null,
+      "stored_at": 1757384687.936276
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.936284+00:00",
+    "updated_at": "2025-09-09T02:24:47.936285+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "52188940-e610-4039-8a7a-2fb6b8cfc697",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.9573572,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.957385+00:00",
+    "updated_at": "2025-09-09T02:24:47.957386+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c9b26ff6-a6aa-4bd8-81c0-f3ee700bc446",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.962334,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.962359+00:00",
+    "updated_at": "2025-09-09T02:24:47.962363+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "ffab7046-ccb2-4ca5-b00c-baa6c036c207",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.968391,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.968418+00:00",
+    "updated_at": "2025-09-09T02:24:47.968423+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "e1b7cadb-b3c9-4083-b615-b0a376f13ce3",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "deleted": true,
+      "deleted_at": 1757384687.9810429,
+      "replaced_by": "new_entry"
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.981068+00:00",
+    "updated_at": "2025-09-09T02:24:47.981073+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "9d84d0dc-ea2d-4637-a4e7-7e2ee7e0d3b5",
+    "memory_type": "short_term",
+    "content": "{\"job_id\": \"58cf576a-0dc0-4f5a-b81f-d574aa957b26\", \"video_id\": \"W6DpAQPTI5A\", \"status\": \"done\", \"phase\": \"geocode\", \"progress\": 100, \"cached\": false, \"created_at\": \"2025-09-09T02:22:34.602786+00:00\", \"updated_at\": \"2025-09-09T02:24:47.956953+00:00\", \"subtitle_availability\": {\"available\": true, \"manual_subtitles\": [\"zh-Hant\", \"en-US\"], \"auto_captions\": [], \"selected_lang\": \"zh-Hant\", \"confidence_score\": 0.95}}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:59192e485aff70e0433fe565ad5055fb",
+      "original_query": "job:58cf576a-0dc0-4f5a-b81f-d574aa957b26",
+      "ttl": 60,
+      "stored_at": 1757384687.9858491
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:47.985868+00:00",
+    "updated_at": "2025-09-09T02:24:47.985872+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "c835e732-0b84-4cd7-8f08-57311760a5fd",
+    "memory_type": "short_term",
+    "content": "{\"video_id\": \"W6DpAQPTI5A\", \"routes\": [{\"location\": \"中村藤吉本店\", \"coordinates\": [135.8017988, 34.8895072], \"description\": \"這邊出來就是一家賣宇治茶的地方，然後那邊就是中村本店，也是賣茶的\", \"timecode\": \"00:01:22,800\", \"tags\": [\"餐廳\"], \"marker\": \"restaurant\"}, {\"location\": \"平等院\", \"coordinates\": [135.8076783, 34.8892908], \"description\": \"來宇治的話，我覺得應該很多人都會去參觀平等院，不知道大家有沒有留意過10日元上的圖案就是平等院的鳳凰堂。\", \"timecode\": \"00:04:48,000\", \"tags\": [\"世界遺產\"], \"marker\": \"heritage\"}, {\"location\": \"下鴨神社\", \"coordinates\": [135.7730068, 35.0389778], \"description\": \"晚上京都那邊有一個下鴨神社的御手洗祭，今天是最後一天，所以我要今天趕緊去。\", \"timecode\": \"00:06:12,033\", \"tags\": [\"神社\"], \"marker\": \"shrine\"}]}",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:c73a652f248574c1c519c722697d77d2",
+      "original_query": "analysis:W6DpAQPTI5A",
+      "ttl": null,
+      "stored_at": 1757384688.096257
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:48.096284+00:00",
+    "updated_at": "2025-09-09T02:24:48.096286+00:00",
+    "expires_at": null
+  },
+  {
+    "id": "0d2fdf9e-951f-4722-ba59-727841797f13",
+    "memory_type": "short_term",
+    "content": "DELETED",
+    "metadata": {
+      "type": "cache",
+      "key": "trailtag:182de2f3442a84c76ff66c7d971da52a",
+      "deleted": true,
+      "deleted_at": 1757384688.1024399
+    },
+    "agent_role": null,
+    "task_id": null,
+    "video_id": null,
+    "created_at": "2025-09-09T02:24:48.102455+00:00",
+    "updated_at": "2025-09-09T02:24:48.102457+00:00",
     "expires_at": null
   }
 ]

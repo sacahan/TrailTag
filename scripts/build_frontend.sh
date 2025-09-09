@@ -12,10 +12,48 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." >/dev/null 2>&1 && pwd)"
 
 info "=== 開始前端建制流程 ==="
 
-# 處理環境變數配置
+# 處理輸入參數與環境變數配置
 info "設定 TrailTag 配置環境變數..."
 
+# 解析 CLI 參數（支援 --api-base-url 或 -u），若未提供則使用環境變數或預設值
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [--api-base-url URL|-u URL]
+
+可選參數:
+  --api-base-url URL, -u URL    設定 TRAILTAG_API_BASE_URL（覆蓋環境變數）
+  --help, -h                    顯示此說明
+EOF
+}
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --api-base-url=*)
+        TRAILTAG_API_BASE_URL="${1#*=}" ; shift ;;
+        --api-base-url|-u)
+            shift
+            if [ "$#" -gt 0 ]; then
+                TRAILTAG_API_BASE_URL="$1"
+                shift
+            else
+                err "Missing value for --api-base-url"
+                usage
+                exit 2
+            fi
+        ;;
+        -h|--help)
+            usage
+            exit 0
+        ;;
+        *)
+            # 忽略其他參數（可按需要擴充）
+            shift
+        ;;
+    esac
+done
+
 # 設定預設環境變數（如果未提供）
+# 先允許 CLI/環境變數覆蓋，否則使用內部預設
 export TRAILTAG_API_BASE_URL="${TRAILTAG_API_BASE_URL:-http://localhost:8010}"
 export TRAILTAG_FETCH_RETRIES="${TRAILTAG_FETCH_RETRIES:-1}"
 export TRAILTAG_FETCH_BACKOFF_MS="${TRAILTAG_FETCH_BACKOFF_MS:-500}"

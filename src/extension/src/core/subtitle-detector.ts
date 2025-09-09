@@ -263,6 +263,10 @@ export class SubtitleChecker {
    * @returns Promise<boolean> 是否可以進行分析
    */
   async checkCurrentVideo(videoId: string): Promise<boolean> {
+    // 確保顯示載入狀態
+    this.showStatus(); // 確保狀態區域可見
+    this.showLoadingStatus(); // 顯示載入動畫
+
     const result = await this.checkSubtitleAvailability(videoId);
     this.displayResult(result);
 
