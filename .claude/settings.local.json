@@ -1,18 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(curl:*)",
-      "Bash(for i in {1..3})",
-      "Bash(done)",
-      "Bash(do curl:*)",
-      "Bash(chmod:*)",
-      "Bash(mkdir:*)",
-      "Bash(tree:*)",
-      "Bash(grep:*)",
-      "Bash(sed:*)",
-      "Bash(./scripts/build_frontend.sh:*)",
-      "Bash(ls:*)"
-    ],
+    "allow": ["Bash", "Bash(npm run copy:static:*)"],
     "deny": [],
     "ask": []
   }

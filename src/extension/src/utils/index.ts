@@ -18,4 +18,5 @@
  */
 
 export * from "./helpers";
+export * from "./badge-manager";
 // map-optimizer.js 是 JavaScript 檔案，需要個別載入

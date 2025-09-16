@@ -14,8 +14,9 @@
 declare const chrome: any; // chrome extension API
 declare const TRAILTAG_CONFIG: any; // 可由環境注入的設定
 
-// 導入字幕檢查器
+// 導入字幕檢查器與徽章管理器
 import { SubtitleChecker } from "./subtitle-detector.js";
+import { BadgeManager } from "../utils/badge-manager.js";
 
 // 優先使用全域註冊的 Utils（若存在）以便測試或 runtime 相容
 const Utils =
@@ -730,6 +731,60 @@ export function exportGeoJSON() {
 }
 
 /**
+ * Update badge status indicator in popup
+ */
+async function updateBadgeStatusIndicator() {
+  const badgeIndicator = document.getElementById("badge-status-indicator");
+  const badgeIcon = document.getElementById("badge-icon");
+  const badgeMessage = document.getElementById("badge-message");
+
+  if (!badgeIndicator || !badgeIcon || !badgeMessage) {
+    return;
+  }
+
+  try {
+    const badgeState = await BadgeManager.getBadgeState();
+    const state = badgeState?.state || "CHECKING";
+
+    // Reset classes
+    badgeIndicator.className = "badge-status-indicator";
+
+    switch (state) {
+      case "AVAILABLE":
+        badgeIndicator.classList.add("available");
+        badgeIcon.textContent = "✅";
+        badgeMessage.textContent = "TrailTag 可用 - 此影片有字幕";
+        break;
+      case "UNAVAILABLE":
+        badgeIndicator.classList.add("unavailable");
+        badgeIcon.textContent = "⚠️";
+        badgeMessage.textContent = "TrailTag 不可用 - 此影片沒有字幕";
+        break;
+      case "CHECKING":
+        badgeIndicator.classList.add("checking");
+        badgeIcon.textContent = "🔍";
+        badgeMessage.textContent = "檢查影片狀態中...";
+        break;
+      case "NOT_YOUTUBE":
+        badgeIndicator.classList.add("not-youtube");
+        badgeIcon.textContent = "ℹ️";
+        badgeMessage.textContent = "請在 YouTube 影片頁面使用 TrailTag";
+        break;
+      default:
+        badgeIndicator.classList.add("checking");
+        badgeIcon.textContent = "❓";
+        badgeMessage.textContent = "TrailTag 狀態未知";
+    }
+  } catch (error) {
+    console.error("Failed to update badge status indicator:", error);
+    // Fallback UI
+    badgeIndicator.className = "badge-status-indicator checking";
+    badgeIcon.textContent = "❓";
+    badgeMessage.textContent = "無法檢查 TrailTag 狀態";
+  }
+}
+
+/**
  * initializeApp - 初始化 popup 應用邏輯
  *
  * 主要流程：
@@ -779,6 +834,9 @@ export async function initializeApp() {
     const canAnalyze =
       await state.subtitleChecker.checkCurrentVideo(currentVideoId);
 
+    // 更新徽章狀態
+    await BadgeManager.updateSubtitleStatus(currentVideoId, canAnalyze);
+
     // 檢查完成後恢復按鈕顯示並根據結果更新狀態
     if (analyzeBtn) {
       analyzeBtn.style.display = "block"; // 恢復顯示
@@ -794,7 +852,7 @@ export async function initializeApp() {
         analyzeBtn.disabled = false;
         analyzeBtn.textContent = "分析此影片";
         analyzeBtn.style.opacity = "1.0";
-        console.log("✅ 字幕檢查通過，按鈕可用");
+        console.log("✅字幕檢查通過，按鈕可用");
       }
     }
 
@@ -1026,6 +1084,9 @@ export function registerApp() {
 
   // 初始化應用狀態與 UI
   initializeApp();
+
+  // 更新徽章狀態指示器
+  updateBadgeStatusIndicator();
 
   // ✅ popup 打開後立即進行一次狀態同步（延遲執行以避免與 initializeApp 衝突）
   setTimeout(async () => {

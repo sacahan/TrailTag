@@ -35,6 +35,48 @@ h1 {
   font-weight: 500;
 }
 
+/* Badge status indicator */
+.badge-status-indicator {
+  padding: 8px 16px;
+  background-color: #e3f2fd;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #1976d2;
+  transition: all 0.3s ease;
+}
+
+.badge-status-indicator.available {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+}
+
+.badge-status-indicator.unavailable {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.badge-status-indicator.checking {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.badge-status-indicator.not-youtube {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.badge-icon {
+  font-size: 14px;
+}
+
+.badge-message {
+  flex: 1;
+  font-weight: 500;
+}
+
 main {
   flex: 1;
   padding: 16px;

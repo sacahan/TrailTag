@@ -202,6 +202,76 @@ CrewAI Memory system is used exclusively for caching - no external cache configu
 - **Multi-source Data**: Chapter extraction, comment mining, and description analysis
 - **Performance Monitoring**: Langtrace integration with execution metrics
 - **State Management**: Persistent task state with recovery mechanisms
+- **Badge Notification System**: Real-time visual indicators on extension icon showing TrailTag availability
+
+## Extension Badge Notification System
+
+### Badge System Architecture
+
+The TrailTag extension implements a sophisticated badge notification system that provides visual feedback about video analysis availability directly on the extension icon.
+
+#### Key Components
+
+- **background.js** - Service worker that manages badge states and coordinates with content scripts
+- **content.js** - Content script that monitors YouTube page changes and subtitle detection
+- **badge-manager.ts** - TypeScript utility class for badge state management
+- **Enhanced popup controller** - Integrates badge status with popup UI
+
+#### Badge States
+
+| State         | Badge Text | Badge Color      | Tooltip                          | Trigger                   |
+| ------------- | ---------- | ---------------- | -------------------------------- | ------------------------- |
+| `AVAILABLE`   | ✓          | Green (#4CAF50)  | TrailTag 可用 - 可以分析此影片   | Subtitles detected        |
+| `UNAVAILABLE` | !          | Orange (#FF9800) | TrailTag 不可用 - 此影片沒有字幕 | No subtitles found        |
+| `CHECKING`    | ...        | Blue (#2196F3)   | TrailTag 檢查中...               | Detection in progress     |
+| `NOT_YOUTUBE` | (empty)    | Default          | TrailTag - 旅遊影片地圖化        | Not on YouTube video page |
+
+#### Implementation Details
+
+**Background Script (background.js)**:
+
+- Listens for tab updates and activations
+- Checks if current page is a YouTube video
+- Calls subtitle availability API
+- Updates badge text, color, and tooltip
+- Handles messages from content script
+
+**Content Script (content.js)**:
+
+- Monitors YouTube SPA navigation changes
+- Detects video player elements and subtitle buttons
+- Sends video change notifications to background script
+- Performs DOM-based subtitle detection as fallback
+
+**Badge Manager (badge-manager.ts)**:
+
+- Provides TypeScript interface for badge communication
+- Integrates with popup controller
+- Maintains state synchronization between components
+- Offers utility methods for badge status queries
+
+#### API Integration
+
+The badge system integrates with the existing subtitle detection API:
+
+- Endpoint: `GET /api/videos/{video_id}/subtitles/check`
+- Returns: `{ available: boolean, manual_subtitles: string[], auto_captions: string[], confidence_score: number }`
+- Used by both background script and popup for consistent results
+
+#### Performance Optimizations
+
+- **Debounced Updates**: Prevents excessive API calls during rapid navigation
+- **Caching**: Stores recent subtitle check results to avoid redundant requests
+- **Lazy Loading**: Only checks subtitle availability when on YouTube video pages
+- **Error Handling**: Graceful fallback to unknown state on API failures
+
+#### Build Integration
+
+The badge system files are automatically included in the extension build:
+
+- `background.js` and `content.js` are copied to the dist directory
+- Manifest v3 permissions include `activeTab` for badge functionality
+- TypeScript compilation includes badge-manager utilities
 
 ## Extension Build System
 

@@ -75,6 +75,7 @@ TrailTag extracts meaningful places, timestamps, and routes from travel videos s
    - A popup UI to request analysis while watching YouTube and view the returned GeoJSON on a map
    - Integrates with the backend API to fetch and render GeoJSON layers
    - **Improved map performance** with marker clustering and optimized rendering
+   - **Smart badge system** that displays TrailTag availability status on the extension icon at a glance
 
 8. **CLI and automation**
    - A `crew`-style CLI to run single-video jobs programmatically
@@ -278,6 +279,36 @@ Run tests
 - Small test deployment: a single uvicorn instance with built-in CrewAI Memory
 - Production: containerize (Docker), run multiple instances behind a load balancer with persistent storage
 - Geocoding providers often have rate limits — use CrewAI Memory caching and provider API keys appropriately
+
+## Extension Badge Notification System
+
+### Smart Badge Status Indicator
+
+The TrailTag extension now features an intelligent badge system that displays the current YouTube video's TrailTag availability status directly on the extension icon:
+
+#### Badge Status Reference
+
+| Badge Display  | Icon State  | Meaning                             | Description                                         |
+| -------------- | ----------- | ----------------------------------- | --------------------------------------------------- |
+| ✓ Green Badge  | Available   | TrailTag can analyze this video     | Video has available subtitles for location analysis |
+| ! Orange Badge | Unavailable | TrailTag cannot analyze this video  | Video lacks subtitles or subtitles are unavailable  |
+| ... Blue Badge | Checking    | Checking video status               | System is detecting subtitle availability           |
+| No Badge       | Not YouTube | Current page is not a YouTube video | Please use TrailTag on YouTube video pages          |
+
+#### Badge System Features
+
+- **Real-time Detection**: Automatically detects subtitle availability as users browse YouTube videos
+- **Visual Feedback**: Know if TrailTag is available without opening the extension
+- **Smart Updates**: Supports YouTube's single-page app navigation with instant status updates
+- **Performance Optimized**: Uses background scripts to avoid impacting page load speeds
+- **Multi-language Support**: Detects both manual subtitles and auto-captions
+
+#### Technical Implementation
+
+- **Background Script**: Monitors tab changes and YouTube navigation
+- **Content Script**: Detects subtitle availability on the page
+- **Badge API**: Uses Chrome Extension Badge API to update icon status
+- **State Synchronization**: Extension popup and badge status stay in sync
 
 ## Extension State Management
 
