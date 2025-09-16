@@ -752,7 +752,7 @@ async function updateBadgeStatusIndicator() {
     switch (state) {
       case "AVAILABLE":
         badgeIndicator.classList.add("available");
-        badgeIcon.textContent = "✅";
+        badgeIcon.textContent = "🏁";
         badgeMessage.textContent = "TrailTag 可用 - 此影片有字幕";
         break;
       case "UNAVAILABLE":

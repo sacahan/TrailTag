@@ -87,7 +87,7 @@ export class BadgeManager {
   static getBadgeMessage(state: string): string {
     switch (state) {
       case "AVAILABLE":
-        return "✅ TrailTag 可用 - 可以分析此影片";
+        return "🏁 TrailTag 可用 - 可以分析此影片";
       case "UNAVAILABLE":
         return "⚠️ TrailTag 不可用 - 此影片沒有字幕";
       case "CHECKING":

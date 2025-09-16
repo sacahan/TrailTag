@@ -7,7 +7,7 @@
 // Badge states
 const BADGE_STATES = {
   AVAILABLE: {
-    text: "✓",
+    text: "✌︎",
     color: "#4CAF50",
     title: "TrailTag 可用 - 可以分析此影片",
   },
