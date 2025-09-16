@@ -4,6 +4,9 @@
  * Handles communication with background script for badge updates
  */
 
+// Chrome extension API declarations
+declare const chrome: any;
+
 export interface BadgeState {
   state: "AVAILABLE" | "UNAVAILABLE" | "CHECKING" | "NOT_YOUTUBE";
 }

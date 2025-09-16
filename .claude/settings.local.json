@@ -1,6 +1,11 @@
 {
   "permissions": {
-    "allow": ["Bash", "Bash(npm run copy:static:*)"],
+    "allow": [
+      "Bash",
+      "Bash(npm run copy:static:*)",
+      "Bash(npm run ts:build:*)",
+      "Bash(npm test)"
+    ],
     "deny": [],
     "ask": []
   }
